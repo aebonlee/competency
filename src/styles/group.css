@@ -1,0 +1,117 @@
+/* ============================================
+   Group Management Styles
+   groupList.css + org.css 기반
+   ============================================ */
+
+.group-page {
+  padding: calc(var(--nav-height) + 32px) 20px 60px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.group-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* Stats Cards */
+.group-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.group-stat-card {
+  background: var(--bg-white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  text-align: center;
+}
+
+.group-stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--primary-blue);
+}
+
+.group-stat-label {
+  font-size: 13px;
+  color: var(--text-light);
+  margin-top: 4px;
+}
+
+/* User List */
+.group-user-list {
+  background: var(--bg-white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* Invitation */
+.invitation-form {
+  max-width: 500px;
+}
+
+.invitation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.invitation-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+}
+
+/* Organization Chart */
+.org-chart {
+  padding: 40px 20px;
+  overflow-x: auto;
+}
+
+.org-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.org-node-box {
+  padding: 12px 20px;
+  border: 2px solid var(--primary-blue);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 14px;
+  background: white;
+  min-width: 120px;
+  text-align: center;
+}
+
+.org-children {
+  display: flex;
+  gap: 24px;
+  padding-top: 20px;
+  position: relative;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .group-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

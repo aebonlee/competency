@@ -1,0 +1,230 @@
+/* ============================================
+   Navbar — header_inc2.css + main2.css 기반
+   MCC 기존 디자인 유지
+   ============================================ */
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: var(--nav-height);
+  display: flex;
+  align-items: center;
+}
+
+.navbar-main {
+  background: var(--primary-blue);
+}
+
+.navbar-group {
+  background: #424242;
+}
+
+.navbar-admin {
+  background: #1a1a2e;
+}
+
+.navbar-inner {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Logo */
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -0.5px;
+}
+
+.navbar-logo-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 0.5px;
+}
+
+/* Nav Links */
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  position: relative;
+  white-space: nowrap;
+}
+
+.nav-btn:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.nav-btn.active {
+  color: white;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Dropdown */
+.nav-dropdown {
+  position: relative;
+}
+
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 220px;
+  background: #424242;
+  border-radius: 8px;
+  padding: 8px 0;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: all 0.2s ease;
+  z-index: 100;
+}
+
+.nav-dropdown-menu.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.nav-dropdown-item {
+  display: block;
+  padding: 10px 20px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.nav-dropdown-item:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-dropdown-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 4px 0;
+}
+
+.nav-dropdown-footer {
+  padding: 8px 20px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Mobile Menu Toggle */
+.navbar-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  padding: 8px;
+  cursor: pointer;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .navbar-toggle {
+    display: flex;
+  }
+
+  .navbar-links {
+    position: absolute;
+    top: var(--nav-height);
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    background: var(--primary-blue);
+    padding: 8px 16px 16px;
+    gap: 0;
+    display: none;
+  }
+
+  .navbar-links.open {
+    display: flex;
+  }
+
+  .navbar-group .navbar-links {
+    background: #424242;
+  }
+
+  .navbar-admin .navbar-links {
+    background: #1a1a2e;
+  }
+
+  .nav-btn {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 12px 16px;
+    border-radius: 0;
+  }
+
+  .nav-dropdown-menu {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    box-shadow: none;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 0;
+    padding: 0;
+  }
+}
+
+/* Footer */
+.footer {
+  background: #2d2d2d;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 40px 0;
+  text-align: center;
+  font-size: 13px;
+  margin-top: 60px;
+}
+
+.footer a {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.footer-copy {
+  margin-top: 8px;
+  font-size: 12px;
+  opacity: 0.7;
+}
