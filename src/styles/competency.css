@@ -29,6 +29,7 @@
   text-align: left;
   max-width: 700px;
   margin: 0 auto;
+  word-break: keep-all;
 }
 
 /* Pulse text */
@@ -61,18 +62,19 @@
 /* Top Content — Circle Icons with Tree */
 .comp-top-content {
   position: relative;
-  height: 500px;
+  width: 100%;
+  max-width: 460px;
+  aspect-ratio: 1 / 1;
   margin: 0 auto 40px;
-  max-width: 500px;
 }
 
 .tree-bg {
   position: absolute;
   left: 50%;
-  top: 50%;
+  top: 48%;
   transform: translate(-50%, -50%);
-  height: 90%;
-  opacity: 0.15;
+  height: 80%;
+  opacity: 0.12;
   pointer-events: none;
 }
 
@@ -89,15 +91,15 @@
   transform: scale(1.15);
 }
 
-/* Position each icon in a circle layout */
-.comp-circle-btn.critical     { top: 5%;  left: 50%; transform: translateX(-50%); }
-.comp-circle-btn.creative     { top: 15%; right: 8%; }
-.comp-circle-btn.communication { top: 40%; right: 0%; }
-.comp-circle-btn.collaboration { top: 65%; right: 8%; }
-.comp-circle-btn.digital      { top: 80%; left: 50%; transform: translateX(-50%); }
-.comp-circle-btn.emotional    { top: 65%; left: 8%; }
-.comp-circle-btn.solving      { top: 40%; left: 0%; }
-.comp-circle-btn.mind         { top: 15%; left: 8%; }
+/* Position each icon in a circle layout (centered with margin offset) */
+.comp-circle-btn.critical     { top: 2%;  left: 50%; transform: translateX(-50%); }
+.comp-circle-btn.creative     { top: 16%; right: 6%; }
+.comp-circle-btn.communication { top: 42%; right: -2%; }
+.comp-circle-btn.collaboration { top: 68%; right: 6%; }
+.comp-circle-btn.digital      { top: 84%; left: 50%; transform: translateX(-50%); }
+.comp-circle-btn.emotional    { top: 68%; left: 6%; }
+.comp-circle-btn.solving      { top: 42%; left: -2%; }
+.comp-circle-btn.mind         { top: 16%; left: 6%; }
 
 .comp-circle-btn.critical:hover,
 .comp-circle-btn.digital:hover {
@@ -119,6 +121,17 @@
   width: 45px;
   height: 45px;
   filter: brightness(0) invert(1);
+}
+
+/* Competency name label below circle */
+.comp-circle-label {
+  display: block;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: #333;
+  margin-top: 4px;
+  white-space: nowrap;
 }
 
 /* Ability Sections */
@@ -151,12 +164,14 @@
 .comp-ability-desc {
   max-width: 700px;
   margin: 0 auto;
+  padding: 0 16px;
 }
 
 .comp-ability-desc h3 {
   font-size: 15px;
   line-height: 1.7;
   margin-bottom: 16px;
+  word-break: keep-all;
 }
 
 .comp-ability-desc h3 b {
@@ -168,6 +183,7 @@
   line-height: 1.8;
   color: #444;
   margin-bottom: 12px;
+  word-break: keep-all;
 }
 
 .comp-back-top {
@@ -211,6 +227,11 @@
 .c2015 {
   max-width: 600px;
   margin: 0 auto 30px;
+}
+
+.c2015 svg {
+  width: 100%;
+  height: auto;
 }
 
 .c2015-text {
@@ -323,24 +344,113 @@
   color: #555;
 }
 
-/* Responsive */
-@media (max-width: 600px) {
-  .comp-top-content {
-    height: 400px;
-    max-width: 350px;
+/* ============================================
+   Responsive
+   ============================================ */
+
+/* Tablet */
+@media (max-width: 768px) {
+  .comp-header h1 {
+    font-size: 24px;
+  }
+
+  .comp-intro {
+    font-size: 14px;
+    padding: 0 8px;
   }
 
   .comp-circle {
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
   }
 
   .comp-circle img {
-    width: 32px;
-    height: 32px;
+    width: 38px;
+    height: 38px;
+  }
+
+  .comp-circle-label {
+    font-size: 10px;
+  }
+
+  .comp-ability-desc h3 {
+    font-size: 14px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .competency-page {
+    padding: 12px;
+  }
+
+  .comp-header {
+    padding: 24px 0 12px;
   }
 
   .comp-header h1 {
-    font-size: 22px;
+    font-size: 20px;
+  }
+
+  .comp-intro {
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .comp-pulse p {
+    font-size: 12px;
+  }
+
+  .comp-top-content {
+    max-width: 320px;
+  }
+
+  .comp-circle {
+    width: 56px;
+    height: 56px;
+  }
+
+  .comp-circle img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .comp-circle-label {
+    font-size: 9px;
+  }
+
+  .comp-circle-display .comp-circle {
+    width: 64px;
+    height: 64px;
+  }
+
+  .comp-circle-display .comp-circle img {
+    width: 34px;
+    height: 34px;
+  }
+
+  .comp-ability-section {
+    margin-bottom: 40px;
+  }
+
+  .c2015-title {
+    font-size: 18px;
+  }
+
+  .c2015-mapping-title {
+    font-size: 17px;
+  }
+
+  .c2015-card {
+    padding: 16px;
+  }
+
+  .comp-badge {
+    padding: 4px 10px;
+    font-size: 11px;
+  }
+
+  .ncs-def-item {
+    font-size: 12px;
   }
 }

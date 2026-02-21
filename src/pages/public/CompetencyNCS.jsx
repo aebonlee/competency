@@ -1,8 +1,25 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { NCS_MAP, COMPETENCY_INFO } from '../../data/competencyInfo';
 import '../../styles/competency.css';
 
 const SVG_FALLBACK_LOADING = '<div style="text-align:center;padding:40px;color:#888;">Loading infographic...</div>';
+
+// 8대 핵심역량 → 연결되는 NCS textfill 클래스
+const CIRCLE_NCS_MAP = {
+  'Circle_75_': { color: '#00AEEF',  fills: ['textfill27','textfill29','textfill25','textfill22'] },
+  'Circle_74_': { color: '#38B549',  fills: ['textfill27','textfill29','textfill23','textfill26','textfill24','textfill20'] },
+  'Circle_73_': { color: '#59C7C4',  fills: ['textfill29','textfill21','textfill24','textfill22','textfill20'] },
+  'Circle_72_': { color: '#662C91',  fills: ['textfill27','textfill29','textfill26','textfill20'] },
+  'Circle_63_': { color: '#EC008C',  fills: ['textfill29','textfill23','textfill21','textfill24','textfill20'] },
+  'Circle_60_': { color: '#D7DF22',  fills: ['textfill29','textfill21','textfill26','textfill24','textfill20'] },
+  'Circle_58_': { color: '#F15A28',  fills: ['textfill29','textfill23','textfill28'] },
+  'Circle_53_': { color: '#ED1B23',  fills: ['textfill27','textfill29','textfill23','textfill28','textfill24'] },
+};
+
+const ALL_TEXTFILLS = [
+  'textfill20','textfill21','textfill22','textfill23','textfill24',
+  'textfill25','textfill26','textfill27','textfill28','textfill29'
+];
 
 const NCS_DEFINITIONS = [
   { name: '의사소통능력', color: '#6951A0', desc: '업무를 수행함에 있어 글과 말을 읽고 들음으로써 다른 사람이 뜻한 바를 파악하고, 자기가 뜻한 바를 글과 말을 통해 정확하게 쓰거나 말하는 능력이다.' },
@@ -19,8 +36,10 @@ const NCS_DEFINITIONS = [
 
 const CompetencyNCS = () => {
   const [svgHtml, setSvgHtml] = useState(SVG_FALLBACK_LOADING);
+  const svgContainerRef = useRef(null);
   const entries = Object.entries(NCS_MAP);
 
+  // SVG 로딩
   useEffect(() => {
     fetch('/images/competency-ncs.svg')
       .then(res => {
@@ -35,6 +54,90 @@ const CompetencyNCS = () => {
         setSvgHtml('<div style="text-align:center;padding:40px;color:#999;">Infographic SVG could not be loaded.</div>');
       });
   }, []);
+
+  // 리셋: 모든 텍스트를 원래 흰색으로
+  const resetColors = useCallback(() => {
+    const container = svgContainerRef.current;
+    if (!container) return;
+    ALL_TEXTFILLS.forEach(cls => {
+      container.querySelectorAll('.' + cls).forEach(el => {
+        el.style.fill = '#FFFFFF';
+      });
+    });
+    // 외곽 원 테두리 리셋
+    Object.keys(CIRCLE_NCS_MAP).forEach(circleId => {
+      const g = container.querySelector('#' + circleId.replace(/\(/g, '\\(').replace(/\)/g, '\\)'));
+      if (g) {
+        const whiteCircle = g.querySelector('[id^="White_x5F_Circle"]');
+        if (whiteCircle) {
+          whiteCircle.querySelectorAll('circle').forEach(c => {
+            c.style.stroke = '';
+            c.style.strokeWidth = '';
+          });
+        }
+      }
+    });
+  }, []);
+
+  // 클릭: 선택한 역량과 연결된 NCS만 하이라이트
+  const handleCircleClick = useCallback((circleId) => {
+    const container = svgContainerRef.current;
+    if (!container) return;
+    const mapping = CIRCLE_NCS_MAP[circleId];
+    if (!mapping) return;
+
+    // 먼저 모두 어두운 색으로
+    ALL_TEXTFILLS.forEach(cls => {
+      container.querySelectorAll('.' + cls).forEach(el => {
+        el.style.fill = '#666666';
+      });
+    });
+
+    // 연결된 NCS만 역량 색상으로 하이라이트
+    mapping.fills.forEach(cls => {
+      container.querySelectorAll('.' + cls).forEach(el => {
+        el.style.fill = mapping.color;
+      });
+    });
+  }, []);
+
+  // SVG 렌더 후 이벤트 바인딩
+  useEffect(() => {
+    const container = svgContainerRef.current;
+    if (!container || svgHtml.includes('Loading') || svgHtml.includes('could not')) return;
+
+    // Circle 클릭 이벤트
+    Object.keys(CIRCLE_NCS_MAP).forEach(circleId => {
+      const cssId = CSS.escape(circleId);
+      const g = container.querySelector('#' + cssId);
+      if (g) {
+        g.style.cursor = 'pointer';
+        g.addEventListener('click', () => handleCircleClick(circleId));
+      }
+    });
+
+    // RESET 클릭
+    const resetEl = container.querySelector('#reset');
+    if (resetEl) {
+      resetEl.style.cursor = 'pointer';
+      resetEl.addEventListener('click', resetColors);
+    }
+
+    // 감성지능/공감능력 텍스트 클릭
+    const intEl = container.querySelector('#int');
+    if (intEl) {
+      intEl.addEventListener('click', () => handleCircleClick('Circle_73_'));
+    }
+
+    return () => {
+      // cleanup
+      Object.keys(CIRCLE_NCS_MAP).forEach(circleId => {
+        const cssId = CSS.escape(circleId);
+        const g = container.querySelector('#' + cssId);
+        if (g) g.replaceWith(g.cloneNode(true));
+      });
+    };
+  }, [svgHtml, handleCircleClick, resetColors]);
 
   return (
     <div className="page-wrapper">
@@ -58,7 +161,7 @@ const CompetencyNCS = () => {
             </p>
           </div>
 
-          <div className="c2015" dangerouslySetInnerHTML={{ __html: svgHtml }} />
+          <div className="c2015" ref={svgContainerRef} dangerouslySetInnerHTML={{ __html: svgHtml }} />
 
           <div className="c2015-text">
             <p>

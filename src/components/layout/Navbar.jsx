@@ -35,7 +35,7 @@ const Navbar = () => {
   return (
     <nav className="navbar navbar-main" ref={navRef}>
       <div className="navbar-inner">
-        <Link to={isAdmin ? '/admin' : isGroup ? '/group' : '/main'} className="navbar-logo">
+        <Link to="/" className="navbar-logo">
           <span className="navbar-logo-badge">MCC</span>
           <span>MyCoreCompetency</span>
         </Link>

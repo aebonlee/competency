@@ -57,6 +57,7 @@ const Competency = () => {
               <div className="comp-circle" style={{ background: comp.color }}>
                 <img src={ICON_IMAGES[i]} alt={comp.name} />
               </div>
+              <span className="comp-circle-label">{comp.name}</span>
             </button>
           ))}
         </div>
