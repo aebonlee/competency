@@ -33,7 +33,9 @@ Dev_md/
     ├── 11_dev-log-session4.md   # 세션4: 파비콘, 리다이렉트, 풍선도움말
     ├── 12_dev-log-session5.md   # 세션5: 공개 역량 페이지 3종 원본 일치 수정
     ├── 13_dev-log-session6.md   # 세션6: OAuth 로그인 리다이렉션 수정
-    └── 14_dev-log-session7.md   # 세션7: NCS 클릭 인터랙션 원본 완전 재현
+    ├── 14_dev-log-session7.md   # 세션7: NCS 클릭 인터랙션 원본 완전 재현
+    ├── 15_plan-session8.md      # 세션8: 구현 계획 (OAuth 수정 + Main 풍선도움말)
+    └── 16_dev-log-session8.md   # 세션8: OAuth 리다이렉션 근본 수정 + Main 풍선도움말
 ```
 
 ## 핵심 기능
@@ -65,4 +67,5 @@ VITE_SUPABASE_URL=<Supabase 프로젝트 URL>
 VITE_SUPABASE_ANON_KEY=<Supabase 익명 키>
 VITE_PORTONE_STORE_ID=<PortOne 스토어 ID>
 VITE_PORTONE_CHANNEL_KEY=<PortOne 채널 키>
+VITE_SITE_URL=https://competency.dreamitbiz.com
 ```

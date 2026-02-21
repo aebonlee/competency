@@ -3,7 +3,7 @@
 **프로젝트**: MyCoreCompetency React 전환
 **리포지토리**: https://github.com/aebonlee/competency
 **배포**: https://competency.dreamitbiz.com
-**최종 커밋**: `1b9f7d1` (2026-02-21)
+**최종 커밋**: `1197a07` (2026-02-21)
 
 ---
 
@@ -15,7 +15,7 @@
 
 ---
 
-## 완료된 작업 (16단계 + 점검 + UI 개선 + 페이지 수정)
+## 완료된 작업 (16단계 + 점검 + UI 개선 + 페이지 수정 + OAuth/툴팁)
 
 ### 세션 1: 초기 구현 (1~13단계)
 
@@ -87,6 +87,14 @@
 | NCS 쐐기 그래디언트 적용 | 원본 SVG url(#SVGID_xx_) / 단색 구분 적용 | `1b9f7d1` |
 | 리셋 그래디언트 복원 | 각 쐐기별 원본 그래디언트 URL 명시적 복원 | `1b9f7d1` |
 | 중앙 원 리셋 추가 | Center_x5F_Circle 클릭 → 리셋 바인딩 | `1b9f7d1` |
+
+### 세션 8: OAuth 리다이렉션 근본 수정 + Main 풍선도움말
+
+| 작업 | 상세 | 커밋 |
+|------|------|------|
+| Supabase eager 초기화 | lazy → eager + auth 옵션 (detectSessionInUrl, implicit flow) | `1197a07` |
+| VITE_SITE_URL 환경변수 | redirectTo를 환경변수 기반으로 변경 | `1197a07` |
+| Main 풍선도움말 6개 | 이어서 검사/카드결제/쿠폰/검사결과/검사내역/통계비교 | `1197a07` |
 
 ---
 
