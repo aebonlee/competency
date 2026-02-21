@@ -109,6 +109,15 @@
 | createEvaluation 확장 | eval_list + eval_questions 56개 일괄 생성 | 세션9 |
 | Evaluation.jsx 버그 수정 | 0점 답변 복원 조건 수정 (> 0 → !== null) | 세션9 |
 
+### 세션 10: 전체 사이트 점검 + 결과 계산 구현
+
+| 작업 | 상세 | 커밋 |
+|------|------|------|
+| calculateResults() 구현 | 레거시 updateEval.jsp 알고리즘 클라이언트 사이드 이식 | 세션10 |
+| Edge Function 제거 | calculate-result invoke → calculateResults() 교체 | 세션10 |
+| deploy.yml 수정 | VITE_SITE_URL 환경변수 추가 | 세션10 |
+| 빈 문항 에러 핸들링 | 문항 0건 시 안내 메시지 + 메인 복귀 버튼 | 세션10 |
+
 ---
 
 ## 전체 커밋 이력 (최신순)

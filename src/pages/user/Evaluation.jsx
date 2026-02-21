@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useToast } from '../../contexts/ToastContext';
-import { getEvalQuestions, saveAnswer } from '../../utils/supabase';
+import { getEvalQuestions, saveAnswer, calculateResults } from '../../utils/supabase';
 import getSupabase from '../../utils/supabase';
 import AssessmentRadio from '../../components/AssessmentRadio';
 import ProgressBar from '../../components/ProgressBar';
@@ -56,13 +56,8 @@ const Evaluation = () => {
           end_date: new Date().toISOString()
         }).eq('id', parseInt(evalId));
 
-        // Calculate results (call edge function or compute client-side)
-        await client.functions.invoke('calculate-result', {
-          body: { evalId: parseInt(evalId) }
-        }).catch(() => {
-          // Fallback: basic client-side calculation placeholder
-          console.warn('Edge function not available, result will be calculated later');
-        });
+        // Calculate results (client-side, legacy updateEval.jsp algorithm)
+        await calculateResults(parseInt(evalId));
       }
 
       showToast('검사가 완료되었습니다!', 'success');
@@ -78,6 +73,21 @@ const Evaluation = () => {
       <div className="assessment-page">
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
           <div className="loading-spinner" />
+        </div>
+      </div>
+    );
+  }
+
+  if (questions.length === 0) {
+    return (
+      <div className="assessment-page">
+        <div className="assessment-container" style={{ textAlign: 'center', paddingTop: 80 }}>
+          <h2>문항을 불러올 수 없습니다</h2>
+          <p style={{ margin: '16px 0', color: '#666' }}>
+            검사 문항이 아직 생성되지 않았습니다.<br />
+            관리자에게 문의해 주세요.
+          </p>
+          <button className="btn btn-primary" onClick={() => navigate('/main')}>메인으로 돌아가기</button>
         </div>
       </div>
     );

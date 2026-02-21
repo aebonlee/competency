@@ -289,7 +289,7 @@ export const getEvalQuestions = async (evalId) => {
 
   const { data, error } = await client
     .from('eval_questions')
-    .select('*, std_question:questions!eval_questions_stdq_id_fkey(q_text), cmp_question:questions!eval_questions_cmpq_id_fkey(q_text)')
+    .select('*, std_question:questions!eval_questions_stdq_id_fkey(q_text, section), cmp_question:questions!eval_questions_cmpq_id_fkey(q_text, section)')
     .eq('eval_id', evalId)
     .order('id');
 
@@ -310,6 +310,50 @@ export const saveAnswer = async (questionId, stdPoint) => {
     .eq('id', questionId);
 
   if (error) throw error;
+};
+
+/**
+ * Calculate evaluation results (client-side, replaces missing Edge Function).
+ * Algorithm from legacy updateEval.jsp:
+ *   point[std_section] += std_point
+ *   point[cmp_section] += (30 - std_point)
+ */
+export const calculateResults = async (evalId) => {
+  const client = getSupabase();
+  if (!client) return null;
+
+  // Fetch all 56 eval_questions with section info
+  const { data: eqs, error: eqErr } = await client
+    .from('eval_questions')
+    .select('std_point, std_question:questions!eval_questions_stdq_id_fkey(section), cmp_question:questions!eval_questions_cmpq_id_fkey(section)')
+    .eq('eval_id', evalId);
+
+  if (eqErr) throw eqErr;
+  if (!eqs || eqs.length === 0) throw new Error('문항 데이터가 없습니다.');
+
+  // Accumulate scores per section (1-8)
+  const points = [0, 0, 0, 0, 0, 0, 0, 0];
+  for (const eq of eqs) {
+    const stdSection = eq.std_question?.section;
+    const cmpSection = eq.cmp_question?.section;
+    const stdPoint = eq.std_point ?? 0;
+    if (stdSection >= 1 && stdSection <= 8) points[stdSection - 1] += stdPoint;
+    if (cmpSection >= 1 && cmpSection <= 8) points[cmpSection - 1] += (30 - stdPoint);
+  }
+
+  // Upsert into results table
+  const { data, error } = await client
+    .from('results')
+    .upsert({
+      eval_id: evalId,
+      point1: points[0], point2: points[1], point3: points[2], point4: points[3],
+      point5: points[4], point6: points[5], point7: points[6], point8: points[7],
+    }, { onConflict: 'eval_id' })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
 };
 
 /**
