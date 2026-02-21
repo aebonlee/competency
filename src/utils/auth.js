@@ -3,13 +3,15 @@
  */
 import getSupabase from './supabase';
 
+const SITE_URL = import.meta.env.VITE_SITE_URL || window.location.origin;
+
 /** Google OAuth login */
 export async function signInWithGoogle() {
   const client = getSupabase();
   if (!client) throw new Error('Supabase not configured');
   const { data, error } = await client.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: window.location.origin }
+    options: { redirectTo: SITE_URL }
   });
   if (error) throw error;
   return data;
@@ -21,7 +23,7 @@ export async function signInWithKakao() {
   if (!client) throw new Error('Supabase not configured');
   const { data, error } = await client.auth.signInWithOAuth({
     provider: 'kakao',
-    options: { redirectTo: window.location.origin }
+    options: { redirectTo: SITE_URL }
   });
   if (error) throw error;
   return data;
@@ -107,7 +109,7 @@ export async function resetPassword(email) {
   const client = getSupabase();
   if (!client) throw new Error('Supabase not configured');
   const { data, error } = await client.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin + '/login'
+    redirectTo: SITE_URL + '/login'
   });
   if (error) throw error;
   return data;
