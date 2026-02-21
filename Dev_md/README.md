@@ -7,7 +7,7 @@ MyCoreCompetency(www.competency.or.kr) 4차 산업혁명 8대 핵심역량 검�
 ## 기술 스택
 | 구분 | 기술 |
 |------|------|
-| Frontend | React 18 + Vite |
+| Frontend | React 19 + Vite 7 |
 | Backend | Supabase (Auth, DB, Edge Functions) |
 | 결제 | PortOne V2 SDK (KG이니시스) |
 | 차트 | Chart.js + react-chartjs-2 |
@@ -18,11 +18,17 @@ MyCoreCompetency(www.competency.or.kr) 4차 산업혁명 8대 핵심역량 검�
 Dev_md/
 ├── README.md                    # 이 파일
 ├── CLAUDE.md                    # Claude AI 개발 지침
-└── 2026-02-21/
+└── 2026-02-21/                  # 날짜별 폴더 → 내용별 파일
     ├── 01_plan.md               # 전환 계획서
-    ├── 02_dev-log.md            # 개발 일지
+    ├── 02_dev-log.md            # 개발 일지 (1~13단계)
     ├── 03_evaluation.md         # 구현 평가서
-    └── 04_verification.md       # 검증 보고서
+    ├── 03_setup-guide.md        # 배포 설정 가이드
+    ├── 04_verification.md       # 검증 보고서
+    ├── 05_dev-summary.md        # 개발 요약 (14~16단계)
+    ├── 06_code-inspection.md    # 코드 점검 보고서
+    ├── 07_sync-status.md        # GitHub↔로컬 동기화 현황
+    ├── 08_legacy-security-audit.md  # 레거시 보안 감사
+    └── 09_progress-summary.md   # 전체 진행 내역 요약
 ```
 
 ## 핵심 기능
