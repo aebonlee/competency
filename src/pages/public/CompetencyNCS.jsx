@@ -4,16 +4,16 @@ import '../../styles/competency.css';
 
 const SVG_FALLBACK_LOADING = '<div style="text-align:center;padding:40px;color:#888;">Loading infographic...</div>';
 
-// 8대 핵심역량 → 연결되는 NCS (원본 competency-NCS.jsp 매핑 재현)
+// 8대 핵심역량 → 연결되는 NCS (원본 competency-NCS.jsp 매핑 완전 재현)
 const CIRCLE_NCS_MAP = {
-  'Circle_75_': { color: '#00AEEF', label: 'st31', inner: 'st41', fills: ['textfill27','textfill29','textfill25','textfill22'], wedges: ['st27','st29','st25','st22'] },
-  'Circle_74_': { color: '#38B549', label: 'st32', inner: 'st42', fills: ['textfill27','textfill29','textfill23','textfill26','textfill24','textfill20'], wedges: ['st27','st29','st23','st26','st24','st20'] },
-  'Circle_73_': { color: '#59C7C4', label: 'st33', inner: 'st43', fills: ['textfill29','textfill21','textfill24','textfill22','textfill20'], wedges: ['st29','st21','st24','st22','st20'] },
-  'Circle_72_': { color: '#662C91', label: 'st34', inner: 'st44', fills: ['textfill27','textfill29','textfill26','textfill20'], wedges: ['st27','st29','st26','st20'] },
-  'Circle_63_': { color: '#EC008C', label: 'st35', inner: 'st45', fills: ['textfill29','textfill23','textfill21','textfill24','textfill20'], wedges: ['st29','st23','st21','st24','st20'] },
-  'Circle_60_': { color: '#D7DF22', label: 'st36', inner: 'st46', fills: ['textfill29','textfill21','textfill26','textfill24','textfill20'], wedges: ['st29','st21','st26','st24','st20'] },
-  'Circle_58_': { color: '#F15A28', label: 'st37', inner: 'st47', fills: ['textfill29','textfill23','textfill28'], wedges: ['st29','st23','st28'] },
-  'Circle_53_': { color: '#ED1B23', label: 'st38', inner: 'st48', fills: ['textfill27','textfill29','textfill23','textfill28','textfill24'], wedges: ['st27','st29','st23','st28','st24'] },
+  'Circle_75_': { color: '#00AEEF', textGroup: 't1', inner: 'st41', fills: ['textfill27','textfill29','textfill25','textfill22'], wedges: ['st27','st29','st25','st22'], wedgeFill: 'url(#SVGID_19_)' },
+  'Circle_74_': { color: '#38B549', textGroup: 't2', inner: 'st42', fills: ['textfill27','textfill29','textfill23','textfill26','textfill24','textfill20'], wedges: ['st27','st29','st23','st26','st24','st20'], wedgeFill: '#38B549' },
+  'Circle_73_': { color: '#59C7C4', textGroup: 't3', inner: 'st43', fills: ['textfill29','textfill21','textfill24','textfill22','textfill20'], wedges: ['st29','st21','st24','st22','st20'], wedgeFill: 'url(#SVGID_17_)' },
+  'Circle_72_': { color: '#662C91', textGroup: 't4', inner: 'st44', fills: ['textfill27','textfill29','textfill26','textfill20'], wedges: ['st27','st29','st26','st20'], wedgeFill: 'url(#SVGID_11_)' },
+  'Circle_63_': { color: '#EC008C', textGroup: 't5', inner: 'st45', fills: ['textfill29','textfill23','textfill21','textfill24','textfill20'], wedges: ['st29','st23','st21','st24','st20'], wedgeFill: '#EC008C' },
+  'Circle_60_': { color: '#D7DF22', textGroup: 't6', inner: 'st46', fills: ['textfill29','textfill21','textfill26','textfill24','textfill20'], wedges: ['st29','st21','st26','st24','st20'], wedgeFill: 'url(#SVGID_12_)' },
+  'Circle_58_': { color: '#F15A28', textGroup: 't7', inner: 'st47', fills: ['textfill29','textfill23','textfill28'], wedges: ['st29','st23','st28'], wedgeFill: 'url(#SVGID_16_)' },
+  'Circle_53_': { color: '#ED1B23', textGroup: 't8', inner: 'st48', fills: ['textfill27','textfill29','textfill23','textfill28','textfill24'], wedges: ['st27','st29','st23','st28','st24'], wedgeFill: '#ED1B23' },
 };
 
 const ALL_TEXTFILLS = [
@@ -21,9 +21,16 @@ const ALL_TEXTFILLS = [
   'textfill25','textfill26','textfill27','textfill28','textfill29'
 ];
 
-const ALL_LABELS = ['st31','st32','st33','st34','st35','st36','st37','st38','st39'];
 const ALL_INNER_CIRCLES = ['st41','st42','st43','st44','st45','st46','st47','st48'];
 const ALL_NCS_WEDGES = ['st20','st21','st22','st23','st24','st25','st26','st27','st28','st29'];
+
+// 각 NCS 쐐기의 원본 SVG 그래디언트 URL (리셋 시 복원용)
+const NCS_WEDGE_GRADIENTS = {
+  'st20': 'url(#SVGID_11_)', 'st21': 'url(#SVGID_12_)', 'st22': 'url(#SVGID_13_)',
+  'st23': 'url(#SVGID_14_)', 'st24': 'url(#SVGID_15_)', 'st25': 'url(#SVGID_16_)',
+  'st26': 'url(#SVGID_17_)', 'st27': 'url(#SVGID_18_)', 'st28': 'url(#SVGID_19_)',
+  'st29': 'url(#SVGID_20_)',
+};
 
 const NCS_DEFINITIONS = [
   { name: '의사소통능력', color: '#6951A0', desc: '업무를 수행함에 있어 글과 말을 읽고 들음으로써 다른 사람이 뜻한 바를 파악하고, 자기가 뜻한 바를 글과 말을 통해 정확하게 쓰거나 말하는 능력이다.' },
@@ -59,21 +66,13 @@ const CompetencyNCS = () => {
       });
   }, []);
 
-  // 리셋: 모든 요소를 원래 상태로 복원
+  // 리셋: 원본 JSP의 Center_x5F_Circle_11_ / #reset 클릭 동작 재현
   const resetColors = useCallback(() => {
     const container = svgContainerRef.current;
     if (!container) return;
-    // NCS 텍스트 → 흰색
-    ALL_TEXTFILLS.forEach(cls => {
-      container.querySelectorAll('.' + cls).forEach(el => {
-        el.style.fill = '#FFFFFF';
-      });
-    });
-    // 역량 라벨 → 어두운 색
-    ALL_LABELS.forEach(cls => {
-      container.querySelectorAll('.' + cls).forEach(el => {
-        el.style.fill = '#434343';
-      });
+    // 역량 라벨 텍스트(.st50) → 어두운 색
+    container.querySelectorAll('.st50').forEach(el => {
+      el.style.fill = '#434343';
     });
     // 내부 원 → 흰색
     ALL_INNER_CIRCLES.forEach(cls => {
@@ -81,30 +80,37 @@ const CompetencyNCS = () => {
         el.style.fill = '#FFFFFF';
       });
     });
-    // NCS 쐐기 → 원래 색 복원 (인라인 스타일 제거)
-    ALL_NCS_WEDGES.forEach(cls => {
+    // NCS 쐐기 → 원본 그래디언트 복원
+    Object.entries(NCS_WEDGE_GRADIENTS).forEach(([cls, gradient]) => {
       container.querySelectorAll('.' + cls).forEach(el => {
-        el.style.fill = '';
+        el.style.fill = gradient;
+      });
+    });
+    // NCS 텍스트 → 흰색
+    ALL_TEXTFILLS.forEach(cls => {
+      container.querySelectorAll('.' + cls).forEach(el => {
+        el.style.fill = '#FFFFFF';
       });
     });
   }, []);
 
-  // 클릭: 선택한 역량과 연결된 NCS만 하이라이트 (원본 JSP 동작 재현)
+  // 클릭: 원본 JSP 동작 완전 재현
   const handleCircleClick = useCallback((circleId) => {
     const container = svgContainerRef.current;
     if (!container) return;
     const mapping = CIRCLE_NCS_MAP[circleId];
     if (!mapping) return;
 
-    // 1. 모든 역량 라벨 → 어두운 색, 클릭된 라벨만 흰색
-    ALL_LABELS.forEach(cls => {
-      container.querySelectorAll('.' + cls).forEach(el => {
-        el.style.fill = '#434343';
+    // 1. 모든 역량 라벨 텍스트(.st50) → 어두운 색, 클릭된 역량 텍스트만 흰색
+    container.querySelectorAll('.st50').forEach(el => {
+      el.style.fill = '#434343';
+    });
+    const textGroup = container.querySelector('.' + mapping.textGroup);
+    if (textGroup) {
+      textGroup.querySelectorAll('.st50').forEach(el => {
+        el.style.fill = '#FFFFFF';
       });
-    });
-    container.querySelectorAll('.' + mapping.label).forEach(el => {
-      el.style.fill = '#FFFFFF';
-    });
+    }
 
     // 2. 모든 내부 원 → 흰색, 클릭된 내부 원만 역량 색상
     ALL_INNER_CIRCLES.forEach(cls => {
@@ -116,7 +122,7 @@ const CompetencyNCS = () => {
       el.style.fill = mapping.color;
     });
 
-    // 3. 모든 NCS 쐐기 → 흰색, 연결된 쐐기만 역량 색상
+    // 3. 모든 NCS 쐐기 → 흰색, 연결된 쐐기만 그래디언트/색상
     ALL_NCS_WEDGES.forEach(cls => {
       container.querySelectorAll('.' + cls).forEach(el => {
         el.style.fill = '#FFFFFF';
@@ -124,7 +130,7 @@ const CompetencyNCS = () => {
     });
     mapping.wedges.forEach(cls => {
       container.querySelectorAll('.' + cls).forEach(el => {
-        el.style.fill = mapping.color;
+        el.style.fill = mapping.wedgeFill;
       });
     });
 
@@ -156,11 +162,16 @@ const CompetencyNCS = () => {
       }
     });
 
-    // RESET 클릭
+    // RESET 클릭 (텍스트 + 중앙 원)
     const resetEl = container.querySelector('#reset');
     if (resetEl) {
       resetEl.style.cursor = 'pointer';
       resetEl.addEventListener('click', resetColors);
+    }
+    const centerCircle = container.querySelector('[id*="Center_x5F_Circle"]');
+    if (centerCircle) {
+      centerCircle.style.cursor = 'pointer';
+      centerCircle.addEventListener('click', resetColors);
     }
 
     // 감성지능/공감능력 텍스트 클릭
