@@ -11,16 +11,14 @@ import { COMPETENCY_COLORS, COMPETENCY_LABELS_SHORT } from '../data/competencyIn
 ChartJS.register(RadialLinearScale, ArcElement, Tooltip, Legend);
 
 /**
- * 8대 핵심역량 PolarArea 차트
+ * 8대 핵심역량 PolarArea 차트 (legacy result.jsp 동일)
  */
 export const CompetencyPolarChart = ({ scores }) => {
   const data = {
     labels: COMPETENCY_LABELS_SHORT,
     datasets: [{
       data: scores,
-      backgroundColor: COMPETENCY_COLORS.map(c => c + '99'),
-      borderColor: COMPETENCY_COLORS,
-      borderWidth: 2,
+      backgroundColor: COMPETENCY_COLORS,
     }]
   };
 
@@ -34,9 +32,8 @@ export const CompetencyPolarChart = ({ scores }) => {
     },
     scales: {
       r: {
-        beginAtZero: true,
-        max: 100,
-        ticks: { stepSize: 20, font: { size: 10 } }
+        ticks: { display: false },
+        grid: { display: false },
       }
     }
   };
