@@ -1,20 +1,21 @@
-# 전체 진행 내역 요약 — 2026-02-21
+# 전체 진행 내역 요약 — 2026-02-21 (최종 업데이트)
 
 **프로젝트**: MyCoreCompetency React 전환
 **리포지토리**: https://github.com/aebonlee/competency
 **배포**: https://competency.dreamitbiz.com
+**최종 커밋**: `ed20a0b` (2026-02-21)
 
 ---
 
-## 전환 진행 상황 (전체 ~90%)
+## 전환 진행 상황 (전체 ~91%)
 
 ```
-[██████████████████░░] 90%
+[██████████████████░░] 91%
 ```
 
 ---
 
-## 완료된 작업 (16단계 + 점검)
+## 완료된 작업 (16단계 + 점검 + UI 개선)
 
 ### 세션 1: 초기 구현 (1~13단계)
 
@@ -43,15 +44,45 @@
 | 16 | CompetencyNCS JSP 원본 복원 | `d3704de` | +1,372줄 |
 | CI/CD | .env + GitHub Actions + 셋업 가이드 | `809f449` | - |
 
-### 세션 3: 종합 점검 (오늘)
+### 세션 3: 종합 점검
 
-| 작업 | 결과 |
-|------|------|
-| GitHub ↔ 로컬 구조 비교 | 구조 차이 및 코드 버전 차이 확인 |
-| React 소스코드 전수 점검 (76개 파일) | 버그 8건, 미완성 3건, 보안 3건, 품질 15건+ |
-| Java/JSP 백엔드 점검 (172+150개 파일) | CRITICAL 6건, HIGH 8건, MEDIUM 6건 |
-| 설정/배포 파일 점검 | 미흡 5건 |
-| 종합 점검 보고서 작성 | `INSPECTION_REPORT_20260221.md` 저장 |
+| 작업 | 결과 | 커밋 |
+|------|------|------|
+| GitHub ↔ 로컬 구조 비교 | 구조 차이 및 코드 버전 차이 확인 | `d4f0017` |
+| React 소스코드 전수 점검 (76개 파일) | 버그 8건, 미완성 3건, 보안 3건, 품질 15건+ | `d4f0017` |
+| Java/JSP 백엔드 점검 (172+150개 파일) | CRITICAL 6건, HIGH 8건, MEDIUM 6건 | `d4f0017` |
+| 설정/배포 파일 점검 | 미흡 5건 | `d4f0017` |
+| 종합 점검 보고서 작성 | `INSPECTION_REPORT_20260221.md` 저장 | `0a84338` |
+
+### 세션 4: UI 개선 및 UX 수정
+
+| 작업 | 상세 | 커밋 |
+|------|------|------|
+| 파비콘 변경 | vite.svg → competency.or.kr 원본 favicon.ico | `87f9279` |
+| 회원가입 리다이렉트 수정 | `/` → `/main` | `87f9279` |
+| 로그인 풍선도움말 추가 | Google/Kakao/이메일 호버 시 안내 표시 | `87f9279` |
+| React 안티패턴 수정 | render 중 navigate → useEffect 패턴 전환 | `87f9279` |
+
+---
+
+## 전체 커밋 이력 (최신순)
+
+| # | 해시 | 메시지 | 세션 |
+|---|------|--------|------|
+| 1 | `ed20a0b` | docs: 세션4 개발일지 — 파비콘, 리다이렉트, 풍선도움말 | 4 |
+| 2 | `87f9279` | feat: 파비콘 변경, 회원가입 리다이렉트 수정, 로그인 풍선도움말 추가 | 4 |
+| 3 | `0a84338` | docs: 세션3 개발일지 — 종합 점검 및 커밋/배포 기록 | 3 |
+| 4 | `d4f0017` | docs: 코드 점검 보고서 및 전체 진행 내역 정리 | 3 |
+| 5 | `adba470` | fix: 로고→홈 링크, Competency 레이아웃 개선, NCS 인터랙티브 클릭 구현 | 2 |
+| 6 | `85759e0` | docs: 개발일지(세션2) — 14~16단계 전체 작업 요약 | 2 |
+| 7 | `d3704de` | feat: CompetencyNCS 페이지 JSP 원본 복원 + 수동 설정 가이드 | 2 |
+| 8 | `809f449` | ci: GitHub Actions에 환경변수 주입 설정 추가 | 2 |
+| 9 | `b319970` | feat: OAuth 프로필 자동 생성 + 관리자 이메일 설정 + 누락 테이블 추가 | 2 |
+| 10 | `09ebc0c` | feat: JSP→React 전환 완료 — 관리자/그룹 CRUD 11개 페이지 추가 | 2 |
+| 11 | `244e1ce` | refactor: Profile/DeleteAccount/Competency2015 인라인 스타일 → CSS 클래스 전환 | 1 |
+| 12 | `ea5e086` | feat: 핵심역량/교육부 페이지 JSP 원본 복원 및 이미지 에셋 추가 | 1 |
+| 13 | `0d0ff34` | fix: competency.css 누락 파일 추가 | 1 |
+| 14 | `578bede` | ui: 전체 페이지 디자인 통일 (page-wrapper + page-header 패턴) | 1 |
 
 ---
 
@@ -65,8 +96,9 @@
 | CSS 파일 | 11개 |
 | Vite 모듈 | 152개 |
 | DB 테이블 | 12개 (Supabase) |
-| 코드 라인 | ~13,700줄 |
-| 커밋 수 | 7개 |
+| 코드 라인 | ~13,900줄 |
+| 커밋 수 | 14개 (main) |
+| 빌드 크기 | JS 582KB / CSS 38KB (gzip: 165KB / 8KB) |
 
 ---
 
@@ -90,7 +122,7 @@
 | 7 | 테스트 프레임워크 도입 | Vitest + @testing-library/react |
 | 8 | console.log 정리 | 55건 → 로깅 서비스 또는 제거 |
 | 9 | CI/CD lint 단계 추가 | deploy.yml에 `npm run lint` |
-| 10 | 코드 스플리팅 | React.lazy + Suspense (번들 523KB 축소) |
+| 10 | 코드 스플리팅 | React.lazy + Suspense (번들 582KB 축소) |
 | 11 | 에러 바운더리 | React Error Boundary 컴포넌트 |
 | 12 | 관리자 권한 서버 전환 | 클라이언트 ADMIN_EMAILS 제거 |
 | 13 | `.env` GitHub 정리 | `git rm --cached .env` → `.env.example` |
@@ -111,17 +143,17 @@
 
 ```
 1. React 버그 8건 일괄 수정
-   ├── UserInfo.jsx useParams 수정
+   ├── UserInfo.jsx useParams `:id` → `id` 수정
    ├── App.jsx 누락 라우트 3건 추가 + 404 페이지
-   ├── GroupMain.jsx 링크 경로 수정
-   ├── BoardForm.jsx 수정 모드 구현
+   ├── GroupMain.jsx 링크 경로 /group/invitation → /group/invite
+   ├── BoardForm.jsx 수정 모드 구현 (useParams + fetch + update)
    ├── MailForm.jsx 발송 로직 구현 또는 기능 제거
-   ├── 테이블명 통일 (profiles/user_profiles)
-   └── 결과 필드명 통일 (score_N/point_N)
+   ├── 테이블명 통일 (profiles vs user_profiles)
+   └── 결과 필드명 통일 (score_N vs point_N)
 
 2. ResultAvg.jsx 데이터 표시 구현
 
-3. GitHub .env 정리
+3. GitHub .env → .env.example 교체
 
 4. 빌드 + 배포 검증
 ```
