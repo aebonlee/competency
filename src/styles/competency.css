@@ -59,22 +59,22 @@
   100% { transform: scale(1); opacity: 1; }
 }
 
-/* Top Content — Circle Icons with Tree */
+/* Top Content — Circle Icons with Tree (원본 ability.jsp 레이아웃) */
 .comp-top-content {
   position: relative;
   width: 100%;
-  max-width: 460px;
-  aspect-ratio: 1 / 1;
+  max-width: 500px;
+  aspect-ratio: 25 / 14;
   margin: 0 auto 40px;
 }
 
 .tree-bg {
   position: absolute;
   left: 50%;
-  top: 48%;
+  top: 50%;
   transform: translate(-50%, -50%);
-  height: 80%;
-  opacity: 0.12;
+  height: 95%;
+  opacity: 0.15;
   pointer-events: none;
 }
 
@@ -91,24 +91,19 @@
   transform: scale(1.15);
 }
 
-/* Position each icon in a circle layout (centered with margin offset) */
-.comp-circle-btn.critical     { top: 2%;  left: 50%; transform: translateX(-50%); }
-.comp-circle-btn.creative     { top: 16%; right: 6%; }
-.comp-circle-btn.communication { top: 42%; right: -2%; }
-.comp-circle-btn.collaboration { top: 68%; right: 6%; }
-.comp-circle-btn.digital      { top: 84%; left: 50%; transform: translateX(-50%); }
-.comp-circle-btn.emotional    { top: 68%; left: 6%; }
-.comp-circle-btn.solving      { top: 42%; left: -2%; }
-.comp-circle-btn.mind         { top: 16%; left: 6%; }
-
-.comp-circle-btn.critical:hover,
-.comp-circle-btn.digital:hover {
-  transform: translateX(-50%) scale(1.15);
-}
+/* 원본 JSP 위치 재현 — 나무 가지 위에 산포 배치 */
+.comp-circle-btn.critical      { left: 0%;  top: 57%; }
+.comp-circle-btn.creative      { left: 6%;  top: 21%; }
+.comp-circle-btn.communication { left: 26%; top: 36%; }
+.comp-circle-btn.collaboration { left: 42%; top: 0%; }
+.comp-circle-btn.digital       { left: 62%; top: 4%; }
+.comp-circle-btn.emotional     { left: 78%; top: 11%; }
+.comp-circle-btn.solving       { left: 86%; top: 36%; }
+.comp-circle-btn.mind          { left: 86%; top: 75%; }
 
 .comp-circle {
-  width: 80px;
-  height: 80px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -118,8 +113,8 @@
 }
 
 .comp-circle img {
-  width: 45px;
-  height: 45px;
+  width: 36px;
+  height: 36px;
   filter: brightness(0) invert(1);
 }
 

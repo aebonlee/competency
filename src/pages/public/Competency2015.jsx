@@ -97,7 +97,7 @@ const Competency2015 = () => {
                     {compIds.map(id => {
                       const comp = COMPETENCY_INFO[id - 1];
                       return (
-                        <span key={id} className="comp-badge" style={{ background: comp.color + '22', color: comp.color }}>
+                        <span key={id} className="comp-badge" style={{ background: comp.color, color: '#fff' }}>
                           {comp.name}
                         </span>
                       );

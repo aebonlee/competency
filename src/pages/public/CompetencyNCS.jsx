@@ -4,22 +4,26 @@ import '../../styles/competency.css';
 
 const SVG_FALLBACK_LOADING = '<div style="text-align:center;padding:40px;color:#888;">Loading infographic...</div>';
 
-// 8대 핵심역량 → 연결되는 NCS textfill 클래스
+// 8대 핵심역량 → 연결되는 NCS (원본 competency-NCS.jsp 매핑 재현)
 const CIRCLE_NCS_MAP = {
-  'Circle_75_': { color: '#00AEEF',  fills: ['textfill27','textfill29','textfill25','textfill22'] },
-  'Circle_74_': { color: '#38B549',  fills: ['textfill27','textfill29','textfill23','textfill26','textfill24','textfill20'] },
-  'Circle_73_': { color: '#59C7C4',  fills: ['textfill29','textfill21','textfill24','textfill22','textfill20'] },
-  'Circle_72_': { color: '#662C91',  fills: ['textfill27','textfill29','textfill26','textfill20'] },
-  'Circle_63_': { color: '#EC008C',  fills: ['textfill29','textfill23','textfill21','textfill24','textfill20'] },
-  'Circle_60_': { color: '#D7DF22',  fills: ['textfill29','textfill21','textfill26','textfill24','textfill20'] },
-  'Circle_58_': { color: '#F15A28',  fills: ['textfill29','textfill23','textfill28'] },
-  'Circle_53_': { color: '#ED1B23',  fills: ['textfill27','textfill29','textfill23','textfill28','textfill24'] },
+  'Circle_75_': { color: '#00AEEF', label: 'st31', inner: 'st41', fills: ['textfill27','textfill29','textfill25','textfill22'], wedges: ['st27','st29','st25','st22'] },
+  'Circle_74_': { color: '#38B549', label: 'st32', inner: 'st42', fills: ['textfill27','textfill29','textfill23','textfill26','textfill24','textfill20'], wedges: ['st27','st29','st23','st26','st24','st20'] },
+  'Circle_73_': { color: '#59C7C4', label: 'st33', inner: 'st43', fills: ['textfill29','textfill21','textfill24','textfill22','textfill20'], wedges: ['st29','st21','st24','st22','st20'] },
+  'Circle_72_': { color: '#662C91', label: 'st34', inner: 'st44', fills: ['textfill27','textfill29','textfill26','textfill20'], wedges: ['st27','st29','st26','st20'] },
+  'Circle_63_': { color: '#EC008C', label: 'st35', inner: 'st45', fills: ['textfill29','textfill23','textfill21','textfill24','textfill20'], wedges: ['st29','st23','st21','st24','st20'] },
+  'Circle_60_': { color: '#D7DF22', label: 'st36', inner: 'st46', fills: ['textfill29','textfill21','textfill26','textfill24','textfill20'], wedges: ['st29','st21','st26','st24','st20'] },
+  'Circle_58_': { color: '#F15A28', label: 'st37', inner: 'st47', fills: ['textfill29','textfill23','textfill28'], wedges: ['st29','st23','st28'] },
+  'Circle_53_': { color: '#ED1B23', label: 'st38', inner: 'st48', fills: ['textfill27','textfill29','textfill23','textfill28','textfill24'], wedges: ['st27','st29','st23','st28','st24'] },
 };
 
 const ALL_TEXTFILLS = [
   'textfill20','textfill21','textfill22','textfill23','textfill24',
   'textfill25','textfill26','textfill27','textfill28','textfill29'
 ];
+
+const ALL_LABELS = ['st31','st32','st33','st34','st35','st36','st37','st38','st39'];
+const ALL_INNER_CIRCLES = ['st41','st42','st43','st44','st45','st46','st47','st48'];
+const ALL_NCS_WEDGES = ['st20','st21','st22','st23','st24','st25','st26','st27','st28','st29'];
 
 const NCS_DEFINITIONS = [
   { name: '의사소통능력', color: '#6951A0', desc: '업무를 수행함에 있어 글과 말을 읽고 들음으로써 다른 사람이 뜻한 바를 파악하고, 자기가 뜻한 바를 글과 말을 통해 정확하게 쓰거나 말하는 능력이다.' },
@@ -55,48 +59,84 @@ const CompetencyNCS = () => {
       });
   }, []);
 
-  // 리셋: 모든 텍스트를 원래 흰색으로
+  // 리셋: 모든 요소를 원래 상태로 복원
   const resetColors = useCallback(() => {
     const container = svgContainerRef.current;
     if (!container) return;
+    // NCS 텍스트 → 흰색
     ALL_TEXTFILLS.forEach(cls => {
       container.querySelectorAll('.' + cls).forEach(el => {
         el.style.fill = '#FFFFFF';
       });
     });
-    // 외곽 원 테두리 리셋
-    Object.keys(CIRCLE_NCS_MAP).forEach(circleId => {
-      const g = container.querySelector('#' + circleId.replace(/\(/g, '\\(').replace(/\)/g, '\\)'));
-      if (g) {
-        const whiteCircle = g.querySelector('[id^="White_x5F_Circle"]');
-        if (whiteCircle) {
-          whiteCircle.querySelectorAll('circle').forEach(c => {
-            c.style.stroke = '';
-            c.style.strokeWidth = '';
-          });
-        }
-      }
+    // 역량 라벨 → 어두운 색
+    ALL_LABELS.forEach(cls => {
+      container.querySelectorAll('.' + cls).forEach(el => {
+        el.style.fill = '#434343';
+      });
+    });
+    // 내부 원 → 흰색
+    ALL_INNER_CIRCLES.forEach(cls => {
+      container.querySelectorAll('.' + cls).forEach(el => {
+        el.style.fill = '#FFFFFF';
+      });
+    });
+    // NCS 쐐기 → 원래 색 복원 (인라인 스타일 제거)
+    ALL_NCS_WEDGES.forEach(cls => {
+      container.querySelectorAll('.' + cls).forEach(el => {
+        el.style.fill = '';
+      });
     });
   }, []);
 
-  // 클릭: 선택한 역량과 연결된 NCS만 하이라이트
+  // 클릭: 선택한 역량과 연결된 NCS만 하이라이트 (원본 JSP 동작 재현)
   const handleCircleClick = useCallback((circleId) => {
     const container = svgContainerRef.current;
     if (!container) return;
     const mapping = CIRCLE_NCS_MAP[circleId];
     if (!mapping) return;
 
-    // 먼저 모두 어두운 색으로
-    ALL_TEXTFILLS.forEach(cls => {
+    // 1. 모든 역량 라벨 → 어두운 색, 클릭된 라벨만 흰색
+    ALL_LABELS.forEach(cls => {
       container.querySelectorAll('.' + cls).forEach(el => {
-        el.style.fill = '#666666';
+        el.style.fill = '#434343';
+      });
+    });
+    container.querySelectorAll('.' + mapping.label).forEach(el => {
+      el.style.fill = '#FFFFFF';
+    });
+
+    // 2. 모든 내부 원 → 흰색, 클릭된 내부 원만 역량 색상
+    ALL_INNER_CIRCLES.forEach(cls => {
+      container.querySelectorAll('.' + cls).forEach(el => {
+        el.style.fill = '#FFFFFF';
+      });
+    });
+    container.querySelectorAll('.' + mapping.inner).forEach(el => {
+      el.style.fill = mapping.color;
+    });
+
+    // 3. 모든 NCS 쐐기 → 흰색, 연결된 쐐기만 역량 색상
+    ALL_NCS_WEDGES.forEach(cls => {
+      container.querySelectorAll('.' + cls).forEach(el => {
+        el.style.fill = '#FFFFFF';
+      });
+    });
+    mapping.wedges.forEach(cls => {
+      container.querySelectorAll('.' + cls).forEach(el => {
+        el.style.fill = mapping.color;
       });
     });
 
-    // 연결된 NCS만 역량 색상으로 하이라이트
+    // 4. 모든 NCS 텍스트 → 어두운 색, 연결된 텍스트만 흰색
+    ALL_TEXTFILLS.forEach(cls => {
+      container.querySelectorAll('.' + cls).forEach(el => {
+        el.style.fill = '#444444';
+      });
+    });
     mapping.fills.forEach(cls => {
       container.querySelectorAll('.' + cls).forEach(el => {
-        el.style.fill = mapping.color;
+        el.style.fill = '#FFFFFF';
       });
     });
   }, []);
@@ -205,7 +245,7 @@ const CompetencyNCS = () => {
                     {compIds.map(id => {
                       const comp = COMPETENCY_INFO[id - 1];
                       return (
-                        <span key={id} className="comp-badge" style={{ background: comp.color + '22', color: comp.color }}>
+                        <span key={id} className="comp-badge" style={{ background: comp.color, color: '#fff' }}>
                           {comp.name}
                         </span>
                       );
