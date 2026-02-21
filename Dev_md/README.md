@@ -35,7 +35,8 @@ Dev_md/
     ├── 13_dev-log-session6.md   # 세션6: OAuth 로그인 리다이렉션 수정
     ├── 14_dev-log-session7.md   # 세션7: NCS 클릭 인터랙션 원본 완전 재현
     ├── 15_plan-session8.md      # 세션8: 구현 계획 (OAuth 수정 + Main 풍선도움말)
-    └── 16_dev-log-session8.md   # 세션8: OAuth 리다이렉션 근본 수정 + Main 풍선도움말
+    ├── 16_dev-log-session8.md   # 세션8: OAuth 리다이렉션 근본 수정 + Main 풍선도움말
+    └── 17_dev-log-session9.md   # 세션9: 검사 문항 생성 로직 (eval_questions 56쌍)
 ```
 
 ## 핵심 기능

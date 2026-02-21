@@ -77,7 +77,107 @@ export const updatePurchaseStatus = async (purchaseId, status, paymentId) => {
 };
 
 /**
- * Create new evaluation entry
+ * Generate 56 question pairs using the legacy extractQ algorithm.
+ * - 8 sections × 14 questions each = 112 total questions
+ * - Per section: 7 randomly chosen as "standard", remaining 7 as comparison pool
+ * - 56 pairs: each standard question from section i paired with a comparison
+ *   question from section j (j≠i), comparison duplicates allowed up to 2 times
+ *
+ * @param {Object} questionsBySection - { 1: [{id, q_no}, ...], ..., 8: [...] }
+ * @returns {Array<{stdq_id: number, cmpq_id: number}>} 56 pairs
+ */
+function generateQuestionPairs(questionsBySection) {
+  const SECTION_NUM = 8;
+  const QUESTION_NUM = 14;
+  const EXTRACT_STD_NUM = 7;
+  const REMAIN_NUM = QUESTION_NUM - EXTRACT_STD_NUM; // 7
+
+  // Build lookup: section -> q_no -> question id
+  const qLookup = {};
+  for (let s = 1; s <= SECTION_NUM; s++) {
+    qLookup[s] = {};
+    const qs = questionsBySection[s] || [];
+    if (qs.length < QUESTION_NUM) {
+      throw new Error(`영역 ${s}에 문항이 ${qs.length}개뿐입니다 (${QUESTION_NUM}개 필요).`);
+    }
+    for (const q of qs) {
+      qLookup[s][q.q_no] = q.id;
+    }
+  }
+
+  // 1. Extract 7 standard q_nos per section (random, unique within section)
+  const standard = Array.from({ length: SECTION_NUM }, () => new Array(EXTRACT_STD_NUM));
+  for (let section = 0; section < SECTION_NUM; section++) {
+    for (let i = 0; i < EXTRACT_STD_NUM; i++) {
+      let unique = false;
+      while (!unique) {
+        standard[section][i] = Math.floor(Math.random() * QUESTION_NUM) + 1;
+        unique = true;
+        for (let j = 0; j < i; j++) {
+          if (standard[section][i] === standard[section][j]) {
+            unique = false;
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  // 2. Build remaining q_nos per section (those not in standard)
+  const remainQ = Array.from({ length: SECTION_NUM }, () => new Array(REMAIN_NUM));
+  for (let section = 0; section < SECTION_NUM; section++) {
+    let idx = 0;
+    for (let num = 0; num < QUESTION_NUM; num++) {
+      const qNo = num + 1;
+      const isStd = standard[section].some(s => s === qNo);
+      if (!isStd) {
+        remainQ[section][idx] = qNo;
+        idx++;
+      }
+    }
+  }
+
+  // 3. Extract comparison questions: compared[std_sctn][cmp_sctn] = q_no from cmp_sctn's remain pool
+  //    Duplicate usage per comparison question allowed up to 2 times
+  const dupCnt = Array.from({ length: SECTION_NUM }, () => new Array(REMAIN_NUM).fill(0));
+  const compared = Array.from({ length: SECTION_NUM }, () => new Array(SECTION_NUM).fill(0));
+
+  for (let cmpSctn = 0; cmpSctn < SECTION_NUM; cmpSctn++) {
+    for (let stdSctn = 0; stdSctn < SECTION_NUM; stdSctn++) {
+      if (stdSctn !== cmpSctn) {
+        let placed = false;
+        while (!placed) {
+          const idx = Math.floor(Math.random() * REMAIN_NUM);
+          if (dupCnt[cmpSctn][idx] <= 1) {
+            compared[stdSctn][cmpSctn] = remainQ[cmpSctn][idx];
+            dupCnt[cmpSctn][idx]++;
+            placed = true;
+          }
+        }
+      }
+    }
+  }
+
+  // 4. Build 56 pairs
+  const pairs = [];
+  for (let i = 0; i < SECTION_NUM; i++) {
+    let n = 0;
+    for (let j = 0; j < SECTION_NUM; j++) {
+      if (i === j) continue;
+      const stdSection = i + 1;
+      const cmpSection = j + 1;
+      const stdqId = qLookup[stdSection][standard[i][n]];
+      const cmpqId = qLookup[cmpSection][compared[i][j]];
+      pairs.push({ stdq_id: stdqId, cmpq_id: cmpqId });
+      n++;
+    }
+  }
+
+  return pairs; // 56 pairs
+}
+
+/**
+ * Create new evaluation entry and generate 56 question pairs
  */
 export const createEvaluation = async (userId, evalType = 1) => {
   const client = getSupabase();
@@ -108,7 +208,8 @@ export const createEvaluation = async (userId, evalType = 1) => {
 
   const nextTimes = (existing?.[0]?.times || 0) + 1;
 
-  const { data, error } = await client
+  // 1. Insert eval_list record
+  const { data: evalData, error: evalError } = await client
     .from('eval_list')
     .insert({
       user_id: userId,
@@ -120,8 +221,43 @@ export const createEvaluation = async (userId, evalType = 1) => {
     .select()
     .single();
 
-  if (error) throw error;
-  return data;
+  if (evalError) throw evalError;
+
+  // 2. Fetch all questions grouped by section
+  const { data: allQuestions, error: qError } = await client
+    .from('questions')
+    .select('id, section, q_no')
+    .not('section', 'is', null)
+    .not('q_no', 'is', null)
+    .order('section')
+    .order('q_no');
+
+  if (qError) throw qError;
+
+  const questionsBySection = {};
+  for (const q of allQuestions) {
+    if (!questionsBySection[q.section]) questionsBySection[q.section] = [];
+    questionsBySection[q.section].push(q);
+  }
+
+  // 3. Generate 56 question pairs
+  const pairs = generateQuestionPairs(questionsBySection);
+
+  // 4. Bulk insert eval_questions
+  const evalQuestions = pairs.map(p => ({
+    eval_id: evalData.id,
+    stdq_id: p.stdq_id,
+    cmpq_id: p.cmpq_id,
+    std_point: null
+  }));
+
+  const { error: insertError } = await client
+    .from('eval_questions')
+    .insert(evalQuestions);
+
+  if (insertError) throw insertError;
+
+  return evalData;
 };
 
 /**

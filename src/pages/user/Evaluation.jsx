@@ -23,7 +23,7 @@ const Evaluation = () => {
       setQuestions(data);
       const existing = {};
       data.forEach(q => {
-        if (q.std_point > 0) existing[q.id] = q.std_point;
+        if (q.std_point !== null && q.std_point >= 0) existing[q.id] = q.std_point;
       });
       setAnswers(existing);
       setLoading(false);

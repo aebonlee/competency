@@ -3,14 +3,14 @@
 **프로젝트**: MyCoreCompetency React 전환
 **리포지토리**: https://github.com/aebonlee/competency
 **배포**: https://competency.dreamitbiz.com
-**최종 커밋**: `1197a07` (2026-02-21)
+**최종 커밋**: 세션9 (2026-02-21)
 
 ---
 
-## 전환 진행 상황 (전체 ~91%)
+## 전환 진행 상황 (전체 ~93%)
 
 ```
-[██████████████████░░] 91%
+[██████████████████▓░] 93%
 ```
 
 ---
@@ -97,6 +97,17 @@
 | Main 풍선도움말 6개 | 이어서 검사/카드결제/쿠폰/검사결과/검사내역/통계비교 | `1197a07` |
 | 결제카드 그리드 레이아웃 수정 | tooltip-wrapper 내 카드 높이 균등화 (flex) | (세션8 추가) |
 | DB 스키마: 누락 컬럼 추가 | user_profiles에 name, email, updated_at 컬럼 | (세션8 추가) |
+| 쿠폰 RLS 정책 수정 | 일반 사용자 쿠폰 조회/사용 허용 | `1aa4aa9` |
+
+### 세션 9: 검사 문항 생성 로직 구현 (eval_questions 56쌍 자동 생성)
+
+| 작업 | 상세 | 커밋 |
+|------|------|------|
+| DB 마이그레이션 | questions 테이블에 section, q_no 컬럼 추가 | 세션9 |
+| 112개 문항 시드 데이터 | competency.or.kr에서 스크래핑 추출 → seed SQL 생성 | 세션9 |
+| generateQuestionPairs() | 레거시 extractQ 알고리즘 JS 이식 (56쌍 생성) | 세션9 |
+| createEvaluation 확장 | eval_list + eval_questions 56개 일괄 생성 | 세션9 |
+| Evaluation.jsx 버그 수정 | 0점 답변 복원 조건 수정 (> 0 → !== null) | 세션9 |
 
 ---
 
