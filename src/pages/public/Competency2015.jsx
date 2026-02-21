@@ -2,11 +2,6 @@ import { useState, useEffect } from 'react';
 import { COMPETENCY_2015_MAP, COMPETENCY_INFO } from '../../data/competencyInfo';
 import '../../styles/competency.css';
 
-/**
- * Raw SVG HTML string for the 2015 competency infographic.
- * Extracted from competency-2015.jsp (Adobe Illustrator SVG).
- * Uses dangerouslySetInnerHTML to avoid JSX conversion of 970+ lines of SVG paths.
- */
 const SVG_FALLBACK_LOADING = '<div style="text-align:center;padding:40px;color:#888;">Loading infographic...</div>';
 
 const Competency2015 = () => {
@@ -20,13 +15,8 @@ const Competency2015 = () => {
         return res.text();
       })
       .then(text => {
-        // Remove XML declaration if present, keep only the <svg>...</svg>
         const svgMatch = text.match(/<svg[\s\S]*<\/svg>/);
-        if (svgMatch) {
-          setSvgHtml(svgMatch[0]);
-        } else {
-          setSvgHtml(text);
-        }
+        setSvgHtml(svgMatch ? svgMatch[0] : text);
       })
       .catch(() => {
         setSvgHtml('<div style="text-align:center;padding:40px;color:#999;">Infographic SVG could not be loaded.</div>');
@@ -42,35 +32,17 @@ const Competency2015 = () => {
         </div>
       </section>
 
-      <section style={{ padding: '40px 20px' }}>
+      <section className="section-content">
         <div className="container-narrow">
-          {/* Title */}
-          <h1
-            className="c2015-title"
-            style={{
-              margin: '20px auto',
-              fontSize: 22,
-              letterSpacing: '-1.7px',
-              textAlign: 'center',
-              fontWeight: 700,
-            }}
-          >
-            2015개정 교육과정 핵심역량
-          </h1>
+          <h1 className="c2015-title">2015개정 교육과정 핵심역량</h1>
 
-          {/* SVG Infographic */}
-          <div
-            className="c2015"
-            style={{ maxWidth: 600, margin: '0 auto 30px' }}
-            dangerouslySetInnerHTML={{ __html: svgHtml }}
-          />
+          <div className="c2015" dangerouslySetInnerHTML={{ __html: svgHtml }} />
 
-          {/* Description text below the infographic */}
-          <div className="c2015-text" style={{ maxWidth: 600, margin: 'auto', lineHeight: 1.8, fontSize: 14, color: '#333' }}>
+          <div className="c2015-text">
             <p>
               <br />
               <b>
-                <span style={{ letterSpacing: '-1px' }}>
+                <span className="c2015-tight">
                   교육부는 &apos;15. 9. 23.(수) 창의융합형 인재 양성을 목표로 하는「2015 개정 교육과정」을 확정·발표하였다.
                 </span>
               </b>
@@ -83,11 +55,11 @@ const Competency2015 = () => {
               <br /><br />
               <b>《 총론 주요 개정 내용 》</b>
               <br />
-              <span style={{ letterSpacing: '-1px' }}>
+              <span className="c2015-tight">
                 □ 2015개정 교육과정은 2009 개정 교육과정이 추구하는 인간상을 기초로 창조경제 사회가 요구하는 핵심역량을 갖춘 <b>&apos;창의융합형 인재&apos;</b>상을 제시하였다.
               </span>
               <br /><br />
-              <span style={{ letterSpacing: '0.5px' }}>
+              <span className="c2015-wide">
                 ㅇ 또한 이를 구체적으로 구현하기 위해 추구하는 인간상(*4가지)과 창의융합형 인재가 갖추어야 할 핵심역량으로{' '}
               </span>
               <b>
@@ -100,59 +72,32 @@ const Competency2015 = () => {
               </b>
               을 제시하였다.
             </p>
-            <div
-              className="c2015-div"
-              style={{
-                background: '#f5f5f5',
-                padding: '12px 16px',
-                borderRadius: 6,
-                textAlign: 'center',
-                fontSize: 14,
-                margin: '16px 0',
-              }}
-            >
+            <div className="c2015-div">
               <b>* 자주적인 사람, 창의적인 사람, <br />교양있는 사람, 더불어 사는 사람</b>
             </div>
-            <p style={{ fontSize: 13, color: '#666' }}>
+            <p className="c2015-source">
               [출처] 교육부 보도자료 일부 발췌. 2015-09-23 <br />
               <a
                 href="https://www.moe.go.kr/boardCnts/view.do?boardID=294&boardSeq=60753&lev=0&m=0204"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ color: '#1a73e8', wordBreak: 'break-all' }}
               >
                 https://www.moe.go.kr/boardCnts/view.do?boardID=294&amp;boardSeq=60753&amp;lev=0&amp;m=0204
               </a>
             </p>
           </div>
 
-          {/* 6 Curriculum Competencies mapped to 8 Core Competencies */}
-          <div style={{ marginTop: 50 }}>
-            <h2 style={{ fontSize: 20, fontWeight: 700, textAlign: 'center', marginBottom: 30, color: 'var(--primary-blue, #106bb5)' }}>
-              교육과정 핵심역량 ↔ 8대 핵심역량 매핑
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div className="c2015-mapping">
+            <h2 className="c2015-mapping-title">교육과정 핵심역량 ↔ 8대 핵심역량 매핑</h2>
+            <div className="c2015-card-list">
               {entries.map(([name, compIds]) => (
-                <div key={name} className="card" style={{ padding: '20px 24px' }}>
-                  <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 12, color: 'var(--primary-blue, #106bb5)' }}>
-                    {name}
-                  </h3>
-                  <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                <div key={name} className="card c2015-card">
+                  <h3>{name}</h3>
+                  <div className="comp-badge-list">
                     {compIds.map(id => {
                       const comp = COMPETENCY_INFO[id - 1];
                       return (
-                        <span
-                          key={id}
-                          className="badge"
-                          style={{
-                            background: comp.color + '22',
-                            color: comp.color,
-                            padding: '6px 14px',
-                            fontSize: 13,
-                            borderRadius: 20,
-                            fontWeight: 600,
-                          }}
-                        >
+                        <span key={id} className="comp-badge" style={{ background: comp.color + '22', color: comp.color }}>
                           {comp.name}
                         </span>
                       );

@@ -26,21 +26,19 @@ const DeleteAccount = () => {
 
   return (
     <div className="page-wrapper">
-      <section className="page-header" style={{ background: 'var(--accent-red)' }}>
+      <section className="page-header-danger">
         <div className="container"><h1>회원탈퇴</h1></div>
       </section>
 
-      <section style={{ padding: '40px 20px' }}>
-        <div className="container" style={{ maxWidth: 500 }}>
+      <section className="section-content">
+        <div className="container-xs">
           <div className="card">
-            <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 16, color: 'var(--accent-red)' }}>
-              정말 탈퇴하시겠습니까?
-            </h3>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: 8, lineHeight: 1.7 }}>
+            <h3 className="delete-title">정말 탈퇴하시겠습니까?</h3>
+            <p className="delete-desc">
               회원탈퇴 시 모든 검사 결과 및 개인 데이터가 삭제됩니다.
               이 작업은 되돌릴 수 없습니다.
             </p>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: 24, fontSize: 14 }}>
+            <p className="delete-hint">
               탈퇴를 진행하려면 아래에 &quot;회원탈퇴&quot;를 입력해주세요.
             </p>
             <div className="form-group">

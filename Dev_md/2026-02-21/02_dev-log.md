@@ -419,6 +419,66 @@ Supabase 프로젝트: hcmgdztsgjvzcyxyayaj (South Asia - Mumbai)
 
 ---
 
+## 13단계: 인라인 스타일 → CSS 클래스 전환 (2026-02-21)
+
+Profile, DeleteAccount, Competency2015 페이지의 인라인 스타일을 CSS 클래스로 전환하여
+전체 코드베이스의 스타일링 일관성을 확보했습니다.
+
+### 13.1 base.css 추가 클래스
+
+| 클래스 | 용도 |
+|--------|------|
+| `.container-sm` | 600px 폭 컨테이너 (Profile) |
+| `.container-xs` | 500px 폭 컨테이너 (DeleteAccount) |
+| `.section-content` | 공통 섹션 패딩 `40px 20px` |
+| `.page-header-danger` | 빨간색 페이지 헤더 (회원탈퇴) |
+| `.profile-avatar-wrap` | 프로필 아바타 래퍼 |
+| `.profile-avatar` | 원형 아바타 (64px, 파란색) |
+| `.profile-email` | 이메일 텍스트 |
+| `.profile-actions` | 버튼 그룹 (flex, gap) |
+| `.ml-auto` | margin-left auto 유틸리티 |
+| `.delete-title` | 탈퇴 제목 (빨간색) |
+| `.delete-desc` | 탈퇴 설명 텍스트 |
+| `.delete-hint` | 탈퇴 안내 텍스트 |
+
+### 13.2 competency.css 추가 클래스 (2015 페이지용)
+
+| 클래스 | 용도 |
+|--------|------|
+| `.c2015-title` | 제목 (22px, 가운데 정렬) |
+| `.c2015` | SVG 인포그래픽 컨테이너 |
+| `.c2015-text` | 본문 텍스트 영역 |
+| `.c2015-tight` | letter-spacing: -1px |
+| `.c2015-wide` | letter-spacing: 0.5px |
+| `.c2015-div` | 인간상 박스 (회색 배경) |
+| `.c2015-source` | 출처 텍스트 |
+| `.c2015-mapping` | 매핑 섹션 래퍼 |
+| `.c2015-mapping-title` | 매핑 섹션 제목 |
+| `.c2015-card-list` | 카드 목록 (flex column) |
+| `.c2015-card` | 카드 패딩/제목 스타일 |
+| `.comp-badge-list` | 뱃지 목록 (flex wrap) |
+| `.comp-badge` | 역량 뱃지 (pill 스타일) |
+
+### 13.3 JSX 변경 요약
+
+| 파일 | 변경 내용 |
+|------|----------|
+| `Profile.jsx` | 인라인 6개 → CSS 클래스 (`profile-avatar`, `section-content` 등) |
+| `DeleteAccount.jsx` | 인라인 5개 → CSS 클래스 (`page-header-danger`, `delete-title` 등) |
+| `Competency2015.jsx` | 인라인 14개 → CSS 클래스 (`c2015-*`, `comp-badge` 등), 컬러 마커(▲) 6개만 인라인 유지 |
+
+### 13.4 빌드 검증
+
+| 항목 | 결과 |
+|------|------|
+| 빌드 명령 | `npm run build` |
+| 상태 | 성공 |
+| 총 모듈 | 140개 |
+| JS 번들 | 532.70 KB (gzip: 157.62 KB) |
+| CSS 번들 | 35.59 KB (gzip: 7.28 KB) |
+
+---
+
 ## 후속 작업 (TODO)
 
 ### 필수

@@ -196,6 +196,100 @@
   height: auto;
 }
 
+/* ============================================
+   2015 Competency Page — competency-2015.jsp 디자인 재현
+   ============================================ */
+
+.c2015-title {
+  margin: 20px auto;
+  font-size: 22px;
+  letter-spacing: -1.7px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.c2015 {
+  max-width: 600px;
+  margin: 0 auto 30px;
+}
+
+.c2015-text {
+  max-width: 600px;
+  margin: auto;
+  line-height: 1.8;
+  font-size: 14px;
+  color: #333;
+}
+
+.c2015-tight {
+  letter-spacing: -1px;
+}
+
+.c2015-wide {
+  letter-spacing: 0.5px;
+}
+
+.c2015-div {
+  background: #f5f5f5;
+  padding: 12px 16px;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 14px;
+  margin: 16px 0;
+}
+
+.c2015-source {
+  font-size: 13px;
+  color: #666;
+}
+
+.c2015-source a {
+  color: #1a73e8;
+  word-break: break-all;
+}
+
+.c2015-mapping {
+  margin-top: 50px;
+}
+
+.c2015-mapping-title {
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 30px;
+  color: var(--primary-blue, #106bb5);
+}
+
+.c2015-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.c2015-card {
+  padding: 20px 24px;
+}
+
+.c2015-card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--primary-blue, #106bb5);
+}
+
+.comp-badge-list {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.comp-badge {
+  padding: 6px 14px;
+  font-size: 13px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
   .comp-top-content {

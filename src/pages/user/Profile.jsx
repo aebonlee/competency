@@ -50,14 +50,14 @@ const Profile = () => {
         <div className="container"><h1>프로필 수정</h1></div>
       </section>
 
-      <section style={{ padding: '40px 20px' }}>
-        <div className="container" style={{ maxWidth: 600 }}>
+      <section className="section-content">
+        <div className="container-sm">
           <div className="card">
-            <div style={{ textAlign: 'center', marginBottom: 24 }}>
-              <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--primary-blue)', color: 'white', fontSize: 24, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+            <div className="profile-avatar-wrap">
+              <div className="profile-avatar">
                 {(profile?.name || 'U')[0]}
               </div>
-              <p style={{ fontSize: 14, color: 'var(--text-light)' }}>{user?.email}</p>
+              <p className="profile-email">{user?.email}</p>
             </div>
 
             <form onSubmit={handleSubmit}>
@@ -74,9 +74,9 @@ const Profile = () => {
               <div className="form-group"><label>직무</label><select value={form.position} onChange={e => setForm({...form, position: parseInt(e.target.value)})}><option value={0}>선택</option>{POSITION_LIST.map(p => <option key={p.code} value={p.code}>{p.name}</option>)}</select></div>
               <div className="form-group"><label>직업/직책</label><input type="text" value={form.job} onChange={e => setForm({...form, job: e.target.value})} /></div>
 
-              <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
+              <div className="profile-actions">
                 <button type="submit" className="btn btn-primary" disabled={loading}>{loading ? '저장 중...' : '프로필 저장'}</button>
-                <Link to="/delete-account" className="btn btn-danger" style={{ marginLeft: 'auto' }}>회원탈퇴</Link>
+                <Link to="/delete-account" className="btn btn-danger ml-auto">회원탈퇴</Link>
               </div>
             </form>
           </div>

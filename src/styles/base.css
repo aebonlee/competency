@@ -360,6 +360,92 @@ input, select, textarea {
 .badge-yellow { background: #fef3c7; color: #92400e; }
 .badge-gray { background: #f3f4f6; color: #6b7280; }
 
+/* Container variants */
+.container-sm {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.container-xs {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Section content (shared padding) */
+.section-content {
+  padding: 40px 20px;
+}
+
+/* Page header — danger variant */
+.page-header-danger {
+  background: var(--accent-red);
+  color: white;
+  padding: 48px 0 40px;
+  text-align: center;
+}
+
+.page-header-danger h1 {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+/* Profile */
+.profile-avatar-wrap {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.profile-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--primary-blue);
+  color: white;
+  font-size: 24px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+}
+
+.profile-email {
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+.profile-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.ml-auto {
+  margin-left: auto;
+}
+
+/* Delete Account */
+.delete-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--accent-red);
+}
+
+.delete-desc {
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  line-height: 1.7;
+}
+
+.delete-hint {
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
 /* Confirmation Icon */
 .confirmation-icon {
   width: 64px;
