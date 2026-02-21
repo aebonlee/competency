@@ -32,6 +32,7 @@ export const CompetencyPolarChart = ({ scores }) => {
     },
     scales: {
       r: {
+        beginAtZero: true,
         ticks: { display: false },
         grid: { display: false },
       }
