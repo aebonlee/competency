@@ -1,211 +1,296 @@
 /* ============================================
-   Result Styles — result.css + prevResult.css + ability.css 기반
+   Result Page — Legacy result.jsp 디자인 재현
+   prevResult.css + circle.css + ability.css 기반
    ============================================ */
 
 .result-page {
-  max-width: 900px;
+  max-width: 960px;
   margin: 0 auto;
-  padding: 40px 20px 60px;
-}
-
-/* Stat Grid */
-.stat-grid-4 {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin-top: 20px;
-}
-
-.stat-cell {
+  padding: 20px 20px 60px;
   text-align: center;
-  padding: 12px;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
 }
 
-.stat-dot {
-  width: 12px;
-  height: 12px;
+/* ── Speech Bubble ── */
+.speech-bubble {
+  filter: drop-shadow(-1px -1px 2px rgba(0, 0, 0, 0.1)) drop-shadow(1px 2px 2px rgba(0, 0, 0, 0.15));
+  border-radius: 5px;
+  background: #ffffff;
+  margin: 0 0 20px;
+  padding: 1.2rem 1.5rem;
+  position: relative;
+  color: #333;
+}
+
+.speech-bubble p {
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 20px;
+  font-size: 14px;
+}
+
+/* ── Profile Card (gender image + gradient) ── */
+.result-card-media {
+  height: 500px;
+  max-width: 100%;
+  border-radius: 1px;
+  margin: 30px auto 0;
+  overflow: visible;
+}
+
+@media (max-width: 768px) {
+  .result-card-media {
+    height: 350px;
+  }
+}
+
+/* ── Competency Ability Section ── */
+.trd-ability {
+  max-width: 1200px;
+  height: auto;
+  margin: 50px auto;
+  text-align: center;
+}
+
+.trd-ability h1 {
+  display: table;
+  margin: 12px auto;
+  width: max-content;
+  padding: 6px 20px;
+  background: linear-gradient(122deg, rgba(16, 107, 181, 1) 0%, rgba(16, 107, 181, 0.9) 100%);
+  color: white;
+  font-size: 20px;
+}
+
+.trd-ability h3 {
+  font-weight: 600;
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.pulsetext {
+  margin-bottom: 10px;
+  font-weight: bold;
+  padding: 20px 30px;
+  border-radius: 5px;
+  background: #ffffff;
+  box-shadow: 5px 5px 10px #d9d9d9, -5px -5px 10px #ffffff;
+  font-size: 14px;
+  display: inline-block;
+}
+
+/* ── Ability rows ── */
+.ability {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+
+.ability.main-row {
+  margin-top: 30px;
+}
+
+/* ── Competency Card (circle + text) ── */
+.comp-card {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.comp-card p {
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 8px;
+  color: #333;
+}
+
+.comp-card:hover .comp-circle {
+  animation: bounce 0.8s ease-in-out;
+}
+
+/* ── Circles — main-row(100px), first-row(80px), second-row(60px) ── */
+.comp-circle {
   border-radius: 50%;
-  margin: 0 auto 8px;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease-out;
+  margin: auto;
 }
 
-.stat-cell-label {
+.comp-circle img {
+  z-index: 10000;
+  position: relative;
+}
+
+.comp-circle::after {
+  content: "";
+  display: block;
+  position: absolute;
+  border-radius: 50%;
+  transition: opacity 0.3s ease-out;
+}
+
+/* main-row: 100px circle */
+.main-row .comp-circle {
+  width: 100px;
+  height: 100px;
+}
+.main-row .comp-circle img {
+  width: 45px;
+  height: 45px;
+}
+.main-row .comp-circle::after {
+  width: 90px;
+  height: 90px;
+}
+
+/* first-row: 80px circle */
+.first-row .comp-circle {
+  width: 80px;
+  height: 80px;
+}
+.first-row .comp-circle img {
+  width: 40px;
+  height: 40px;
+}
+.first-row .comp-circle::after {
+  width: 70px;
+  height: 70px;
+}
+
+/* second-row: 60px circle */
+.second-row .comp-circle {
+  width: 60px;
+  height: 60px;
+}
+.second-row .comp-circle img {
+  width: 35px;
+  height: 35px;
+}
+.second-row .comp-circle::after {
+  width: 50px;
+  height: 50px;
+}
+
+/* ── Per-competency circle colors ── */
+.critical .comp-circle { border: 2px solid #ED1B23; }
+.critical .comp-circle::after { background: #ED1B23; }
+
+.creative .comp-circle { border: 2px solid #F15A28; }
+.creative .comp-circle::after { background: #F15A28; }
+
+.communiccation .comp-circle { border: 2px solid #D7DF22; }
+.communiccation .comp-circle::after { background: #D7DF22; }
+
+.collaboration .comp-circle { border: 2px solid #EC008C; }
+.collaboration .comp-circle::after { background: #EC008C; }
+
+.digital .comp-circle { border: 2px solid #662C91; }
+.digital .comp-circle::after { background: #662C91; }
+
+.emotional .comp-circle { border: 2px solid #59c7c4; }
+.emotional .comp-circle::after { background: #59c7c4; }
+
+.solving .comp-circle { border: 2px solid #38B549; }
+.solving .comp-circle::after { background: #38B549; }
+
+.mind .comp-circle { border: 2px solid #00AEEF; }
+.mind .comp-circle::after { background: #00AEEF; }
+
+/* ── Bounce animation ── */
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-30px); }
+  60% { transform: translateY(-15px); }
+}
+
+/* ── Chart Title ── */
+.chart-title h1 {
+  background: linear-gradient(122deg, rgba(16, 107, 181, 1) 0%, rgba(16, 107, 181, 0.9) 100%);
+  color: white;
+  padding: 6px 20px;
+  display: table;
+  margin: 20px auto;
+  font-size: 20px;
+}
+
+/* ── Chart Tab Buttons ── */
+.chart-tabs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chart-tabs ul {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.chart-tab-btn {
   font-size: 12px;
-  color: var(--text-light);
-  margin-bottom: 4px;
-}
-
-.stat-cell-value {
-  font-size: 20px;
-  font-weight: 700;
-}
-
-/* Chart Section */
-.chart-section {
-  margin-bottom: 48px;
-}
-
-.chart-section h2 {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 24px;
+  width: 100%;
+  padding: 12px 0;
+  border: 1px solid #e2e2e2;
+  cursor: pointer;
   text-align: center;
+  transition: background 0.2s, color 0.2s;
 }
 
-.chart-wrapper {
+.chart-tab-btn.active {
+  background-color: #106bb5;
+  color: white;
+}
+
+.chart-tab-btn:hover:not(.active) {
+  background-color: #f0f0f0;
+}
+
+/* ── Chart Panel ── */
+.chart-panel {
+  margin-top: 20px;
+  margin-bottom: 32px;
+}
+
+.chart-subtitle {
+  font-size: 22px;
+  color: #00249c;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.chart-canvas-wrap {
   max-width: 500px;
   margin: 0 auto;
   padding: 20px;
 }
 
-/* Top 3 Competencies */
-.top3-section {
-  margin-bottom: 48px;
-}
-
-.top3-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-
-.top3-card {
-  text-align: center;
-  padding: 24px 16px;
-  border-radius: var(--radius-md);
-  border: 2px solid var(--border-light);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.top3-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-
-.top3-rank {
+/* ── Legend inline (2015 / NCS) ── */
+.legend-inline {
   font-size: 13px;
-  font-weight: 700;
-  color: var(--accent-red);
-  margin-bottom: 12px;
+  font-weight: bold;
+  letter-spacing: -1px;
 }
 
-.top3-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  margin: 0 auto 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-  font-weight: 700;
-  color: white;
+.legend-inline span[style] {
+  letter-spacing: -5px;
 }
 
-.top3-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-}
-
-.top3-score {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--primary-blue);
-}
-
-/* Score Table */
-.score-table {
-  margin-bottom: 48px;
-}
-
-.score-row {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border-light);
-}
-
-.score-row:last-child {
-  border-bottom: none;
-}
-
-.score-color {
-  width: 12px;
-  height: 12px;
-  border-radius: 3px;
-  margin-right: 12px;
-  flex-shrink: 0;
-}
-
-.score-label {
-  flex: 1;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.score-bar-wrapper {
-  width: 200px;
-  height: 8px;
-  background: var(--bg-light-gray);
-  border-radius: 4px;
-  overflow: hidden;
-  margin-right: 16px;
-}
-
-.score-bar {
-  height: 100%;
-  border-radius: 4px;
-  transition: width 0.8s ease;
-}
-
-.score-value {
-  font-size: 16px;
-  font-weight: 700;
-  min-width: 40px;
-  text-align: right;
-}
-
-/* Infographic Section */
-.infographic-section {
-  background: linear-gradient(135deg, var(--primary-blue), #0a4f8a);
-  border-radius: var(--radius-lg);
-  padding: 48px 32px;
-  color: white;
-  text-align: center;
-  margin-bottom: 48px;
-}
-
-.infographic-section h2 {
-  font-size: 22px;
-  margin-bottom: 32px;
-}
-
-.infographic-stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-}
-
-.infographic-stat {
-  padding: 16px;
-}
-
-.infographic-stat-value {
-  font-size: 32px;
-  font-weight: 700;
-  margin-bottom: 4px;
-}
-
-.infographic-stat-label {
-  font-size: 13px;
-  opacity: 0.8;
-}
-
-/* History */
+/* ── History list (for Results page) ── */
 .history-list {
   display: flex;
   flex-direction: column;
@@ -249,27 +334,56 @@
   gap: 12px;
 }
 
-/* Previous Results */
-.prev-result-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  margin-bottom: 48px;
-}
-
-/* Responsive */
+/* ── Responsive ── */
 @media (max-width: 768px) {
-  .top3-grid {
-    grid-template-columns: 1fr;
+  .ability {
     gap: 12px;
   }
-  .infographic-stats {
-    grid-template-columns: repeat(2, 1fr);
+  .trd-ability h1 {
+    font-size: 16px;
+    padding: 4px 12px;
   }
-  .score-bar-wrapper {
-    width: 120px;
+  .pulsetext {
+    padding: 12px 16px;
+    font-size: 12px;
   }
-  .prev-result-grid {
-    grid-template-columns: 1fr;
+}
+
+@media (max-width: 500px) {
+  .main-row .comp-circle {
+    width: 80px;
+    height: 80px;
+  }
+  .main-row .comp-circle img {
+    width: 35px;
+    height: 35px;
+  }
+  .main-row .comp-circle::after {
+    width: 70px;
+    height: 70px;
+  }
+  .first-row .comp-circle {
+    width: 60px;
+    height: 60px;
+  }
+  .first-row .comp-circle img {
+    width: 30px;
+    height: 30px;
+  }
+  .first-row .comp-circle::after {
+    width: 50px;
+    height: 50px;
+  }
+  .second-row .comp-circle {
+    width: 50px;
+    height: 50px;
+  }
+  .second-row .comp-circle img {
+    width: 25px;
+    height: 25px;
+  }
+  .second-row .comp-circle::after {
+    width: 40px;
+    height: 40px;
   }
 }
