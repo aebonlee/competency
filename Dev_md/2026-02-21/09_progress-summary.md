@@ -88,13 +88,15 @@
 | 리셋 그래디언트 복원 | 각 쐐기별 원본 그래디언트 URL 명시적 복원 | `1b9f7d1` |
 | 중앙 원 리셋 추가 | Center_x5F_Circle 클릭 → 리셋 바인딩 | `1b9f7d1` |
 
-### 세션 8: OAuth 리다이렉션 근본 수정 + Main 풍선도움말
+### 세션 8: OAuth 리다이렉션 근본 수정 + Main 풍선도움말 + DB 스키마
 
 | 작업 | 상세 | 커밋 |
 |------|------|------|
 | Supabase eager 초기화 | lazy → eager + auth 옵션 (detectSessionInUrl, implicit flow) | `1197a07` |
 | VITE_SITE_URL 환경변수 | redirectTo를 환경변수 기반으로 변경 | `1197a07` |
 | Main 풍선도움말 6개 | 이어서 검사/카드결제/쿠폰/검사결과/검사내역/통계비교 | `1197a07` |
+| 결제카드 그리드 레이아웃 수정 | tooltip-wrapper 내 카드 높이 균등화 (flex) | (세션8 추가) |
+| DB 스키마: 누락 컬럼 추가 | user_profiles에 name, email, updated_at 컬럼 | (세션8 추가) |
 
 ---
 

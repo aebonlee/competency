@@ -225,6 +225,15 @@
   display: inline-block;
 }
 
+.main-payment-grid .main-tooltip-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.main-payment-grid .main-tooltip-wrapper > .card {
+  flex: 1;
+}
+
 .main-tooltip {
   position: absolute;
   bottom: calc(100% + 10px);

@@ -1,14 +1,17 @@
-# 세션 8 개발일지 — OAuth 리다이렉션 근본 수정 + Main 페이지 풍선도움말
+# 세션 8 개발일지 — OAuth 리다이렉션 근본 수정 + Main 풍선도움말 + DB 스키마 수정
 
 **날짜**: 2026-02-21
+**커밋**: `1197a07` (코드), `253e686` (문서), + 추가 커밋 (레이아웃 수정 + DB 스키마)
 **배포**: https://competency.dreamitbiz.com
 
 ---
 
 ## 작업 요약
 
-1. OAuth 로그인 리다이렉션 문제를 근본적으로 수정 (Supabase 클라이언트 eager 초기화 + VITE_SITE_URL 환경변수)
-2. Main 페이지(`/main`)의 6개 기능 버튼/링크에 풍선도움말(tooltip) 추가
+1. OAuth 로그인 리다이렉션 문제 근본 수정 (Supabase eager 초기화 + VITE_SITE_URL 환경변수)
+2. Main 페이지(`/main`) 6개 기능 버튼/링크에 풍선도움말(tooltip) 추가
+3. 재검토: 결제카드 그리드 레이아웃 수정 (tooltip-wrapper 높이 균등화)
+4. DB 스키마 수정: `user_profiles` 테이블 `name`, `email`, `updated_at` 컬럼 누락 해결
 
 ---
 
@@ -53,7 +56,6 @@ const getSupabase = () => supabase;
 ### 변경 1-2: `src/utils/auth.js` — VITE_SITE_URL 기반 redirectTo
 
 ```js
-// 상단에 상수 추가
 const SITE_URL = import.meta.env.VITE_SITE_URL || window.location.origin;
 
 // Google/Kakao OAuth, resetPassword 모두 SITE_URL 사용
@@ -66,9 +68,9 @@ options: { redirectTo: SITE_URL }
 VITE_SITE_URL=https://competency.dreamitbiz.com
 ```
 
-### 사용자 수동 작업 필요: Supabase Dashboard
+### 사용자 수동 작업 (완료됨)
 
-- **Authentication → URL Configuration → Redirect URLs**에 추가:
+- Supabase Dashboard → Authentication → URL Configuration → Redirect URLs에 추가:
   - `https://competency.dreamitbiz.com`
   - `https://competency.dreamitbiz.com/**`
 
@@ -78,7 +80,7 @@ VITE_SITE_URL=https://competency.dreamitbiz.com
 
 ### 변경 2-1: `src/pages/user/Main.jsx`
 
-Login.jsx 패턴 (`useState` + `onMouseEnter`/`onMouseLeave` + 조건부 렌더링)을 그대로 적용:
+Login.jsx 패턴을 그대로 적용:
 
 ```js
 const TOOLTIPS = {
@@ -89,10 +91,9 @@ const TOOLTIPS = {
   history: '지금까지 진행한 모든 검사 내역을 확인합니다.',
   average: '다른 사용자들의 평균 결과와 내 결과를 비교합니다.'
 };
-const [tooltip, setTooltip] = useState(null);
 ```
 
-각 버튼/링크를 `.main-tooltip-wrapper` div로 감싸고 위쪽 방향 tooltip 표시:
+6개 버튼/링크에 `.main-tooltip-wrapper` 적용:
 1. **이어서 검사하기** 버튼 (`continueTest`)
 2. **카드 결제** 카드 전체 (`cardPayment`)
 3. **쿠폰 사용** 카드 전체 (`coupon`)
@@ -102,22 +103,55 @@ const [tooltip, setTooltip] = useState(null);
 
 ### 변경 2-2: `src/styles/checkout.css` — 풍선도움말 CSS
 
+- 위쪽 방향 tooltip (bottom 배치, 아래쪽 화살표)
+- auth-tooltip과 동일 시각 스타일 (box-shadow, border, animation)
+- 모바일 반응형: `white-space: normal` + min/max-width 제한
+
+---
+
+## 작업 3: 재검토 — 결제카드 그리드 레이아웃 수정
+
+### 문제
+
+`.main-tooltip-wrapper`가 `.main-payment-grid`의 직접 자식이 되면서, 내부 `.card`가 동일 높이로 늘어나지 않는 문제.
+
+### 수정
+
 ```css
-.main-tooltip-wrapper { position: relative; display: inline-block; }
-.main-tooltip {
-  position: absolute;
-  bottom: calc(100% + 10px);
-  left: 50%;
-  transform: translateX(-50%);
-  /* auth-tooltip과 동일 스타일 */
+.main-payment-grid .main-tooltip-wrapper {
+  display: flex;
+  flex-direction: column;
 }
-.main-tooltip-arrow {
-  bottom: -6px;  /* 아래쪽 화살표 */
+.main-payment-grid .main-tooltip-wrapper > .card {
+  flex: 1;
 }
 ```
 
-- 위쪽 방향 (bottom 배치) — Login.jsx는 오른쪽 방향이었으나, Main 페이지는 위쪽이 자연스러움
-- 모바일 반응형: `white-space: normal` + min/max-width 제한
+---
+
+## 작업 4: DB 스키마 — user_profiles 누락 컬럼 추가
+
+### 문제
+
+`Could not find the 'name' column of 'user_profiles' in the schema cache` — 프로필 완성 시 오류 발생.
+
+### 원인
+
+마이그레이션 `20260220230614_competency_schema.sql`이 `ALTER TABLE user_profiles ADD COLUMN`으로 MCC 전용 컬럼만 추가하고, 기본 컬럼(`name`, `email`, `updated_at`)은 기존 테이블에 이미 있다고 가정했으나 실제로는 누락.
+
+### 수정
+
+`supabase/migrations/20260221190000_add_missing_profile_columns.sql` 생성:
+
+```sql
+ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS name       text DEFAULT '';
+ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS email      text DEFAULT '';
+ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS updated_at timestamptz DEFAULT now();
+```
+
+### 사용자 수동 작업 필요
+
+Supabase Dashboard → SQL Editor에서 위 SQL 실행 필요.
 
 ---
 
@@ -128,12 +162,14 @@ const [tooltip, setTooltip] = useState(null);
 | `src/utils/supabase.js` | lazy → eager 초기화 + auth 옵션 4개 |
 | `src/utils/auth.js` | `window.location.origin` → `VITE_SITE_URL` 상수 |
 | `.env` | `VITE_SITE_URL=https://competency.dreamitbiz.com` 추가 |
-| `src/pages/user/Main.jsx` | 풍선도움말 6개 추가 (TOOLTIPS 객체 + useState + wrapper) |
-| `src/styles/checkout.css` | `.main-tooltip-wrapper`, `.main-tooltip`, `.main-tooltip-arrow` CSS |
+| `src/pages/user/Main.jsx` | 풍선도움말 6개 (TOOLTIPS + useState + wrapper) |
+| `src/styles/checkout.css` | tooltip CSS + 결제카드 grid 높이 균등화 |
+| `supabase/migrations/20260221190000_add_missing_profile_columns.sql` | name, email, updated_at 컬럼 추가 |
 
 ---
 
 ## 빌드 & 배포
 
-- Vite 빌드: (빌드 후 업데이트 예정)
-- GitHub Actions 배포: (배포 후 업데이트 예정)
+- Vite 빌드: 152 modules, 9.45s
+- JS 586KB / CSS 39KB (gzip: 166KB / 8KB)
+- GitHub Pages 배포: 커밋 & 푸시 후 GitHub Actions 자동 실행
