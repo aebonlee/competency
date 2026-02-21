@@ -31,7 +31,8 @@ Dev_md/
     ├── 09_progress-summary.md   # 전체 진행 내역 요약
     ├── 10_dev-log-session3.md   # 세션3: 종합 점검 및 커밋/배포
     ├── 11_dev-log-session4.md   # 세션4: 파비콘, 리다이렉트, 풍선도움말
-    └── 12_dev-log-session5.md   # 세션5: 공개 역량 페이지 3종 원본 일치 수정
+    ├── 12_dev-log-session5.md   # 세션5: 공개 역량 페이지 3종 원본 일치 수정
+    └── 13_dev-log-session6.md   # 세션6: OAuth 로그인 리다이렉션 수정
 ```
 
 ## 핵심 기능
