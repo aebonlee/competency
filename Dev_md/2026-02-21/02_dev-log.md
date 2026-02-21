@@ -341,6 +341,84 @@ Supabase 프로젝트: hcmgdztsgjvzcyxyayaj (South Asia - Mumbai)
 
 ---
 
+## 12단계: 핵심 페이지 JSP→React 원본 복원 및 에셋 추가 (2026-02-21)
+
+기존 JSP 원본 디자인을 React에 충실하게 복원하고, 필요한 이미지 에셋을 모두 추가했습니다.
+
+### 12.1 Competency.jsx (4차산업혁명 8대 핵심역량) 전면 개편
+
+**이전**: 카드 그리드 + 모달 팝업 방식 (숫자 아이콘)
+**이후**: JSP 원본(competency.jsp) 디자인 복원
+
+- 트리 배경 SVG (`/images/tree.svg`) 위에 8대 역량 아이콘 원형 배치
+- 아이콘 클릭 시 해당 역량 설명으로 스크롤 이동 (`scrollIntoView`)
+- 각 역량별 상세 설명 섹션 (아이콘 + 설명 텍스트 2컬럼 레이아웃)
+- "↑ Top" 버튼으로 상단 복귀
+- 모달 제거 → 스크롤 기반 UX로 전환
+- `ICON_IMAGES` 배열 + `CIRCLE_CLASSES` 배열로 구조화
+- `competency.css` 활용 (`.competency-page`, `.comp-header`, `.comp-top-content`, `.comp-abilities` 등)
+
+### 12.2 Competency2015.jsx (2015 교육과정 핵심역량) 전면 개편
+
+**이전**: 텍스트 카드 + 뱃지 매핑만 표시
+**이후**: JSP 원본(competency-2015.jsp) 디자인 복원
+
+- 외부 SVG 인포그래픽 (`/images/competency-2015.svg`) 동적 로딩 (`fetch` + `dangerouslySetInnerHTML`)
+- SVG 로딩 실패 시 graceful fallback 메시지
+- 교육부 보도자료 텍스트 (2015.9.23 발표 내용) 전문 추가
+- 6대 핵심역량 컬러 삼각형 마커 (▲) 포함
+- 총론 주요 개정 내용 박스
+- 교육부 출처 링크 포함
+- 하단 교육과정 핵심역량 ↔ 8대 핵심역량 매핑 섹션 유지
+
+### 12.3 competency-2015.svg 추출
+
+- `scripts/extract-svg.js` 스크립트를 사용하여 JSP 원본에서 SVG 추출
+- 원본: `D:/competency/tomcat/webapps/ROOT/competency-2015.jsp` (974줄, 87,696자)
+- JSP 표현식(`<%=request.getContextPath()%>`) → 정적 경로 변환
+- 이미지 참조 `/img/` → `/images/` 경로 변환
+- 참조 PNG 이미지 11개 자동 복사
+
+### 12.4 navbar.css 변경
+
+- `.navbar-main` 배경색: `var(--primary-blue)` → `#424242` (다크 그레이)
+- 모바일 `.navbar-main .navbar-links` 배경색 `#424242` 추가
+- 기존 그룹 네비바와 동일한 톤으로 통일
+
+### 12.5 이미지 에셋 추가 (public/images/)
+
+| 유형 | 파일 수 | 내용 |
+|------|---------|------|
+| SVG 아이콘 | 9개 | idea, plan, agreement, team, wheel, brain, brain2, business-and-finance, tree |
+| SVG 인포그래픽 | 1개 | competency-2015.svg (교육과정 핵심역량 도식) |
+| PNG 역량 이미지 | 19개 | 357361F*.png (8개), A3E24A*.png (8개), AFB4D*.png (2개), grass2.png |
+| 로고/기타 | 2개 | logo.png, favicon.ico |
+| 8job 직업 이미지 | 22개 | 8job/*.png, job10.svg |
+| metis-assets | 9개 | 랜딩페이지 디자인 요소 (blob, dots, macbook, sampleQ 등) |
+| **합계** | **62개** | |
+
+### 12.6 수정 파일 요약
+
+| 파일 | 변경 내용 |
+|------|----------|
+| `src/pages/public/Competency.jsx` | 트리 배경 + 원형 아이콘 + 스크롤 UX로 전면 개편 |
+| `src/pages/public/Competency2015.jsx` | SVG 인포그래픽 + 교육부 보도자료 텍스트 복원 |
+| `src/styles/navbar.css` | 메인 네비바 배경색 다크 그레이로 변경 |
+| `public/images/` (신규) | SVG/PNG 에셋 62개 |
+| `scripts/extract-svg.js` (신규) | JSP→SVG 추출 유틸리티 |
+
+### 12.7 빌드 검증
+
+| 항목 | 결과 |
+|------|------|
+| 빌드 명령 | `npm run build` |
+| 상태 | 성공 |
+| 총 모듈 | 140개 |
+| JS 번들 | 533.81 KB (gzip: 157.82 KB) |
+| CSS 번들 | 33.67 KB (gzip: 6.94 KB) |
+
+---
+
 ## 후속 작업 (TODO)
 
 ### 필수
@@ -354,6 +432,7 @@ Supabase 프로젝트: hcmgdztsgjvzcyxyayaj (South Asia - Mumbai)
 - [ ] 코드 스플리팅 (React.lazy + Suspense)
 - [ ] 에러 바운더리 추가
 - [x] ~~이미지 자산 이전 (MCC 로고, 역량 아이콘)~~ → Home 그리드에 SVG 아이콘 적용 완료
+- [x] ~~교육부/NCS 페이지 원본 디자인 복원~~ → Competency, Competency2015 JSP 원본 복원 완료
 - [ ] Edge Function: calculate_results (서버사이드 점수 계산)
 - [ ] SEO 메타태그 (react-helmet)
 

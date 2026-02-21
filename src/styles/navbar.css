@@ -15,7 +15,7 @@
 }
 
 .navbar-main {
-  background: var(--primary-blue);
+  background: #424242;
 }
 
 .navbar-group {
@@ -180,6 +180,10 @@
 
   .navbar-links.open {
     display: flex;
+  }
+
+  .navbar-main .navbar-links {
+    background: #424242;
   }
 
   .navbar-group .navbar-links {
