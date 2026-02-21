@@ -30,7 +30,7 @@ const GroupUserResult = () => {
         const { data: group } = await supabase
           .from('groups')
           .select('id')
-          .eq('manager_id', user.id)
+          .eq('owner_id', user.id)
           .single();
 
         if (!group) {
@@ -54,7 +54,7 @@ const GroupUserResult = () => {
 
         // Fetch member profile
         const { data: profile } = await supabase
-          .from('profiles')
+          .from('user_profiles')
           .select('name, email, phone')
           .eq('id', userId)
           .single();
@@ -89,14 +89,14 @@ const GroupUserResult = () => {
 
           // Extract scores for the 8 competencies
           const competencyScores = [
-            result.score_1 || 0,
-            result.score_2 || 0,
-            result.score_3 || 0,
-            result.score_4 || 0,
-            result.score_5 || 0,
-            result.score_6 || 0,
-            result.score_7 || 0,
-            result.score_8 || 0,
+            result.point1 || 0,
+            result.point2 || 0,
+            result.point3 || 0,
+            result.point4 || 0,
+            result.point5 || 0,
+            result.point6 || 0,
+            result.point7 || 0,
+            result.point8 || 0,
           ];
           setScores(competencyScores);
         }

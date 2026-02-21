@@ -25,7 +25,7 @@ const GroupMain = () => {
         const { data: group, error: groupError } = await supabase
           .from('groups')
           .select('*')
-          .eq('manager_id', user.id)
+          .eq('owner_id', user.id)
           .single();
 
         if (groupError && groupError.code !== 'PGRST116') {
@@ -112,11 +112,11 @@ const GroupMain = () => {
       {/* Group Info Card */}
       <div className="card mb-3">
         <h2 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '8px' }}>
-          {groupInfo.group_name}
+          {groupInfo.name}
         </h2>
-        {groupInfo.org_name && (
+        {groupInfo.org && (
           <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
-            {groupInfo.org_name}
+            {groupInfo.org}
           </p>
         )}
         {groupInfo.description && (

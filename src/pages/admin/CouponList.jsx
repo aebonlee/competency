@@ -47,8 +47,8 @@ const CouponList = () => {
         // Fetch groups for assignment
         const { data: groupData } = await supabase
           .from('groups')
-          .select('id, group_name')
-          .order('group_name', { ascending: true });
+          .select('id, name')
+          .order('name', { ascending: true });
 
         setGroups(groupData || []);
       } catch (err) {
@@ -169,7 +169,7 @@ const CouponList = () => {
             >
               <option value="">그룹 미배정</option>
               {groups.map((g) => (
-                <option key={g.id} value={g.id}>{g.group_name}</option>
+                <option key={g.id} value={g.id}>{g.name}</option>
               ))}
             </select>
           </div>
@@ -218,7 +218,7 @@ const CouponList = () => {
                   </td>
                   <td>
                     {coupon.group_id
-                      ? (groups.find((g) => g.id === coupon.group_id)?.group_name || coupon.group_id)
+                      ? (groups.find((g) => g.id === coupon.group_id)?.name || coupon.group_id)
                       : '-'}
                   </td>
                   <td>{coupon.used_by || '-'}</td>

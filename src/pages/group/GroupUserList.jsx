@@ -26,7 +26,7 @@ const GroupUserList = () => {
         const { data: group } = await supabase
           .from('groups')
           .select('id')
-          .eq('manager_id', user.id)
+          .eq('owner_id', user.id)
           .single();
 
         if (!group) {

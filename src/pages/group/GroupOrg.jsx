@@ -45,8 +45,8 @@ const GroupOrg = () => {
         // Get group
         const { data: group } = await supabase
           .from('groups')
-          .select('id, group_name, org_name')
-          .eq('manager_id', user.id)
+          .select('id, name, org')
+          .eq('owner_id', user.id)
           .single();
 
         if (!group) {
@@ -74,7 +74,7 @@ const GroupOrg = () => {
         if (nodes.length === 0) {
           setOrgTree({
             id: group.id,
-            name: group.group_name || group.org_name || '그룹',
+            name: group.name || group.org || '그룹',
             title: '그룹 관리자',
             children: [],
           });
@@ -101,7 +101,7 @@ const GroupOrg = () => {
               ? roots[0]
               : {
                   id: group.id,
-                  name: group.group_name || '그룹',
+                  name: group.name || '그룹',
                   title: '',
                   children: roots,
                 }

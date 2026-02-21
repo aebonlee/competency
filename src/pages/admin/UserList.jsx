@@ -31,7 +31,7 @@ const UserList = () => {
       const to = from + PAGE_SIZE - 1;
 
       let query = supabase
-        .from('profiles')
+        .from('user_profiles')
         .select('*', { count: 'exact' });
 
       if (search) {

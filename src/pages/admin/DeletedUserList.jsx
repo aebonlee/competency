@@ -31,9 +31,9 @@ const DeletedUserList = () => {
       const to = from + PAGE_SIZE - 1;
 
       let query = supabase
-        .from('profiles')
+        .from('user_profiles')
         .select('*', { count: 'exact' })
-        .eq('is_deleted', true);
+        .not('deleted_at', 'is', null);
 
       if (search) {
         query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%`);
@@ -73,7 +73,7 @@ const DeletedUserList = () => {
       if (!supabase) return;
 
       const { error } = await supabase
-        .from('profiles')
+        .from('user_profiles')
         .delete()
         .eq('id', userId);
 
@@ -212,7 +212,7 @@ const DeletedUserList = () => {
                   <td>{(currentPage - 1) * PAGE_SIZE + idx + 1}</td>
                   <td>{u.name || '-'}</td>
                   <td>{u.email || '-'}</td>
-                  <td>{u.group_name || '-'}</td>
+                  <td>{u.grp || '-'}</td>
                   <td>{getUsertypeBadge(u.usertype)}</td>
                   <td>{u.updated_at ? new Date(u.updated_at).toLocaleDateString('ko-KR') : '-'}</td>
                   <td>

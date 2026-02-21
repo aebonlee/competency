@@ -41,14 +41,27 @@ const MailForm = () => {
       const supabase = getSupabase();
       if (!supabase) return;
 
+      // Look up receiver by email
+      const { data: receiver } = await supabase
+        .from('user_profiles')
+        .select('id')
+        .eq('email', email.trim())
+        .single();
+
+      if (!receiver) {
+        showToast('해당 이메일의 회원을 찾을 수 없습니다.', 'error');
+        setLoading(false);
+        return;
+      }
+
       const { error } = await supabase
         .from('notes')
         .insert({
-          sender_id: user?.id || null,
+          sender_id: user?.id,
+          receiver_id: receiver.id,
           title: title.trim(),
           content: content.trim(),
           note_type: 'email',
-          created_at: new Date().toISOString(),
         });
 
       if (error) throw error;

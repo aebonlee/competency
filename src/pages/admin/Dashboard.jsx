@@ -33,12 +33,12 @@ const Dashboard = () => {
 
         // Total users
         const { count: totalUsers } = await supabase
-          .from('profiles')
+          .from('user_profiles')
           .select('*', { count: 'exact', head: true });
 
         // Today's new users
         const { count: todayUsers } = await supabase
-          .from('profiles')
+          .from('user_profiles')
           .select('*', { count: 'exact', head: true })
           .gte('created_at', todayISO);
 
@@ -62,7 +62,7 @@ const Dashboard = () => {
 
         // Recent users
         const { data: recentUserData } = await supabase
-          .from('profiles')
+          .from('user_profiles')
           .select('id, name, email, created_at')
           .order('created_at', { ascending: false })
           .limit(5);

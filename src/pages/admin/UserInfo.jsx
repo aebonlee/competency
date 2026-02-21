@@ -29,7 +29,7 @@ const UserInfo = () => {
 
         // Fetch profile
         const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
+          .from('user_profiles')
           .select('*')
           .eq('id', userId)
           .single();
@@ -69,7 +69,7 @@ const UserInfo = () => {
       if (!supabase) return;
 
       const { error } = await supabase
-        .from('profiles')
+        .from('user_profiles')
         .update({
           name: editForm.name.trim(),
           phone: editForm.phone.trim(),
@@ -111,7 +111,7 @@ const UserInfo = () => {
 
       // Delete profile
       const { error } = await supabase
-        .from('profiles')
+        .from('user_profiles')
         .delete()
         .eq('id', userId);
 
@@ -263,7 +263,7 @@ const UserInfo = () => {
             </div>
             <div>
               <span style={{ color: 'var(--text-light)', display: 'block', marginBottom: '4px' }}>지역</span>
-              <span style={{ fontWeight: 500 }}>{profile.region || '-'}</span>
+              <span style={{ fontWeight: 500 }}>{profile.country || '-'}</span>
             </div>
             <div>
               <span style={{ color: 'var(--text-light)', display: 'block', marginBottom: '4px' }}>가입일</span>

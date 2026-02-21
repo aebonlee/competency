@@ -29,8 +29,8 @@ const Statistics = () => {
 
         // Get all profiles for demographic analysis
         const { data: profiles, count: userCount } = await supabase
-          .from('profiles')
-          .select('age, position, region', { count: 'exact' });
+          .from('user_profiles')
+          .select('age, position, country', { count: 'exact' });
 
         setTotalUsers(userCount || 0);
 
@@ -82,8 +82,8 @@ const Statistics = () => {
         const regionCounts = {};
         REGION_LIST.forEach((r) => { regionCounts[r] = 0; });
         (profiles || []).forEach((p) => {
-          if (p.region && regionCounts.hasOwnProperty(p.region)) {
-            regionCounts[p.region]++;
+          if (p.country && regionCounts.hasOwnProperty(p.country)) {
+            regionCounts[p.country]++;
           }
         });
         setRegionStats(

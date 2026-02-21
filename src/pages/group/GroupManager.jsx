@@ -29,7 +29,7 @@ const GroupManager = () => {
         const { data: group } = await supabase
           .from('groups')
           .select('id')
-          .eq('manager_id', user.id)
+          .eq('owner_id', user.id)
           .single();
 
         if (!group) {
@@ -139,7 +139,7 @@ const GroupManager = () => {
 
       // Update user's usertype to sub-group manager (3)
       await supabase
-        .from('profiles')
+        .from('user_profiles')
         .update({ usertype: 3 })
         .eq('id', selectedUserId);
 
@@ -178,7 +178,7 @@ const GroupManager = () => {
 
       // Revert usertype to group member (1)
       await supabase
-        .from('profiles')
+        .from('user_profiles')
         .update({ usertype: 1 })
         .eq('id', managerUserId);
 

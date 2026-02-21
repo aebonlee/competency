@@ -32,7 +32,7 @@ const GroupSettings = () => {
         const { data: group, error } = await supabase
           .from('groups')
           .select('*')
-          .eq('manager_id', user.id)
+          .eq('owner_id', user.id)
           .single();
 
         if (error && error.code !== 'PGRST116') throw error;
@@ -40,8 +40,8 @@ const GroupSettings = () => {
         if (group) {
           setGroupId(group.id);
           setForm({
-            group_name: group.group_name || '',
-            org_name: group.org_name || '',
+            group_name: group.name || '',
+            org_name: group.org || '',
             description: group.description || '',
           });
         }
@@ -76,10 +76,8 @@ const GroupSettings = () => {
       const { error } = await supabase
         .from('groups')
         .update({
-          group_name: form.group_name.trim(),
-          org_name: form.org_name.trim(),
-          description: form.description.trim(),
-          updated_at: new Date().toISOString(),
+          name: form.group_name.trim(),
+          org: form.org_name.trim(),
         })
         .eq('id', groupId);
 

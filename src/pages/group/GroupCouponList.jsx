@@ -30,7 +30,7 @@ const GroupCouponList = () => {
         const { data: group } = await supabase
           .from('groups')
           .select('id')
-          .eq('manager_id', user.id)
+          .eq('owner_id', user.id)
           .single();
 
         if (!group) {
@@ -91,8 +91,7 @@ const GroupCouponList = () => {
       const { error } = await supabase
         .from('coupons')
         .update({
-          assigned_to: selectedMember,
-          assigned_at: new Date().toISOString(),
+          used_by: selectedMember,
         })
         .eq('id', selectedCoupon);
 
@@ -105,9 +104,8 @@ const GroupCouponList = () => {
           c.id === selectedCoupon
             ? {
                 ...c,
-                assigned_to: selectedMember,
-                assigned_at: new Date().toISOString(),
-                assigned_name: member?.name || '-',
+                used_by: selectedMember,
+                _assigned_name: member?.name || '-',
               }
             : c
         )
@@ -124,8 +122,8 @@ const GroupCouponList = () => {
     }
   };
 
-  const availableCoupons = coupons.filter((c) => !c.is_used && !c.assigned_to);
-  const distributedCoupons = coupons.filter((c) => c.assigned_to);
+  const availableCoupons = coupons.filter((c) => !c.is_used && !c.used_by);
+  const distributedCoupons = coupons.filter((c) => c.used_by && !c.is_used);
   const usedCoupons = coupons.filter((c) => c.is_used);
 
   if (loading) {
@@ -246,13 +244,13 @@ const GroupCouponList = () => {
                   <td>
                     {coupon.is_used ? (
                       <span className="badge badge-gray">사용완료</span>
-                    ) : coupon.assigned_to ? (
+                    ) : coupon.used_by ? (
                       <span className="badge badge-green">배포완료</span>
                     ) : (
                       <span className="badge badge-blue">미배포</span>
                     )}
                   </td>
-                  <td>{coupon.assigned_to ? (members.find((m) => m.user_id === coupon.assigned_to)?.name || coupon.assigned_to) : '-'}</td>
+                  <td>{coupon.used_by ? (members.find((m) => m.user_id === coupon.used_by)?.name || coupon.used_by) : '-'}</td>
                   <td>
                     {coupon.is_used ? (
                       <span style={{ fontSize: '13px', color: 'var(--text-light)' }}>

@@ -25,7 +25,7 @@ const EvalManager = () => {
 
         // Fetch user profile for name
         const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
+          .from('user_profiles')
           .select('name')
           .eq('id', userId)
           .single();
@@ -43,8 +43,7 @@ const EvalManager = () => {
             created_at,
             end_date,
             results (
-              id,
-              elapsed_time
+              id
             )
           `)
           .eq('user_id', userId)
@@ -92,10 +91,7 @@ const EvalManager = () => {
     return `${mins}분 ${secs}초`;
   };
 
-  const getElapsedTime = (ev) => {
-    if (ev.results && ev.results.length > 0 && ev.results[0].elapsed_time != null) {
-      return formatElapsedTime(ev.results[0].elapsed_time);
-    }
+  const getElapsedTime = () => {
     return '-';
   };
 

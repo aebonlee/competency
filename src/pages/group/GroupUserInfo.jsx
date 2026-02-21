@@ -23,7 +23,7 @@ const GroupUserInfo = () => {
         }
 
         const { data, error } = await supabase
-          .from('profiles')
+          .from('user_profiles')
           .select('*')
           .eq('id', userId)
           .single();
@@ -112,23 +112,23 @@ const GroupUserInfo = () => {
             </div>
             <div>
               <label style={{ display: 'block', fontSize: '13px', color: 'var(--text-light)', marginBottom: '4px' }}>나이대</label>
-              <div style={{ fontSize: '15px', fontWeight: 500 }}>{profile.age_group || '-'}</div>
+              <div style={{ fontSize: '15px', fontWeight: 500 }}>{profile.age || '-'}</div>
             </div>
             <div>
               <label style={{ display: 'block', fontSize: '13px', color: 'var(--text-light)', marginBottom: '4px' }}>학력</label>
-              <div style={{ fontSize: '15px', fontWeight: 500 }}>{profile.education || '-'}</div>
+              <div style={{ fontSize: '15px', fontWeight: 500 }}>{profile.edulevel || '-'}</div>
             </div>
             <div>
               <label style={{ display: 'block', fontSize: '13px', color: 'var(--text-light)', marginBottom: '4px' }}>직무</label>
-              <div style={{ fontSize: '15px', fontWeight: 500 }}>{profile.job_function || '-'}</div>
+              <div style={{ fontSize: '15px', fontWeight: 500 }}>{profile.job || '-'}</div>
             </div>
             <div>
               <label style={{ display: 'block', fontSize: '13px', color: 'var(--text-light)', marginBottom: '4px' }}>직업/직책</label>
-              <div style={{ fontSize: '15px', fontWeight: 500 }}>{profile.job_title || '-'}</div>
+              <div style={{ fontSize: '15px', fontWeight: 500 }}>{profile.position || '-'}</div>
             </div>
             <div>
               <label style={{ display: 'block', fontSize: '13px', color: 'var(--text-light)', marginBottom: '4px' }}>지역</label>
-              <div style={{ fontSize: '15px', fontWeight: 500 }}>{profile.region || '-'}</div>
+              <div style={{ fontSize: '15px', fontWeight: 500 }}>{profile.country || '-'}</div>
             </div>
             <div>
               <label style={{ display: 'block', fontSize: '13px', color: 'var(--text-light)', marginBottom: '4px' }}>가입일</label>

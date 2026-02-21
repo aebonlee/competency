@@ -25,7 +25,7 @@ const GroupUserEvalList = () => {
 
         // Fetch member name
         const { data: profile } = await supabase
-          .from('profiles')
+          .from('user_profiles')
           .select('name')
           .eq('id', userId)
           .single();
@@ -44,18 +44,9 @@ const GroupUserEvalList = () => {
         // For completed evals, fetch elapsed time from results
         const evalsWithResult = await Promise.all(
           (evalData || []).map(async (ev) => {
-            let elapsedTime = null;
-            if (ev.progress >= 100) {
-              const { data: result } = await supabase
-                .from('results')
-                .select('elapsed_time')
-                .eq('eval_id', ev.id)
-                .single();
-              elapsedTime = result?.elapsed_time || null;
-            }
             return {
               ...ev,
-              elapsedTime,
+              elapsedTime: null,
             };
           })
         );
