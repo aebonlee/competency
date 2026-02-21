@@ -596,11 +596,50 @@ Kakao OAuth     → Login.jsx → signInWithKakao()  → 첫 로그인 시 자�
 
 ---
 
+## 16단계: CompetencyNCS 페이지 원본 복원 + 수동 설정 가이드 (2026-02-21)
+
+### 16.1 CompetencyNCS.jsx 전면 개편
+
+**이전**: 단순 카드 목록 + 뱃지 매핑만 표시
+**이후**: JSP 원본(competency-ncs.jsp) 디자인 복원
+
+- 외부 SVG 인포그래픽 (`/images/competency-ncs.svg`) 동적 로딩
+- NCS 10대 직업기초능력 정의 텍스트 (컬러 불릿 포함)
+- NCS 출처 링크 (https://www.ncs.go.kr)
+- 하단 NCS ↔ 8대 핵심역량 매핑 섹션 유지
+
+### 16.2 competency-ncs.svg 추출
+
+- JSP 원본에서 SVG 추출: 65,723자
+- 이미지 참조: 29개 PNG (모두 /images/8job/에 존재)
+- JSP 표현식 → 정적 경로 변환 완료
+
+### 16.3 CSS 추가 (competency.css)
+
+| 클래스 | 용도 |
+|--------|------|
+| `.ncs-definitions` | NCS 정의 목록 래퍼 |
+| `.ncs-def-item` | 정의 항목 (flex) |
+| `.ncs-def-bullet` | 컬러 불릿 (원형) |
+| `.ncs-def-text` | 정의 텍스트 |
+
+### 16.4 수동 설정 가이드
+
+`Dev_md/2026-02-21/03_setup-guide.md` 파일로 상세 가이드 작성:
+- GitHub Secrets 등록 (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY)
+- Google/Kakao OAuth Provider 활성화 (Supabase + Google Cloud + Kakao Developers)
+- SQL 마이그레이션 실행 (board_posts, survey_questions)
+- 관리자 계정 설정
+- 문제 해결 가이드
+
+---
+
 ## 후속 작업 (TODO)
 
 ### 필수
-- [ ] GitHub Settings > Pages > Source를 "GitHub Actions"로 변경
-- [ ] `.env`에 Supabase URL/anon key 설정
+- [ ] GitHub Secrets 등록 (→ 03_setup-guide.md 참조)
+- [ ] Supabase OAuth Provider 활성화 (→ 03_setup-guide.md 참조)
+- [ ] SQL 마이그레이션 실행 (→ 03_setup-guide.md 참조)
 - [ ] PortOne V2 스토어/채널 키 설정
 - [ ] 실제 데이터로 E2E 테스트 (회원가입 → 결제 → 검사 → 결과)
 - [ ] 기존 MySQL 데이터 마이그레이션
@@ -609,7 +648,7 @@ Kakao OAuth     → Login.jsx → signInWithKakao()  → 첫 로그인 시 자�
 - [ ] 코드 스플리팅 (React.lazy + Suspense)
 - [ ] 에러 바운더리 추가
 - [x] ~~이미지 자산 이전 (MCC 로고, 역량 아이콘)~~ → Home 그리드에 SVG 아이콘 적용 완료
-- [x] ~~교육부/NCS 페이지 원본 디자인 복원~~ → Competency, Competency2015 JSP 원본 복원 완료
+- [x] ~~교육부/NCS 페이지 원본 디자인 복원~~ → Competency, Competency2015, CompetencyNCS JSP 원본 복원 완료
 - [x] ~~관리자/그룹 CRUD 페이지 전환~~ → 11개 신규 + 2개 강화, 총 48페이지 완료
 - [x] ~~관리자 이메일 설정~~ → AuthContext + is_admin() DB 함수에 이메일 기반 관리자 체크 적용
 - [x] ~~Google/Kakao OAuth 프로필 자동 생성~~ → AuthContext에서 첫 로그인 시 자동 INSERT
