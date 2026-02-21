@@ -51,6 +51,19 @@ import Statistics from './pages/admin/Statistics';
 import BoardList from './pages/admin/BoardList';
 import SurveyList from './pages/admin/SurveyList';
 import NoteList from './pages/admin/NoteList';
+import SvQuestionList from './pages/admin/SvQuestionList';
+import SvQuestionForm from './pages/admin/SvQuestionForm';
+import BoardForm from './pages/admin/BoardForm';
+import BoardView from './pages/admin/BoardView';
+import NoteForm from './pages/admin/NoteForm';
+import DeletedUserList from './pages/admin/DeletedUserList';
+import EvalManager from './pages/admin/EvalManager';
+import MailForm from './pages/admin/MailForm';
+import Sources from './pages/admin/Sources';
+
+// Group pages (additional)
+import GroupUserEvalList from './pages/group/GroupUserEvalList';
+import GroupUserInfo from './pages/group/GroupUserInfo';
 
 function App() {
   return (
@@ -89,6 +102,8 @@ function App() {
         <Route path="/group/invite" element={<GroupGuard><GroupInvitation /></GroupGuard>} />
         <Route path="/group/org" element={<GroupGuard><GroupOrg /></GroupGuard>} />
         <Route path="/group/manager" element={<GroupGuard><GroupManager /></GroupGuard>} />
+        <Route path="/group/users/:userId/info" element={<GroupGuard><GroupUserInfo /></GroupGuard>} />
+        <Route path="/group/users/:userId/evals" element={<GroupGuard><GroupUserEvalList /></GroupGuard>} />
         <Route path="/group/coupons" element={<GroupGuard><GroupCouponList /></GroupGuard>} />
         <Route path="/group/settings" element={<GroupGuard><GroupSettings /></GroupGuard>} />
 
@@ -103,6 +118,18 @@ function App() {
         <Route path="/admin/board" element={<AdminGuard><BoardList /></AdminGuard>} />
         <Route path="/admin/surveys" element={<AdminGuard><SurveyList /></AdminGuard>} />
         <Route path="/admin/notes" element={<AdminGuard><NoteList /></AdminGuard>} />
+        <Route path="/admin/notes/new" element={<AdminGuard><NoteForm /></AdminGuard>} />
+        <Route path="/admin/notes/:id/edit" element={<AdminGuard><NoteForm /></AdminGuard>} />
+        <Route path="/admin/survey-questions" element={<AdminGuard><SvQuestionList /></AdminGuard>} />
+        <Route path="/admin/survey-questions/new" element={<AdminGuard><SvQuestionForm /></AdminGuard>} />
+        <Route path="/admin/survey-questions/:id/edit" element={<AdminGuard><SvQuestionForm /></AdminGuard>} />
+        <Route path="/admin/board/new" element={<AdminGuard><BoardForm /></AdminGuard>} />
+        <Route path="/admin/board/:id" element={<AdminGuard><BoardView /></AdminGuard>} />
+        <Route path="/admin/board/:id/edit" element={<AdminGuard><BoardForm /></AdminGuard>} />
+        <Route path="/admin/deleted-users" element={<AdminGuard><DeletedUserList /></AdminGuard>} />
+        <Route path="/admin/users/:userId/evals" element={<AdminGuard><EvalManager /></AdminGuard>} />
+        <Route path="/admin/mail" element={<AdminGuard><MailForm /></AdminGuard>} />
+        <Route path="/admin/sources" element={<AdminGuard><Sources /></AdminGuard>} />
       </Routes>
       <Footer />
     </>

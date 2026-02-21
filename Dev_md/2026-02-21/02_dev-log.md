@@ -258,12 +258,12 @@ Supabase 프로젝트: hcmgdztsgjvzcyxyayaj (South Asia - Mumbai)
 
 | 항목 | 수량 |
 |------|------|
-| 총 소스 파일 | 63개 |
-| 페이지 컴포넌트 | 37개 |
+| 총 소스 파일 | 76개 |
+| 페이지 컴포넌트 | 48개 |
 | 재사용 컴포넌트 | 8개 |
-| CSS 파일 | 9개 |
+| CSS 파일 | 10개 |
 | 유틸리티 모듈 | 3개 |
-| 라우트 | 34개 |
+| 라우트 | 52개 |
 | DB 테이블 | 9개 신규 + 1개 수정 |
 | DB 인덱스 | 17개 |
 | RLS 정책 | 전 테이블 적용 |
@@ -479,6 +479,62 @@ Profile, DeleteAccount, Competency2015 페이지의 인라인 스타일을 CSS �
 
 ---
 
+## 14단계: JSP→React 전환 완료 — 관리자/그룹 CRUD 페이지 추가 (2026-02-21)
+
+나머지 JSP 페이지들을 모두 React로 전환하여 1차 전환 목표를 완료했습니다.
+총 11개 신규 페이지 생성, 2개 기존 페이지 기능 강화.
+
+### 14.1 신규 관리자 페이지 (9개)
+
+| 파일 | 라우트 | 설명 |
+|------|--------|------|
+| `SvQuestionList.jsx` | `/admin/survey-questions` | 만족도 질문 관리 (목록/삭제) |
+| `SvQuestionForm.jsx` | `/admin/survey-questions/new`, `/:id/edit` | 만족도 질문 등록/수정 (대상, 기간 설정) |
+| `BoardForm.jsx` | `/admin/board/new`, `/:id/edit` | 게시판 글쓰기/수정 (이미지 업로드 → Supabase Storage) |
+| `BoardView.jsx` | `/admin/board/:id` | 게시판 상세보기 (이미지 표시) |
+| `NoteForm.jsx` | `/admin/notes/new`, `/:id/edit` | 쪽지/메시지 작성/수정 |
+| `DeletedUserList.jsx` | `/admin/deleted-users` | 탈퇴 회원 관리 (검색, 영구삭제) |
+| `EvalManager.jsx` | `/admin/users/:userId/evals` | 회원별 검사 이력 관리 (삭제) |
+| `MailForm.jsx` | `/admin/mail` | 이메일 발송 폼 (쿼리 파라미터 연동) |
+| `Sources.jsx` | `/admin/sources` | 이미지/라이브러리 출처 정보 |
+
+### 14.2 신규 그룹 페이지 (2개)
+
+| 파일 | 라우트 | 설명 |
+|------|--------|------|
+| `GroupUserInfo.jsx` | `/group/users/:userId/info` | 그룹원 상세정보 (2컬럼 읽기 전용) |
+| `GroupUserEvalList.jsx` | `/group/users/:userId/evals` | 그룹원 검사 이력 (회차/소요시간/결과) |
+
+### 14.3 기존 페이지 기능 강화
+
+| 파일 | 변경 내용 |
+|------|----------|
+| `BoardList.jsx` | "글쓰기" 버튼 추가, 제목 클릭 → 상세보기 링크, "수정" 버튼 추가 |
+| `GroupUserList.jsx` | "정보" 컬럼 (→ /group/users/:id/info), "검사내역" 컬럼 (→ /group/users/:id/evals), 미완료 회원 결과보기 비활성화 |
+
+### 14.4 App.jsx 라우트 업데이트
+
+| 영역 | 기존 라우트 | 추가 라우트 | 합계 |
+|------|------------|------------|------|
+| Public | 4 | 0 | 4 |
+| Auth | 4 | 0 | 4 |
+| User | 10 | 0 | 10 |
+| Group | 9 | +2 | 11 |
+| Admin | 10 | +13 | 23 |
+| **합계** | **37** | **+15** | **52** |
+
+### 14.5 빌드 검증
+
+| 항목 | 결과 |
+|------|------|
+| 빌드 명령 | `npm run build` |
+| 상태 | 성공 |
+| 총 모듈 | 151개 (+11) |
+| JS 번들 | 571.33 KB (gzip: 163.14 KB) |
+| CSS 번들 | 35.59 KB (gzip: 7.28 KB) |
+
+---
+
 ## 후속 작업 (TODO)
 
 ### 필수
@@ -493,6 +549,10 @@ Profile, DeleteAccount, Competency2015 페이지의 인라인 스타일을 CSS �
 - [ ] 에러 바운더리 추가
 - [x] ~~이미지 자산 이전 (MCC 로고, 역량 아이콘)~~ → Home 그리드에 SVG 아이콘 적용 완료
 - [x] ~~교육부/NCS 페이지 원본 디자인 복원~~ → Competency, Competency2015 JSP 원본 복원 완료
+- [x] ~~관리자/그룹 CRUD 페이지 전환~~ → 11개 신규 + 2개 강화, 총 48페이지 완료
+- [ ] 관리자 이메일 설정 (aebon@kakao.com, aebon@kyonggi.ac.kr → usertype=2)
+- [ ] Google/Kakao OAuth 연동 설정 (Supabase Auth Providers)
+- [ ] 회원가입 시 인구통계학적 정보 수집 강화
 - [ ] Edge Function: calculate_results (서버사이드 점수 계산)
 - [ ] SEO 메타태그 (react-helmet)
 

@@ -170,6 +170,8 @@ const GroupUserList = () => {
                 <th>이메일</th>
                 <th>전화번호</th>
                 <th>검사 상태</th>
+                <th>정보</th>
+                <th>검사내역</th>
                 <th>관리</th>
               </tr>
             </thead>
@@ -182,6 +184,22 @@ const GroupUserList = () => {
                   <td>{member.phone}</td>
                   <td>{getStatusBadge(member.evalStatus)}</td>
                   <td>
+                    <Link
+                      to={`/group/users/${member.user_id}/info`}
+                      className="btn btn-secondary btn-sm"
+                    >
+                      정보
+                    </Link>
+                  </td>
+                  <td>
+                    <Link
+                      to={`/group/users/${member.user_id}/evals`}
+                      className="btn btn-secondary btn-sm"
+                    >
+                      내역
+                    </Link>
+                  </td>
+                  <td>
                     {member.evalStatus === '완료' && member.latestEvalId ? (
                       <Link
                         to={`/group/users/${member.user_id}/result`}
@@ -190,7 +208,13 @@ const GroupUserList = () => {
                         결과 보기
                       </Link>
                     ) : (
-                      <span style={{ color: 'var(--text-light)', fontSize: '13px' }}>-</span>
+                      <button
+                        className="btn btn-primary btn-sm"
+                        disabled
+                        style={{ opacity: 0.5, cursor: 'not-allowed' }}
+                      >
+                        결과 보기
+                      </button>
                     )}
                   </td>
                 </tr>
