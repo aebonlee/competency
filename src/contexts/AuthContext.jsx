@@ -14,7 +14,28 @@ export const AuthProvider = ({ children }) => {
       setProfile(null);
       return;
     }
-    const p = await getProfile(authUser.id);
+    let p = await getProfile(authUser.id);
+
+    // OAuth 사용자 첫 로그인 시 자동 프로필 생성
+    if (!p) {
+      const client = getSupabase();
+      if (client) {
+        const meta = authUser.user_metadata || {};
+        const { data, error } = await client
+          .from('user_profiles')
+          .insert({
+            id: authUser.id,
+            name: meta.full_name || meta.name || '',
+            email: authUser.email || '',
+            gender: '',
+            phone: '',
+            usertype: 0
+          })
+          .select()
+          .single();
+        if (!error && data) p = data;
+      }
+    }
     setProfile(p);
   }, []);
 
@@ -61,6 +82,8 @@ export const AuthProvider = ({ children }) => {
   const isAdmin = usertype === 2 || !!(user?.email && ADMIN_EMAILS.includes(user.email));
   const isGroup = usertype === 1 || usertype === 3;
   const isLoggedIn = !!user;
+  // 인구통계학적 정보 미완성 체크 (OAuth 사용자용)
+  const needsProfileCompletion = isLoggedIn && profile && !profile.name;
 
   return (
     <AuthContext.Provider value={{
@@ -71,6 +94,7 @@ export const AuthProvider = ({ children }) => {
       isAdmin,
       isGroup,
       usertype,
+      needsProfileCompletion,
       signOut,
       refreshProfile
     }}>

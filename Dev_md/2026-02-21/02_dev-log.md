@@ -535,6 +535,67 @@ Profile, DeleteAccount, Competency2015 페이지의 인라인 스타일을 CSS �
 
 ---
 
+## 15단계: 인증 강화 — OAuth 프로필 자동 생성 + 관리자 설정 (2026-02-21)
+
+관리자 이메일 설정, OAuth 사용자 프로필 자동 생성, 인구통계학적 정보 수집 플로우를 구현했습니다.
+
+### 15.1 관리자 이메일 설정
+
+- `AuthContext.jsx`에 `ADMIN_EMAILS` 배열로 프론트엔드 관리자 판별
+- `is_admin()` DB 함수 업데이트: `usertype=2` OR `email IN ('aebon@kakao.com', 'aebon@kyonggi.ac.kr')`
+- 프론트엔드 + 백엔드(RLS) 양쪽에서 관리자 권한 적용
+
+### 15.2 OAuth 사용자 프로필 자동 생성
+
+- `AuthContext.jsx`의 `loadProfile()`에서 프로필이 없는 경우 자동 INSERT
+- Google/Kakao OAuth 메타데이터(full_name, name)를 사용해 기본 프로필 생성
+- `mcc_users_insert_own` RLS 정책 추가 (본인 ID로만 INSERT 가능)
+- `mcc_users_update_own` RLS 정책 추가 (본인 프로필만 UPDATE 가능)
+
+### 15.3 프로필 완성 리다이렉트 (OAuth 사용자용)
+
+- `AuthContext`에 `needsProfileCompletion` 상태 추가 (프로필의 name이 비어있으면 true)
+- `AuthGuard`에서 프로필 미완성 시 `/complete-profile`로 자동 리다이렉트
+- `CompleteProfile.jsx` 신규 페이지: 이름, 성별, 나이대, 학력, 시/도, 직무, 직업, 휴대전화 수집
+- 인구통계학적 정보 입력 완료 후 `/main`으로 이동
+
+### 15.4 누락 DB 테이블 추가
+
+| 테이블 | 용도 |
+|--------|------|
+| `board_posts` | 게시판 (title, content, image_url, author_id) |
+| `survey_questions` | 만족도 조사 질문 (content, target_type, group_name, start_date, end_date) |
+
+### 15.5 인증 플로우 요약
+
+```
+이메일 회원가입 → Register.jsx → signUp() → user_profiles INSERT (인구통계 포함) → 이메일 인증 → 로그인
+Google OAuth    → Login.jsx → signInWithGoogle() → 첫 로그인 시 자동 프로필 생성 → CompleteProfile → 인구통계 입력 → /main
+Kakao OAuth     → Login.jsx → signInWithKakao()  → 첫 로그인 시 자동 프로필 생성 → CompleteProfile → 인구통계 입력 → /main
+```
+
+### 15.6 수정/생성 파일
+
+| 파일 | 변경 내용 |
+|------|----------|
+| `src/contexts/AuthContext.jsx` | OAuth 프로필 자동 생성, needsProfileCompletion 상태 |
+| `src/components/AuthGuard.jsx` | 프로필 완성 리다이렉트 로직 |
+| `src/pages/auth/CompleteProfile.jsx` | 신규 - 인구통계학적 정보 수집 페이지 |
+| `src/App.jsx` | /complete-profile 라우트 추가 |
+| `supabase/migrations/20260221020000_add_board_survey_tables.sql` | board_posts, survey_questions, is_admin() 업데이트, RLS 추가 |
+
+### 15.7 빌드 검증
+
+| 항목 | 결과 |
+|------|------|
+| 빌드 명령 | `npm run build` |
+| 상태 | 성공 |
+| 총 모듈 | 152개 |
+| JS 번들 | 575.20 KB (gzip: 163.58 KB) |
+| CSS 번들 | 35.59 KB (gzip: 7.28 KB) |
+
+---
+
 ## 후속 작업 (TODO)
 
 ### 필수
@@ -550,9 +611,10 @@ Profile, DeleteAccount, Competency2015 페이지의 인라인 스타일을 CSS �
 - [x] ~~이미지 자산 이전 (MCC 로고, 역량 아이콘)~~ → Home 그리드에 SVG 아이콘 적용 완료
 - [x] ~~교육부/NCS 페이지 원본 디자인 복원~~ → Competency, Competency2015 JSP 원본 복원 완료
 - [x] ~~관리자/그룹 CRUD 페이지 전환~~ → 11개 신규 + 2개 강화, 총 48페이지 완료
-- [ ] 관리자 이메일 설정 (aebon@kakao.com, aebon@kyonggi.ac.kr → usertype=2)
-- [ ] Google/Kakao OAuth 연동 설정 (Supabase Auth Providers)
-- [ ] 회원가입 시 인구통계학적 정보 수집 강화
+- [x] ~~관리자 이메일 설정~~ → AuthContext + is_admin() DB 함수에 이메일 기반 관리자 체크 적용
+- [x] ~~Google/Kakao OAuth 프로필 자동 생성~~ → AuthContext에서 첫 로그인 시 자동 INSERT
+- [x] ~~인구통계학적 정보 수집 강화~~ → CompleteProfile 페이지 + AuthGuard 리다이렉트
+- [ ] Supabase 콘솔에서 Google/Kakao OAuth Provider 활성화 (수동 설정 필요)
 - [ ] Edge Function: calculate_results (서버사이드 점수 계산)
 - [ ] SEO 메타태그 (react-helmet)
 

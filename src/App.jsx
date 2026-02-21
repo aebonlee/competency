@@ -16,6 +16,7 @@ import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import InviteRegister from './pages/auth/InviteRegister';
+import CompleteProfile from './pages/auth/CompleteProfile';
 
 // User pages
 import Main from './pages/user/Main';
@@ -81,6 +82,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/invite/:code" element={<InviteRegister />} />
+        <Route path="/complete-profile" element={<AuthGuard><CompleteProfile /></AuthGuard>} />
 
         {/* User (AuthGuard) */}
         <Route path="/main" element={<AuthGuard><Main /></AuthGuard>} />
