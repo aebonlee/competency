@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { COMPETENCY_INFO } from '../../data/competencyInfo';
 import '../../styles/home.css';
@@ -23,9 +23,17 @@ const STEPS = [
 ];
 
 const Home = () => {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, loading } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('q1');
   const activeStep = STEPS.find(s => s.id === activeTab);
+
+  // OAuth 콜백 후 또는 이미 로그인 된 상태에서 홈 접근 시 /main으로 리다이렉트
+  useEffect(() => {
+    if (!loading && isLoggedIn) {
+      navigate('/main', { replace: true });
+    }
+  }, [isLoggedIn, loading, navigate]);
 
   return (
     <div className="page-wrapper">

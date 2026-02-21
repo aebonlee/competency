@@ -9,7 +9,7 @@ export async function signInWithGoogle() {
   if (!client) throw new Error('Supabase not configured');
   const { data, error } = await client.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: window.location.origin + window.location.pathname }
+    options: { redirectTo: window.location.origin }
   });
   if (error) throw error;
   return data;
@@ -21,7 +21,7 @@ export async function signInWithKakao() {
   if (!client) throw new Error('Supabase not configured');
   const { data, error } = await client.auth.signInWithOAuth({
     provider: 'kakao',
-    options: { redirectTo: window.location.origin + window.location.pathname }
+    options: { redirectTo: window.location.origin }
   });
   if (error) throw error;
   return data;
