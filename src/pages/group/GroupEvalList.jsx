@@ -116,7 +116,7 @@ const GroupEvalList = () => {
 
   if (loading) {
     return (
-      <div className="group-page">
+      <div className="page-wrapper">
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '40vh' }}>
           <div className="loading-spinner"></div>
         </div>
@@ -125,9 +125,13 @@ const GroupEvalList = () => {
   }
 
   return (
-    <div className="group-page">
-      <div className="group-header">
-        <h1>검사 현황</h1>
+    <div className="page-wrapper">
+      <section className="page-header">
+        <div className="container"><h1>검사 현황</h1></div>
+      </section>
+
+      <div className="group-page">
+      <div className="group-header-bar">
         <Link to="/group" className="btn btn-secondary btn-sm">돌아가기</Link>
       </div>
 
@@ -166,6 +170,7 @@ const GroupEvalList = () => {
             </tbody>
           </table>
         )}
+      </div>
       </div>
     </div>
   );

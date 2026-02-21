@@ -1,4 +1,5 @@
 import { NCS_MAP, COMPETENCY_INFO } from '../../data/competencyInfo';
+import '../../styles/competency.css';
 
 const CompetencyNCS = () => {
   const entries = Object.entries(NCS_MAP);
@@ -14,7 +15,7 @@ const CompetencyNCS = () => {
 
       <section style={{ padding: '60px 20px' }}>
         <div className="container-narrow">
-          <p style={{ textAlign: 'center', color: 'var(--text-secondary)', marginBottom: 40, lineHeight: 1.8 }}>
+          <p className="text-center" style={{ color: 'var(--text-secondary)', marginBottom: 40, lineHeight: 1.8 }}>
             국가직무능력표준(NCS)의 10대 직업기초능력이 4차산업혁명 8대 핵심역량과 어떻게 연결되는지 보여줍니다.
           </p>
 

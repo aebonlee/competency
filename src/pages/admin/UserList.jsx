@@ -134,9 +134,13 @@ const UserList = () => {
   };
 
   return (
-    <div className="admin-page">
-      <div className="admin-header">
-        <h1>회원 관리</h1>
+    <div className="page-wrapper">
+      <section className="page-header">
+        <div className="container"><h1>회원 관리</h1></div>
+      </section>
+
+      <div className="admin-page">
+      <div className="admin-header-bar">
         <Link to="/admin" className="btn btn-secondary btn-sm">대시보드</Link>
       </div>
 
@@ -202,6 +206,7 @@ const UserList = () => {
 
       {/* Pagination */}
       {renderPagination()}
+      </div>
     </div>
   );
 };

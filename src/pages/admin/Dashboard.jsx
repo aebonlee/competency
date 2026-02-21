@@ -103,7 +103,7 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="admin-page">
+      <div className="page-wrapper">
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '40vh' }}>
           <div className="loading-spinner"></div>
         </div>
@@ -112,10 +112,12 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="admin-page">
-      <div className="admin-header">
-        <h1>관리자 대시보드</h1>
-      </div>
+    <div className="page-wrapper">
+      <section className="page-header">
+        <div className="container"><h1>관리자 대시보드</h1></div>
+      </section>
+
+      <div className="admin-page">
 
       {/* Stats Cards */}
       <div className="dashboard-stats">
@@ -220,6 +222,7 @@ const Dashboard = () => {
             </table>
           )}
         </div>
+      </div>
       </div>
     </div>
   );

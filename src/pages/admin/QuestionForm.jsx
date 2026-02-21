@@ -108,7 +108,7 @@ const QuestionForm = () => {
 
   if (loading) {
     return (
-      <div className="admin-page">
+      <div className="page-wrapper">
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '40vh' }}>
           <div className="loading-spinner"></div>
         </div>
@@ -117,9 +117,13 @@ const QuestionForm = () => {
   }
 
   return (
-    <div className="admin-page">
-      <div className="admin-header">
-        <h1>{isEditing ? '문항 수정' : '문항 추가'}</h1>
+    <div className="page-wrapper">
+      <section className="page-header">
+        <div className="container"><h1>{isEditing ? '문항 수정' : '문항 추가'}</h1></div>
+      </section>
+
+      <div className="admin-page">
+      <div className="admin-header-bar">
         <Link to="/admin/questions" className="btn btn-secondary btn-sm">목록으로</Link>
       </div>
 
@@ -155,6 +159,7 @@ const QuestionForm = () => {
             </button>
           </div>
         </form>
+      </div>
       </div>
     </div>
   );

@@ -76,7 +76,7 @@ const GroupMain = () => {
 
   if (loading) {
     return (
-      <div className="group-page">
+      <div className="page-wrapper">
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '40vh' }}>
           <div className="loading-spinner"></div>
         </div>
@@ -86,24 +86,28 @@ const GroupMain = () => {
 
   if (!groupInfo) {
     return (
-      <div className="group-page">
-        <div className="group-header">
-          <h1>그룹 관리</h1>
-        </div>
-        <div className="card text-center" style={{ padding: '60px 20px' }}>
-          <p style={{ fontSize: '16px', color: 'var(--text-light)' }}>
-            등록된 그룹이 없습니다. 관리자에게 문의해 주세요.
-          </p>
+      <div className="page-wrapper">
+        <section className="page-header">
+          <div className="container"><h1>그룹 관리</h1></div>
+        </section>
+        <div className="group-page">
+          <div className="card text-center" style={{ padding: '60px 20px' }}>
+            <p style={{ fontSize: '16px', color: 'var(--text-light)' }}>
+              등록된 그룹이 없습니다. 관리자에게 문의해 주세요.
+            </p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="group-page">
-      <div className="group-header">
-        <h1>그룹 관리</h1>
-      </div>
+    <div className="page-wrapper">
+      <section className="page-header">
+        <div className="container"><h1>그룹 관리</h1></div>
+      </section>
+
+      <div className="group-page">
 
       {/* Group Info Card */}
       <div className="card mb-3">
@@ -206,6 +210,7 @@ const GroupMain = () => {
           </div>
           <span style={{ fontWeight: 600, fontSize: '14px' }}>그룹 설정</span>
         </Link>
+      </div>
       </div>
     </div>
   );

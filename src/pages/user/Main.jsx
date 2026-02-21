@@ -60,13 +60,13 @@ const Main = () => {
         </div>
       </section>
 
-      <section style={{ padding: '40px 20px' }}>
-        <div className="container" style={{ maxWidth: 800 }}>
+      <section className="main-content">
+        <div className="container-narrow">
           {/* Active evaluation */}
           {activeEval && (
-            <div className="card" style={{ marginBottom: 24, borderLeft: '4px solid #22c55e' }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>진행 중인 검사</h3>
-              <p style={{ color: 'var(--text-secondary)', marginBottom: 16 }}>
+            <div className="card mb-3 main-active-eval">
+              <h3 className="card-title">진행 중인 검사</h3>
+              <p className="card-desc">
                 {activeEval.times}회차 검사 — 진행률: {activeEval.progress}%
               </p>
               <button className="btn btn-primary" onClick={handleStartEval}>이어서 검사하기</button>
@@ -74,23 +74,23 @@ const Main = () => {
           )}
 
           {/* New assessment */}
-          <div className="card" style={{ marginBottom: 24 }}>
-            <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>새 검사 시작</h3>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: 24 }}>
+          <div className="card mb-3">
+            <h3 className="card-title-lg">새 검사 시작</h3>
+            <p className="card-desc mb-3">
               MyCoreCompetency 핵심역량 검사 (56쌍 문항, 약 20~30분 소요)
             </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-              <div className="card" style={{ textAlign: 'center', padding: 24 }}>
-                <h4 style={{ marginBottom: 8 }}>카드 결제</h4>
-                <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--primary-blue)', marginBottom: 16 }}>25,000원</p>
+            <div className="main-payment-grid">
+              <div className="card text-center main-payment-card">
+                <h4 className="mb-1">카드 결제</h4>
+                <p className="main-price">25,000원</p>
                 <Link to="/checkout" className="btn btn-primary btn-full">결제 후 검사</Link>
               </div>
-              <div className="card" style={{ textAlign: 'center', padding: 24 }}>
-                <h4 style={{ marginBottom: 8 }}>쿠폰 사용</h4>
-                <p style={{ fontSize: 14, color: 'var(--text-light)', marginBottom: 16 }}>쿠폰 코드를 입력하세요</p>
+              <div className="card text-center main-payment-card">
+                <h4 className="mb-1">쿠폰 사용</h4>
+                <p className="main-coupon-desc">쿠폰 코드를 입력하세요</p>
                 <div className="coupon-input-row">
-                  <input type="text" value={couponCode} onChange={e => setCouponCode(e.target.value)} placeholder="쿠폰 코드" style={{ padding: '10px 14px', border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-sm)', fontSize: 14 }} />
+                  <input type="text" value={couponCode} onChange={e => setCouponCode(e.target.value)} placeholder="쿠폰 코드" className="coupon-input" />
                   <button className="btn btn-secondary" onClick={handleCoupon} disabled={couponLoading}>
                     {couponLoading ? '...' : '적용'}
                   </button>
@@ -100,7 +100,7 @@ const Main = () => {
           </div>
 
           {/* Previous results link */}
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+          <div className="main-links">
             <Link to="/results" className="btn btn-secondary">검사결과 보기</Link>
             <Link to="/history" className="btn btn-secondary">검사내역</Link>
             <Link to="/results/average" className="btn btn-secondary">통계 비교</Link>

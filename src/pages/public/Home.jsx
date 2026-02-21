@@ -1,92 +1,137 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { COMPETENCY_INFO } from '../../data/competencyInfo';
+import '../../styles/home.css';
+
+const ICON_IMAGES = [
+  '/images/idea.svg',
+  '/images/plan.svg',
+  '/images/agreement.svg',
+  '/images/team.svg',
+  '/images/wheel.svg',
+  '/images/brain.svg',
+  '/images/brain2.svg',
+  '/images/business-and-finance.svg',
+];
+
+const STEPS = [
+  { id: 'q1', title: '핵심역량 검사 안내문', img: '/images/metis-assets/placeholders/sampleQ1.png' },
+  { id: 'q2', title: '핵심역량 예시문항 1', img: '/images/metis-assets/placeholders/sampleQ2.png' },
+  { id: 'q3', title: '핵심역량 예시문항 2', img: '/images/metis-assets/placeholders/sampleQ3.png' },
+  { id: 'q4', title: '결과 확인', img: '/images/metis-assets/placeholders/sampleQ4.png' },
+];
 
 const Home = () => {
   const { isLoggedIn } = useAuth();
+  const [activeTab, setActiveTab] = useState('q1');
+  const activeStep = STEPS.find(s => s.id === activeTab);
 
   return (
     <div className="page-wrapper">
-      {/* Hero Section */}
-      <section style={{
-        background: 'linear-gradient(135deg, #106bb5 0%, #0a4f8a 100%)',
-        color: 'white',
-        padding: '120px 20px 80px',
-        textAlign: 'center'
-      }}>
+      {/* Hero Section — intro.jsp 재현 */}
+      <section className="home-hero">
+        <div className="home-hero-inner">
+          <div className="home-hero-text">
+            <h2>당신의 <span className="text-blue">핵심역량</span>을 알고 이해하는 것이 성공에 중요합니다.</h2>
+            <p className="home-hero-desc">
+              미래에 성공하기 위한 8가지 가장 중요한 핵심역량이 있습니다. 당신은 얼마나 많은 핵심역량을 가지고 있다고 생각하십니까?
+            </p>
+            <Link to="/competency" className="btn btn-primary btn-lg">Learn more</Link>
+          </div>
+          <div className="home-hero-mockup">
+            <div className="macbook-wrapper">
+              <img className="macbook-img" src="/images/metis-assets/elements/macbook.png" alt="MacBook" />
+              <div className="macbook-screen">
+                <img src="/images/metis-assets/placeholders/app2.png" alt="App Preview" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Blue CTA Section */}
+      <section className="home-blue-cta">
         <div className="container">
-          <h1 style={{ fontSize: 42, fontWeight: 700, marginBottom: 16, letterSpacing: -1 }}>
-            MyCoreCompetency
-          </h1>
-          <p style={{ fontSize: 20, opacity: 0.9, marginBottom: 8 }}>
-            4차 산업혁명 시대의 8대 핵심역량 검사
-          </p>
-          <p style={{ fontSize: 15, opacity: 0.7, marginBottom: 40, maxWidth: 560, margin: '0 auto 40px' }}>
-            나의 핵심역량을 진단하고, 미래를 준비하세요.<br />
-            56쌍의 문항을 통해 8대 핵심역량을 측정합니다.
-          </p>
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-            {isLoggedIn ? (
-              <Link to="/main" className="btn" style={{ background: 'white', color: '#106bb5', padding: '14px 32px', fontSize: 16, fontWeight: 700 }}>
-                검사 시작하기
+          <div className="home-blue-cta-inner">
+            <div className="home-blue-cta-text">
+              <h2>본 검사를 통해 당신은 어떤 <span>핵심역량</span>들을 얼마나 보유하고 있는지 살펴보는 새로운 경험을 하게될 것입니다.</h2>
+              <p>This assessment will provide you with an eye-opening experience to recognize your core competencies</p>
+            </div>
+            <div className="home-blue-cta-btn">
+              <Link to={isLoggedIn ? '/main' : '/checkout'} className="btn home-cta-button">
+                나의 핵심역량 검사 시작하기
               </Link>
-            ) : (
-              <>
-                <Link to="/register" className="btn" style={{ background: 'white', color: '#106bb5', padding: '14px 32px', fontSize: 16, fontWeight: 700 }}>
-                  회원가입
-                </Link>
-                <Link to="/login" className="btn" style={{ background: 'transparent', color: 'white', border: '2px solid rgba(255,255,255,0.5)', padding: '14px 32px', fontSize: 16 }}>
-                  로그인
-                </Link>
-              </>
-            )}
+            </div>
+          </div>
+        </div>
+        <img className="home-blue-decoration" src="/images/metis-assets/elements/square-rotated.svg" alt="" />
+      </section>
+
+      {/* 4-Step Process */}
+      <section className="home-steps-section">
+        <div className="container">
+          <div className="home-steps-header">
+            <span className="home-badge">핵심역량 검사</span>
+            <h2><span className="text-blue">MY CORE COMPETENCY</span> 핵심역량 검사 방법</h2>
+            <p>MY CORE COMPETENCY test procedure</p>
+          </div>
+
+          <div className="home-steps-preview">
+            {activeStep && <img src={activeStep.img} alt={activeStep.title} />}
+          </div>
+
+          <div className="home-steps-tabs">
+            <div className="home-steps-line" />
+            <div className="home-steps-buttons">
+              {STEPS.map((step, i) => (
+                <div key={step.id} className="home-step-item">
+                  <button
+                    className={`home-step-circle ${activeTab === step.id ? 'active' : ''}`}
+                    onClick={() => setActiveTab(step.id)}
+                  >
+                    <div className={`home-step-number ${activeTab === step.id ? 'active' : ''}`}>
+                      {i + 1}
+                    </div>
+                  </button>
+                  <p className={`home-step-label ${activeTab !== step.id ? 'dimmed' : ''}`}>
+                    {step.title}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* 8대 역량 Grid */}
-      <section style={{ padding: '80px 20px' }}>
+      <section className="home-competency-section">
         <div className="container">
-          <h2 style={{ textAlign: 'center', fontSize: 28, fontWeight: 700, marginBottom: 12 }}>
-            4차 산업혁명 8대 핵심역량
-          </h2>
-          <p style={{ textAlign: 'center', color: 'var(--text-light)', marginBottom: 48 }}>
-            미래사회를 이끌어갈 8가지 핵심 역량을 측정합니다
-          </p>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-            gap: 20
-          }}>
-            {COMPETENCY_INFO.map((comp) => (
-              <div key={comp.id} className="card" style={{ borderTop: `4px solid ${comp.color}` }}>
-                <div style={{
-                  width: 48, height: 48, borderRadius: '50%',
-                  background: comp.color, color: 'white',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 20, fontWeight: 700, marginBottom: 16
-                }}>
-                  {comp.id}
+          <div className="home-steps-header">
+            <span className="home-badge">핵심역량 검사</span>
+            <h2><span className="text-blue">MY CORE COMPETENCY</span> 핵심역량 검사의 활용</h2>
+            <p>핵심역량은 당신의 성공과 미래를 준비하는데 있어 매우 중요한 역할을 하게 됩니다.</p>
+          </div>
+
+          <div className="home-competency-grid">
+            {COMPETENCY_INFO.map((comp, i) => (
+              <Link to="/competency" key={comp.id} className="home-competency-card" style={{ borderTop: `4px solid ${comp.color}` }}>
+                <div className="home-comp-icon" style={{ background: comp.color }}>
+                  <img src={ICON_IMAGES[i]} alt={comp.name} />
                 </div>
-                <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>{comp.name}</h3>
-                <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                  {comp.summary}
-                </p>
-              </div>
+                <h3>{comp.name}</h3>
+                <p>{comp.summary}</p>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section style={{ background: 'var(--bg-light-gray)', padding: '60px 20px', textAlign: 'center' }}>
+      {/* Bottom CTA */}
+      <section className="home-bottom-cta">
         <div className="container-narrow">
-          <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 12 }}>
-            지금 바로 핵심역량을 진단해보세요
-          </h2>
-          <p style={{ color: 'var(--text-secondary)', marginBottom: 32 }}>
-            검사 소요시간: 약 20~30분 | 56쌍 문항 | 즉시 결과 확인
-          </p>
+          <h2>지금 바로 핵심역량을 진단해보세요</h2>
+          <p>검사 소요시간: 약 20~30분 | 56쌍 문항 | 즉시 결과 확인</p>
           <Link to={isLoggedIn ? '/main' : '/register'} className="btn btn-primary btn-lg">
             {isLoggedIn ? '검사하기' : '무료 회원가입'}
           </Link>

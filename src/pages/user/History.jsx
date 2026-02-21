@@ -19,16 +19,19 @@ const History = () => {
   }, [user]);
 
   if (loading) {
-    return <div className="result-page"><div style={{ display: 'flex', justifyContent: 'center', minHeight: '60vh', alignItems: 'center' }}><div className="loading-spinner" /></div></div>;
+    return <div className="page-wrapper"><div style={{ display: 'flex', justifyContent: 'center', minHeight: '60vh', alignItems: 'center' }}><div className="loading-spinner" /></div></div>;
   }
 
   return (
-    <div className="result-page">
-      <div className="result-header">
-        <h1>검사 내역</h1>
-        <p>총 {evals.length}회 검사</p>
-      </div>
+    <div className="page-wrapper">
+      <section className="page-header">
+        <div className="container">
+          <h1>검사 내역</h1>
+          <p>총 {evals.length}회 검사</p>
+        </div>
+      </section>
 
+      <div className="result-page">
       {evals.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '60px 0' }}>
           <p style={{ color: 'var(--text-light)', marginBottom: 20 }}>검사 내역이 없습니다.</p>
@@ -59,6 +62,7 @@ const History = () => {
           ))}
         </div>
       )}
+      </div>
     </div>
   );
 };

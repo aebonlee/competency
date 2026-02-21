@@ -28,18 +28,21 @@ const PrevResult = () => {
   }, [user]);
 
   if (loading) {
-    return <div className="result-page"><div style={{ display: 'flex', justifyContent: 'center', minHeight: '60vh', alignItems: 'center' }}><div className="loading-spinner" /></div></div>;
+    return <div className="page-wrapper"><div style={{ display: 'flex', justifyContent: 'center', minHeight: '60vh', alignItems: 'center' }}><div className="loading-spinner" /></div></div>;
   }
 
   const latest = results[0];
 
   return (
-    <div className="result-page">
-      <div className="result-header">
-        <h1>최근 검사 결과</h1>
-        <p>{results.length}회 검사 완료</p>
-      </div>
+    <div className="page-wrapper">
+      <section className="page-header">
+        <div className="container">
+          <h1>최근 검사 결과</h1>
+          <p>{results.length}회 검사 완료</p>
+        </div>
+      </section>
 
+      <div className="result-page">
       {latest ? (
         <>
           <div className="chart-section">
@@ -72,6 +75,7 @@ const PrevResult = () => {
           <Link to="/main" className="btn btn-primary">검사하기</Link>
         </div>
       )}
+      </div>
     </div>
   );
 };

@@ -77,7 +77,7 @@ const QuestionList = () => {
 
   if (loading) {
     return (
-      <div className="admin-page">
+      <div className="page-wrapper">
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '40vh' }}>
           <div className="loading-spinner"></div>
         </div>
@@ -86,9 +86,13 @@ const QuestionList = () => {
   }
 
   return (
-    <div className="admin-page">
-      <div className="admin-header">
-        <h1>문항 관리</h1>
+    <div className="page-wrapper">
+      <section className="page-header">
+        <div className="container"><h1>문항 관리</h1></div>
+      </section>
+
+      <div className="admin-page">
+      <div className="admin-header-bar">
         <div style={{ display: 'flex', gap: '8px' }}>
           <Link to="/admin/questions/new" className="btn btn-primary btn-sm">문항 추가</Link>
           <Link to="/admin" className="btn btn-secondary btn-sm">대시보드</Link>
@@ -176,6 +180,7 @@ const QuestionList = () => {
             </tbody>
           </table>
         )}
+      </div>
       </div>
     </div>
   );

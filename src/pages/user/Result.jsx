@@ -22,7 +22,7 @@ const Result = () => {
 
   if (loading) {
     return (
-      <div className="result-page">
+      <div className="page-wrapper">
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
           <div className="loading-spinner" />
         </div>
@@ -32,12 +32,14 @@ const Result = () => {
 
   if (!result) {
     return (
-      <div className="result-page">
-        <div className="result-header">
-          <h1>검사 결과</h1>
-          <p>아직 결과가 생성되지 않았습니다. 검사를 완료해주세요.</p>
-        </div>
-        <div style={{ textAlign: 'center' }}>
+      <div className="page-wrapper">
+        <section className="page-header">
+          <div className="container">
+            <h1>검사 결과</h1>
+            <p>아직 결과가 생성되지 않았습니다. 검사를 완료해주세요.</p>
+          </div>
+        </section>
+        <div style={{ textAlign: 'center', padding: '60px 20px' }}>
           <Link to="/main" className="btn btn-primary">메인으로</Link>
         </div>
       </div>
@@ -53,11 +55,15 @@ const Result = () => {
   const avgScore = Math.round(totalScore / 8);
 
   return (
-    <div className="result-page">
-      <div className="result-header">
-        <h1>핵심역량 검사 결과</h1>
-        <p>4차 산업혁명 8대 핵심역량 진단 결과입니다</p>
-      </div>
+    <div className="page-wrapper">
+      <section className="page-header">
+        <div className="container">
+          <h1>핵심역량 검사 결과</h1>
+          <p>4차 산업혁명 8대 핵심역량 진단 결과입니다</p>
+        </div>
+      </section>
+
+      <div className="result-page">
 
       {/* Polar Chart */}
       <div className="chart-section">
@@ -124,6 +130,7 @@ const Result = () => {
       <div style={{ textAlign: 'center' }}>
         <Link to="/results" className="btn btn-secondary" style={{ marginRight: 12 }}>전체 결과 보기</Link>
         <Link to="/main" className="btn btn-primary">메인으로</Link>
+      </div>
       </div>
     </div>
   );

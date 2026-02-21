@@ -124,7 +124,7 @@ const NoteList = () => {
 
   if (loading) {
     return (
-      <div className="admin-page">
+      <div className="page-wrapper">
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '40vh' }}>
           <div className="loading-spinner"></div>
         </div>
@@ -133,9 +133,13 @@ const NoteList = () => {
   }
 
   return (
-    <div className="admin-page">
-      <div className="admin-header">
-        <h1>메시지/알림 관리</h1>
+    <div className="page-wrapper">
+      <section className="page-header">
+        <div className="container"><h1>메시지/알림 관리</h1></div>
+      </section>
+
+      <div className="admin-page">
+      <div className="admin-header-bar">
         <Link to="/admin" className="btn btn-secondary btn-sm">대시보드</Link>
       </div>
 
@@ -225,6 +229,7 @@ const NoteList = () => {
             </tbody>
           </table>
         )}
+      </div>
       </div>
     </div>
   );

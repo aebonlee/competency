@@ -149,6 +149,13 @@
   flex: 1;
 }
 
+.coupon-input {
+  padding: 10px 14px;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+}
+
 .coupon-success {
   color: #16a34a;
   font-size: 13px;
@@ -156,6 +163,60 @@
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+/* Main User Dashboard */
+.main-content {
+  padding: 40px 20px;
+}
+
+.main-active-eval {
+  border-left: 4px solid #22c55e;
+}
+
+.main-payment-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.main-payment-card {
+  padding: 24px;
+}
+
+.main-price {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--primary-blue);
+  margin-bottom: 16px;
+}
+
+.main-coupon-desc {
+  font-size: 14px;
+  color: var(--text-light);
+  margin-bottom: 16px;
+}
+
+.main-links {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.card-title-lg {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.card-desc {
+  color: var(--text-secondary);
 }
 
 /* Responsive */
@@ -168,5 +229,8 @@
   }
   .payment-methods {
     flex-direction: column;
+  }
+  .main-payment-grid {
+    grid-template-columns: 1fr;
   }
 }

@@ -1,0 +1,378 @@
+/* ============================================
+   Home Page — intro.jsp 디자인 재현
+   ============================================ */
+
+/* Hero */
+.home-hero {
+  padding: 100px 20px 60px;
+  overflow: hidden;
+}
+
+.home-hero-inner {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: center;
+}
+
+.home-hero-text {
+  flex: 1;
+  min-width: 300px;
+  padding: 20px 40px 20px 20px;
+}
+
+.home-hero-text h2 {
+  font-size: 30px;
+  font-weight: 300;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  letter-spacing: -0.5px;
+}
+
+.text-blue {
+  color: #2563eb;
+}
+
+.home-hero-desc {
+  color: #94a3b8;
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+
+.home-hero-mockup {
+  flex: 1;
+  min-width: 300px;
+  position: relative;
+}
+
+.macbook-wrapper {
+  position: relative;
+  max-width: 700px;
+}
+
+.macbook-img {
+  width: 100%;
+  height: auto;
+}
+
+.macbook-screen {
+  position: absolute;
+  top: 5.8%;
+  left: 14.6%;
+  width: 72.8%;
+  height: 76.8%;
+  overflow: hidden;
+}
+
+.macbook-screen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Blue CTA */
+.home-blue-cta {
+  position: relative;
+  background: #2563eb;
+  padding: 80px 20px;
+  overflow: hidden;
+}
+
+.home-blue-cta-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 32px;
+  position: relative;
+  z-index: 10;
+}
+
+.home-blue-cta-text {
+  flex: 1;
+  min-width: 300px;
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .home-blue-cta-text {
+    text-align: left;
+  }
+}
+
+.home-blue-cta-text h2 {
+  font-size: 24px;
+  font-weight: 300;
+  color: white;
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+
+.home-blue-cta-text h2 span {
+  color: #bfdbfe;
+}
+
+.home-blue-cta-text p {
+  color: #cbd5e1;
+}
+
+.home-blue-cta-btn {
+  flex: 1;
+  min-width: 280px;
+  display: flex;
+  justify-content: center;
+}
+
+.home-cta-button {
+  padding: 16px 32px !important;
+  background: white !important;
+  color: #1e40af !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  transition: all 0.3s !important;
+}
+
+.home-cta-button:hover {
+  background: #f1f5f9 !important;
+}
+
+.home-blue-decoration {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 800px;
+  margin-top: -200px;
+  padding-bottom: 60px;
+  opacity: 0.15;
+}
+
+@media (min-width: 1024px) {
+  .home-blue-decoration {
+    display: block;
+  }
+}
+
+/* Steps */
+.home-steps-section {
+  padding: 80px 20px;
+}
+
+.home-steps-header {
+  max-width: 600px;
+  margin: 0 auto 48px;
+  text-align: center;
+}
+
+.home-badge {
+  display: inline-block;
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #dbeafe;
+  color: #2563eb;
+  border-radius: 999px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.home-steps-header h2 {
+  font-size: 28px;
+  font-weight: 300;
+  margin-bottom: 8px;
+}
+
+.home-steps-header p {
+  color: #94a3b8;
+}
+
+.home-steps-preview {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.home-steps-preview img {
+  max-width: 480px;
+  margin: 0 auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.home-steps-tabs {
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.home-steps-line {
+  display: none;
+  position: absolute;
+  top: 40px;
+  left: 64px;
+  right: 64px;
+  height: 3px;
+  background: #e5e7eb;
+  border-radius: 2px;
+}
+
+@media (min-width: 768px) {
+  .home-steps-line {
+    display: block;
+  }
+}
+
+.home-steps-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.home-step-item {
+  width: 50%;
+  text-align: center;
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 768px) {
+  .home-step-item {
+    width: 25%;
+  }
+}
+
+.home-step-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: none;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.home-step-number {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 600;
+  background: #f8fafc;
+  color: #94a3b8;
+  transition: all 0.2s;
+}
+
+.home-step-number.active {
+  background: #2563eb;
+  color: white;
+}
+
+.home-step-label {
+  margin-top: 16px;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.home-step-label.dimmed {
+  color: #94a3b8;
+}
+
+/* Competency Grid */
+.home-competency-section {
+  padding: 60px 20px 80px;
+  background: #f8fafc;
+}
+
+.home-competency-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.home-competency-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: all 0.2s;
+  text-decoration: none;
+  color: inherit;
+}
+
+.home-competency-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+.home-comp-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.home-comp-icon img {
+  width: 28px;
+  height: 28px;
+  filter: brightness(0) invert(1);
+}
+
+.home-competency-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.home-competency-card p {
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+/* Bottom CTA */
+.home-bottom-cta {
+  background: var(--bg-light-gray);
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.home-bottom-cta h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.home-bottom-cta p {
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .home-hero-text h2 {
+    font-size: 24px;
+  }
+  .home-hero-text {
+    padding: 20px;
+  }
+  .home-blue-cta-text h2 {
+    font-size: 20px;
+  }
+  .home-steps-header h2 {
+    font-size: 22px;
+  }
+}

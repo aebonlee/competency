@@ -147,7 +147,7 @@ const UserInfo = () => {
 
   if (loading) {
     return (
-      <div className="admin-page">
+      <div className="page-wrapper">
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '40vh' }}>
           <div className="loading-spinner"></div>
         </div>
@@ -157,9 +157,13 @@ const UserInfo = () => {
 
   if (!profile) {
     return (
-      <div className="admin-page">
-        <div className="admin-header">
-          <h1>회원 상세 정보</h1>
+      <div className="page-wrapper">
+        <section className="page-header">
+          <div className="container"><h1>회원 상세 정보</h1></div>
+        </section>
+
+        <div className="admin-page">
+        <div className="admin-header-bar">
           <Link to="/admin/users" className="btn btn-secondary btn-sm">목록으로</Link>
         </div>
         <div className="card text-center" style={{ padding: '60px 20px' }}>
@@ -167,14 +171,19 @@ const UserInfo = () => {
             회원 정보를 찾을 수 없습니다.
           </p>
         </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="admin-page">
-      <div className="admin-header">
-        <h1>회원 상세 정보</h1>
+    <div className="page-wrapper">
+      <section className="page-header">
+        <div className="container"><h1>회원 상세 정보</h1></div>
+      </section>
+
+      <div className="admin-page">
+      <div className="admin-header-bar">
         <Link to="/admin/users" className="btn btn-secondary btn-sm">목록으로</Link>
       </div>
 
@@ -307,6 +316,7 @@ const UserInfo = () => {
             </tbody>
           </table>
         )}
+      </div>
       </div>
     </div>
   );

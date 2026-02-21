@@ -6,16 +6,23 @@ const Confirmation = () => {
 
   return (
     <div className="page-wrapper">
-      <section style={{ padding: 'calc(var(--nav-height) + 60px) 20px 60px', textAlign: 'center' }}>
+      <section className="page-header">
+        <div className="container">
+          <h1>결제 완료</h1>
+          <p>핵심역량 검사를 시작할 준비가 되었습니다</p>
+        </div>
+      </section>
+
+      <section style={{ padding: '60px 20px', textAlign: 'center' }}>
         <div className="container-narrow">
-          <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(34,197,94,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+          <div className="confirmation-icon">
             <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#22c55e" strokeWidth="2">
               <polyline points="20 6 9 17 4 12" />
             </svg>
           </div>
-          <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 12 }}>결제가 완료되었습니다!</h1>
+          <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 12 }}>결제가 완료되었습니다!</h2>
           <p style={{ color: 'var(--text-secondary)', marginBottom: 32, fontSize: 15 }}>
-            핵심역량 검사를 시작할 준비가 되었습니다.
+            아래 버튼을 눌러 검사를 시작하세요.
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
             {evalId && (

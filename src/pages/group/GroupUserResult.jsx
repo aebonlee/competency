@@ -113,7 +113,7 @@ const GroupUserResult = () => {
 
   if (loading) {
     return (
-      <div className="group-page">
+      <div className="page-wrapper">
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '40vh' }}>
           <div className="loading-spinner"></div>
         </div>
@@ -122,9 +122,13 @@ const GroupUserResult = () => {
   }
 
   return (
-    <div className="group-page">
-      <div className="group-header">
-        <h1>멤버 검사 결과</h1>
+    <div className="page-wrapper">
+      <section className="page-header">
+        <div className="container"><h1>멤버 검사 결과</h1></div>
+      </section>
+
+      <div className="group-page">
+      <div className="group-header-bar">
         <Link to="/group/users" className="btn btn-secondary btn-sm">목록으로</Link>
       </div>
 
@@ -212,6 +216,7 @@ const GroupUserResult = () => {
           </div>
         </>
       )}
+    </div>
     </div>
   );
 };

@@ -292,6 +292,55 @@ Supabase 프로젝트: hcmgdztsgjvzcyxyayaj (South Asia - Mumbai)
 
 ---
 
+## 11단계: 전체 페이지 디자인 통일 (2026-02-21 후속 작업)
+
+교육부(Competency2015) 페이지와 NCS 페이지에 적용된 `page-wrapper` + `page-header` (파란 배너) 디자인 패턴을
+전체 페이지에 일관되게 적용했습니다.
+
+### 11.1 기준 디자인 패턴 (Competency, Competency2015, CompetencyNCS)
+- `page-wrapper` + `page-header` (파란 배너) 구조
+- SVG 아이콘/일러스트 활용
+- 역량 컬러 뱃지 (`comp.color + '22'` 반투명 배경)
+- `.card` 기반 레이아웃
+- CSS 클래스 기반 스타일링 (인라인 스타일 최소화)
+
+### 11.2 적용 내역
+
+| 우선순위 | 대상 | 변경 내용 | 수정 파일 수 |
+|----------|------|----------|-------------|
+| 1 | Result 계열 4개 | `result-page`/`result-header` → `page-wrapper`+`page-header`+`result-page` | 4 JSX + 1 CSS |
+| 2 | Group 페이지 9개 | `group-page`/`group-header` → `page-wrapper`+`page-header`+`group-page` | 9 JSX + 1 CSS |
+| 3 | Admin 페이지 10개 | `admin-page`/`admin-header` → `page-wrapper`+`page-header`+`admin-page` | 10 JSX + 1 CSS |
+| 4 | Home 역량 그리드 | 숫자(`comp.id`) → SVG 아이콘 (`idea.svg`, `plan.svg` 등) | 1 JSX + 1 CSS |
+| 5 | Confirmation | 인라인 패딩 → `page-header` 파란 배너 추가 | 1 JSX + 1 CSS |
+| 6 | 인라인 스타일 정리 | Main.jsx, CompetencyNCS.jsx 인라인 스타일 → CSS 클래스 전환 | 2 JSX + 1 CSS |
+
+### 11.3 CSS 변경 요약
+
+| CSS 파일 | 변경 내용 |
+|----------|----------|
+| result.css | `result-page` padding 조정, `stat-grid-4`/`stat-cell`/`stat-dot` 추가 |
+| group.css | `group-page` padding 조정, `group-header` → `group-header-bar` |
+| admin.css | `admin-page` padding 조정, `admin-header` → `admin-header-bar` |
+| home.css | `.home-comp-icon img` 추가 (SVG 아이콘 흰색 필터) |
+| base.css | `.confirmation-icon` 추가 |
+| checkout.css | `.main-*` 클래스 추가 (Main 대시보드용), `.coupon-input` 추가, 반응형 그리드 |
+
+### 11.4 총 수정 파일: 35개
+- JSX 페이지: 29개 (Result 4 + Group 9 + Admin 10 + Home 1 + Confirmation 1 + Main 1 + CompetencyNCS 1 + Competency 1 + Competency2015 1)
+- CSS 스타일: 6개 (result, group, admin, home, base, checkout)
+
+### 11.5 빌드 검증
+| 항목 | 결과 |
+|------|------|
+| 빌드 명령 | `npm run build` |
+| 상태 | 성공 |
+| 총 모듈 | 140개 |
+| JS 번들 | 533.81 KB (gzip: 157.82 KB) |
+| CSS 번들 | 33.67 KB (gzip: 6.94 KB) |
+
+---
+
 ## 후속 작업 (TODO)
 
 ### 필수
@@ -304,7 +353,7 @@ Supabase 프로젝트: hcmgdztsgjvzcyxyayaj (South Asia - Mumbai)
 ### 권장
 - [ ] 코드 스플리팅 (React.lazy + Suspense)
 - [ ] 에러 바운더리 추가
-- [ ] 이미지 자산 이전 (MCC 로고, 역량 아이콘)
+- [x] ~~이미지 자산 이전 (MCC 로고, 역량 아이콘)~~ → Home 그리드에 SVG 아이콘 적용 완료
 - [ ] Edge Function: calculate_results (서버사이드 점수 계산)
 - [ ] SEO 메타태그 (react-helmet)
 

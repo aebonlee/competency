@@ -191,7 +191,7 @@ const GroupManager = () => {
 
   if (loading) {
     return (
-      <div className="group-page">
+      <div className="page-wrapper">
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '40vh' }}>
           <div className="loading-spinner"></div>
         </div>
@@ -200,9 +200,13 @@ const GroupManager = () => {
   }
 
   return (
-    <div className="group-page">
-      <div className="group-header">
-        <h1>서브 관리자 관리</h1>
+    <div className="page-wrapper">
+      <section className="page-header">
+        <div className="container"><h1>서브 관리자 관리</h1></div>
+      </section>
+
+      <div className="group-page">
+      <div className="group-header-bar">
         <Link to="/group" className="btn btn-secondary btn-sm">돌아가기</Link>
       </div>
 
@@ -293,6 +297,7 @@ const GroupManager = () => {
             </tbody>
           </table>
         )}
+      </div>
       </div>
     </div>
   );
