@@ -129,6 +129,8 @@
 | NCS 계산 알고리즘 | result.jsp 10개 NCS 직업기초능력 점수 계산 이식 | 세션11 |
 | DoughnutChart 확장 | 커스텀 색상/라벨/tooltip 지원 | 세션11 |
 | result.css 재작성 | prevResult + circle + ability CSS 3파일 통합 | 세션11 |
+| PolarArea 차트 수정 | max:100 제거, 솔리드 색상, ticks/grid 숨김 | 세션11 |
+| PolarArea beginAtZero 복원 | Chart.js 4.x 기본값 차이 → 쐐기 전체 채움 현상 수정 | 세션11 |
 
 ---
 
@@ -136,7 +138,13 @@
 
 | # | 해시 | 메시지 | 세션 |
 |---|------|--------|------|
-| 1 | `1b9f7d1` | fix: NCS 페이지 클릭 인터랙션 원본 JSP 완전 재현 | 7 |
+| 1 | `3ef20d9` | fix: PolarArea 차트 beginAtZero 복원 | 11 |
+| 2 | `39617fe` | fix: PolarArea 차트 레거시 원본 일치 수정 | 11 |
+| 3 | `fd24d09` | feat: 결과 페이지 레거시 디자인 완전 재현 (result.jsp → React) | 11 |
+| 4 | `ddb16f6` | fix: 검사 결과 계산 구현 + 전체 사이트 점검 수정 | 10 |
+| 5 | `c9b634a` | feat: 검사 문항 56쌍 자동 생성 로직 구현 + 112개 문항 시드 데이터 | 9 |
+| 6 | `1aa4aa9` | fix: 쿠폰 RLS 정책 수정 — 일반 사용자 쿠폰 조회/사용 허용 | 8 |
+| 7 | `1b9f7d1` | fix: NCS 페이지 클릭 인터랙션 원본 JSP 완전 재현 | 7 |
 | 2 | `e48981f` | docs: 세션6 개발일지 | 6 |
 | 3 | `f7bd3b7` | fix: OAuth 로그인 리다이렉션 수정 | 6 |
 | 2 | `205b744` | docs: 세션5 개발일지 | 5 |
@@ -170,7 +178,7 @@
 | Vite 모듈 | 152개 |
 | DB 테이블 | 12개 (Supabase) |
 | 코드 라인 | ~13,900줄 |
-| 커밋 수 | 21개 (main) |
+| 커밋 수 | 27개 (main) |
 | 빌드 크기 | JS 598KB / CSS 41KB (gzip: 170KB / 8KB) |
 
 ---
