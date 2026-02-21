@@ -1,0 +1,219 @@
+/* ============================================
+   Competency Page — competency.jsp 디자인 재현
+   circle.css + ability.css + topBkg.css 통합
+   ============================================ */
+
+.competency-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header */
+.comp-header {
+  text-align: center;
+  padding: 40px 0 20px;
+}
+
+.comp-header h1 {
+  color: #106bb5;
+  font-size: 28px;
+  letter-spacing: -1px;
+  margin-bottom: 20px;
+}
+
+.comp-intro {
+  color: #444;
+  font-size: 15px;
+  line-height: 1.8;
+  text-align: left;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Pulse text */
+.comp-pulse {
+  text-align: center;
+  padding: 30px 0;
+}
+
+.comp-pulse p {
+  color: #106bb5;
+  font-size: 14px;
+}
+
+.pulse-dot {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #106bb5;
+  margin-top: 12px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.5; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Top Content — Circle Icons with Tree */
+.comp-top-content {
+  position: relative;
+  height: 500px;
+  margin: 0 auto 40px;
+  max-width: 500px;
+}
+
+.tree-bg {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  height: 90%;
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+.comp-circle-btn {
+  position: absolute;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.3s;
+  z-index: 2;
+}
+
+.comp-circle-btn:hover {
+  transform: scale(1.15);
+}
+
+/* Position each icon in a circle layout */
+.comp-circle-btn.critical     { top: 5%;  left: 50%; transform: translateX(-50%); }
+.comp-circle-btn.creative     { top: 15%; right: 8%; }
+.comp-circle-btn.communication { top: 40%; right: 0%; }
+.comp-circle-btn.collaboration { top: 65%; right: 8%; }
+.comp-circle-btn.digital      { top: 80%; left: 50%; transform: translateX(-50%); }
+.comp-circle-btn.emotional    { top: 65%; left: 8%; }
+.comp-circle-btn.solving      { top: 40%; left: 0%; }
+.comp-circle-btn.mind         { top: 15%; left: 8%; }
+
+.comp-circle-btn.critical:hover,
+.comp-circle-btn.digital:hover {
+  transform: translateX(-50%) scale(1.15);
+}
+
+.comp-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: all 0.3s;
+}
+
+.comp-circle img {
+  width: 45px;
+  height: 45px;
+  filter: brightness(0) invert(1);
+}
+
+/* Ability Sections */
+.comp-abilities {
+  padding-top: 20px;
+}
+
+.comp-ability-section {
+  margin-bottom: 60px;
+}
+
+.comp-ability-icon {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.comp-circle-display {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.comp-circle-display h3 {
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.comp-ability-desc {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.comp-ability-desc h3 {
+  font-size: 15px;
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.comp-ability-desc h3 b {
+  font-weight: 700;
+}
+
+.comp-ability-desc p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: #444;
+  margin-bottom: 12px;
+}
+
+.comp-back-top {
+  text-align: right;
+  margin-top: 16px;
+}
+
+.comp-back-top a {
+  color: #106bb5;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.comp-back-top a:hover {
+  text-decoration: underline;
+}
+
+/* Bottom */
+.comp-bottom-img {
+  max-width: 700px;
+  margin: 40px auto;
+}
+
+.comp-bottom-img img {
+  width: 100%;
+  height: auto;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .comp-top-content {
+    height: 400px;
+    max-width: 350px;
+  }
+
+  .comp-circle {
+    width: 60px;
+    height: 60px;
+  }
+
+  .comp-circle img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .comp-header h1 {
+    font-size: 22px;
+  }
+}
