@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { signUp } from '../../utils/auth';
@@ -19,10 +19,11 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  if (isLoggedIn) {
-    navigate('/', { replace: true });
-    return null;
-  }
+  useEffect(() => {
+    if (isLoggedIn) navigate('/main', { replace: true });
+  }, [isLoggedIn, navigate]);
+
+  if (isLoggedIn) return null;
 
   const handleChange = (field, value) => {
     setForm(prev => ({ ...prev, [field]: value }));
