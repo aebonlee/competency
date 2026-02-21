@@ -28,7 +28,9 @@ Dev_md/
     ├── 06_code-inspection.md    # 코드 점검 보고서
     ├── 07_sync-status.md        # GitHub↔로컬 동기화 현황
     ├── 08_legacy-security-audit.md  # 레거시 보안 감사
-    └── 09_progress-summary.md   # 전체 진행 내역 요약
+    ├── 09_progress-summary.md   # 전체 진행 내역 요약
+    ├── 10_dev-log-session3.md   # 세션3: 종합 점검 및 커밋/배포
+    └── 11_dev-log-session4.md   # 세션4: 파비콘, 리다이렉트, 풍선도움말
 ```
 
 ## 핵심 기능
