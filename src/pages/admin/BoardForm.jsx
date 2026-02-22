@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import getSupabase from '../../utils/supabase';
@@ -10,14 +10,39 @@ const BoardForm = () => {
   const { user } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
+  const { id } = useParams();
+  const isEdit = Boolean(id);
 
   const [form, setForm] = useState({
     title: '',
     content: '',
   });
   const [imageFile, setImageFile] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(!!id);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!id) return;
+    const fetchPost = async () => {
+      try {
+        const supabase = getSupabase();
+        if (!supabase) return;
+        const { data, error } = await supabase
+          .from('board_posts')
+          .select('*')
+          .eq('id', id)
+          .single();
+        if (error) throw error;
+        setForm({ title: data.title || '', content: data.content || '' });
+      } catch (err) {
+        console.error('Failed to load post:', err);
+        showToast('게시글을 불러오는 데 실패했습니다.', 'error');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPost();
+  }, [id, showToast]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -73,21 +98,41 @@ const BoardForm = () => {
         imageUrl = urlData.publicUrl;
       }
 
-      const payload = {
-        title: form.title.trim(),
-        content: form.content.trim(),
-        image_url: imageUrl,
-        author_id: user?.id || null,
-        views: 0,
-      };
+      if (isEdit) {
+        const updatePayload = {
+          title: form.title.trim(),
+          content: form.content.trim(),
+          updated_at: new Date().toISOString(),
+        };
+        if (imageUrl) {
+          updatePayload.image_url = imageUrl;
+        }
 
-      const { error } = await supabase
-        .from('board_posts')
-        .insert(payload);
+        const { error } = await supabase
+          .from('board_posts')
+          .update(updatePayload)
+          .eq('id', id);
 
-      if (error) throw error;
+        if (error) throw error;
 
-      showToast('게시글이 등록되었습니다.', 'success');
+        showToast('게시글이 수정되었습니다.', 'success');
+      } else {
+        const payload = {
+          title: form.title.trim(),
+          content: form.content.trim(),
+          image_url: imageUrl,
+          author_id: user?.id || null,
+          views: 0,
+        };
+
+        const { error } = await supabase
+          .from('board_posts')
+          .insert(payload);
+
+        if (error) throw error;
+
+        showToast('게시글이 등록되었습니다.', 'success');
+      }
       navigate('/admin/board');
     } catch (err) {
       console.error('Failed to save board post:', err);
@@ -110,7 +155,7 @@ const BoardForm = () => {
   return (
     <div className="page-wrapper">
       <section className="page-header">
-        <div className="container"><h1>게시글 작성</h1></div>
+        <div className="container"><h1>{isEdit ? '게시글 수정' : '게시글 작성'}</h1></div>
       </section>
 
       <div className="admin-page">
@@ -169,7 +214,7 @@ const BoardForm = () => {
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '24px' }}>
             <Link to="/admin/board" className="btn btn-secondary">취소</Link>
             <button type="submit" className="btn btn-primary" disabled={saving}>
-              {saving ? '저장 중...' : '게시글 등록'}
+              {saving ? '저장 중...' : isEdit ? '게시글 수정' : '게시글 등록'}
             </button>
           </div>
         </form>

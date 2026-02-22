@@ -66,7 +66,28 @@ const MailForm = () => {
 
       if (error) throw error;
 
-      showToast('메일이 전송되었습니다.', 'success');
+      // Attempt actual email sending via Edge Function
+      try {
+        const { data: sendResult, error: sendError } = await supabase.functions.invoke('send-email', {
+          body: {
+            to: email.trim(),
+            subject: title.trim(),
+            content: content.trim(),
+          },
+        });
+
+        if (sendError) throw sendError;
+
+        if (sendResult?.sent) {
+          showToast('메일이 전송되었습니다.', 'success');
+        } else {
+          showToast(sendResult?.message || '저장 완료 (발송 미설정)', 'info');
+        }
+      } catch (sendErr) {
+        console.warn('Email send failed, but note saved:', sendErr);
+        showToast('저장 완료 (메일 발송 실패 — 기록은 저장됨)', 'warning');
+      }
+
       navigate(-1);
     } catch (err) {
       console.error('Failed to send mail:', err);

@@ -167,7 +167,7 @@ const GroupMain = () => {
             if (recentEvalData?.length > 0) {
               const evalUserIds = [...new Set(recentEvalData.map(e => e.user_id))];
               const { data: profiles } = await supabase
-                .from('profiles')
+                .from('user_profiles')
                 .select('id, name')
                 .in('id', evalUserIds);
 

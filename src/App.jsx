@@ -25,6 +25,7 @@ import Checkout from './pages/user/Checkout';
 import Confirmation from './pages/user/Confirmation';
 import Evaluation from './pages/user/Evaluation';
 import Result from './pages/user/Result';
+import Survey from './pages/user/Survey';
 import PrevResult from './pages/user/PrevResult';
 import ResultAvg from './pages/user/ResultAvg';
 import History from './pages/user/History';
@@ -126,6 +127,7 @@ function App() {
           <Route path="/confirmation" element={<AuthGuard><Confirmation /></AuthGuard>} />
           <Route path="/evaluation/:evalId" element={<AuthGuard><Evaluation /></AuthGuard>} />
           <Route path="/result/:evalId" element={<AuthGuard><Result /></AuthGuard>} />
+          <Route path="/survey/:evalId" element={<AuthGuard><Survey /></AuthGuard>} />
           <Route path="/results" element={<AuthGuard><PrevResult /></AuthGuard>} />
           <Route path="/results/average" element={<AuthGuard><ResultAvg /></AuthGuard>} />
           <Route path="/history" element={<AuthGuard><History /></AuthGuard>} />
@@ -152,6 +154,8 @@ function App() {
           <Route path="/admin/users/:id" element={<AdminGuard><UserInfo /></AdminGuard>} />
           <Route path="/admin/questions" element={<AdminGuard><QuestionList /></AdminGuard>} />
           <Route path="/admin/questions/new" element={<AdminGuard><QuestionForm /></AdminGuard>} />
+          <Route path="/admin/questions/:id/edit" element={<AdminGuard><QuestionForm /></AdminGuard>} />
+          <Route path="/admin/results/:id" element={<AdminGuard><Result /></AdminGuard>} />
           <Route path="/admin/coupons" element={<AdminGuard><CouponList /></AdminGuard>} />
           <Route path="/admin/statistics" element={<AdminGuard><Statistics /></AdminGuard>} />
           <Route path="/admin/board" element={<AdminGuard><BoardList /></AdminGuard>} />

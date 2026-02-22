@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import getSupabase from '../../utils/supabase';
+import { exportToCSV } from '../../utils/export';
 import '../../styles/admin.css';
 import '../../styles/base.css';
 
@@ -25,6 +26,9 @@ const CouponList = () => {
   const [generateCount, setGenerateCount] = useState(1);
   const [groupId, setGroupId] = useState('');
   const [groups, setGroups] = useState([]);
+  const [distributeEmail, setDistributeEmail] = useState('');
+  const [distributeGroupId, setDistributeGroupId] = useState('');
+  const [distributing, setDistributing] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -95,6 +99,81 @@ const CouponList = () => {
     }
   };
 
+  const handleDistribute = async () => {
+    if (!distributeEmail.trim() && !distributeGroupId) {
+      showToast('이메일 또는 그룹을 선택해 주세요.', 'warning');
+      return;
+    }
+
+    setDistributing(true);
+    try {
+      const supabase = getSupabase();
+      if (!supabase) return;
+
+      const available = coupons.filter((c) => !c.is_used && !c.assigned_user);
+      if (available.length === 0) {
+        showToast('배포 가능한 쿠폰이 없습니다.', 'warning');
+        return;
+      }
+
+      if (distributeEmail.trim()) {
+        const coupon = available[0];
+        const { error } = await supabase
+          .from('coupons')
+          .update({ assigned_user: distributeEmail.trim() })
+          .eq('id', coupon.id);
+
+        if (error) throw error;
+
+        setCoupons((prev) =>
+          prev.map((c) =>
+            c.id === coupon.id ? { ...c, assigned_user: distributeEmail.trim() } : c
+          )
+        );
+        showToast(`쿠폰이 ${distributeEmail.trim()}에게 배포되었습니다.`, 'success');
+        setDistributeEmail('');
+      } else if (distributeGroupId) {
+        const { data: members } = await supabase
+          .from('group_members')
+          .select('user_id, user_profiles:user_id (email)')
+          .eq('group_id', distributeGroupId);
+
+        if (!members || members.length === 0) {
+          showToast('그룹에 멤버가 없습니다.', 'warning');
+          return;
+        }
+
+        const needed = Math.min(members.length, available.length);
+        const updates = [];
+        for (let i = 0; i < needed; i++) {
+          const memberEmail = members[i].user_profiles?.email || members[i].user_id;
+          updates.push(
+            supabase
+              .from('coupons')
+              .update({ assigned_user: memberEmail })
+              .eq('id', available[i].id)
+          );
+        }
+
+        await Promise.all(updates);
+
+        const { data: refreshed } = await supabase
+          .from('coupons')
+          .select('*')
+          .order('created_at', { ascending: false });
+        setCoupons(refreshed || []);
+
+        showToast(`${needed}명에게 쿠폰이 배포되었습니다.`, 'success');
+        setDistributeGroupId('');
+      }
+    } catch (err) {
+      console.error('Failed to distribute coupons:', err);
+      showToast('쿠폰 배포에 실패했습니다.', 'error');
+    } finally {
+      setDistributing(false);
+    }
+  };
+
   const totalCoupons = coupons.length;
   const usedCoupons = coupons.filter((c) => c.is_used).length;
   const availableCoupons = coupons.filter((c) => !c.is_used).length;
@@ -118,6 +197,22 @@ const CouponList = () => {
       <div className="admin-page">
       <div className="admin-header-bar">
         <Link to="/admin" className="btn btn-secondary btn-sm">대시보드</Link>
+        <button
+          className="btn btn-secondary btn-sm"
+          onClick={() => {
+            exportToCSV(coupons, '쿠폰목록', [
+              { key: 'code', label: '쿠폰코드' },
+              { key: 'is_used', label: '사용여부' },
+              { key: 'group_id', label: '그룹ID' },
+              { key: 'used_by', label: '사용자' },
+              { key: 'created_at', label: '생성일' },
+              { key: 'used_at', label: '사용일' },
+            ]);
+          }}
+          disabled={coupons.length === 0}
+        >
+          CSV 다운로드
+        </button>
       </div>
 
       {/* Stats */}
@@ -179,6 +274,46 @@ const CouponList = () => {
             disabled={generating}
           >
             {generating ? '생성 중...' : '쿠폰 생성'}
+          </button>
+        </div>
+      </div>
+
+      {/* Distribute Form */}
+      <div className="card mb-3">
+        <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '16px' }}>
+          쿠폰 배포
+        </h3>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-end', flexWrap: 'wrap' }}>
+          <div className="form-group" style={{ marginBottom: 0, minWidth: '220px' }}>
+            <label htmlFor="distribute-email">이메일 (개인 배포)</label>
+            <input
+              id="distribute-email"
+              type="email"
+              value={distributeEmail}
+              onChange={(e) => { setDistributeEmail(e.target.value); setDistributeGroupId(''); }}
+              placeholder="이메일 주소"
+            />
+          </div>
+          <span style={{ fontSize: '14px', color: 'var(--text-light)', alignSelf: 'center' }}>또는</span>
+          <div className="form-group" style={{ marginBottom: 0, minWidth: '200px' }}>
+            <label htmlFor="distribute-group">그룹 (일괄 배포)</label>
+            <select
+              id="distribute-group"
+              value={distributeGroupId}
+              onChange={(e) => { setDistributeGroupId(e.target.value); setDistributeEmail(''); }}
+            >
+              <option value="">그룹 선택</option>
+              {groups.map((g) => (
+                <option key={g.id} value={g.id}>{g.name}</option>
+              ))}
+            </select>
+          </div>
+          <button
+            className="btn btn-primary"
+            onClick={handleDistribute}
+            disabled={distributing}
+          >
+            {distributing ? '배포 중...' : '쿠폰 배포'}
           </button>
         </div>
       </div>

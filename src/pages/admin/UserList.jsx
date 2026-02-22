@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import getSupabase from '../../utils/supabase';
+import { exportToCSV } from '../../utils/export';
 import '../../styles/admin.css';
 import '../../styles/base.css';
 
@@ -143,6 +144,24 @@ const UserList = () => {
       <div className="admin-page">
       <div className="admin-header-bar">
         <Link to="/admin" className="btn btn-secondary btn-sm">대시보드</Link>
+        <button
+          className="btn btn-secondary btn-sm"
+          onClick={() => {
+            exportToCSV(users, '회원목록', [
+              { key: 'name', label: '이름' },
+              { key: 'email', label: '이메일' },
+              { key: 'phone', label: '전화번호' },
+              { key: 'usertype', label: '유형' },
+              { key: 'age', label: '나이대' },
+              { key: 'position', label: '직무' },
+              { key: 'region', label: '지역' },
+              { key: 'created_at', label: '가입일' },
+            ]);
+          }}
+          disabled={users.length === 0}
+        >
+          CSV 다운로드
+        </button>
       </div>
 
       {/* Search Toolbar */}

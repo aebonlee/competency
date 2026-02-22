@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { getResult } from '../../utils/supabase';
+import { getResult, checkSurveyCompleted } from '../../utils/supabase';
 import { CompetencyPolarChart, CompetencyDoughnutChart } from '../../components/CompetencyChart';
 import Modal from '../../components/Modal';
 import { COMPETENCY_INFO, COMPETENCY_COLORS, COMPETENCY_LABELS } from '../../data/competencyInfo';
@@ -73,11 +73,17 @@ const Result = () => {
   const [loading, setLoading] = useState(true);
   const [activeChart, setActiveChart] = useState(1);
   const [selectedComp, setSelectedComp] = useState(null);
+  const [surveyDone, setSurveyDone] = useState(false);
+  const resultRef = useRef(null);
 
   useEffect(() => {
     const load = async () => {
-      const data = await getResult(parseInt(evalId));
+      const [data, completed] = await Promise.all([
+        getResult(parseInt(evalId)),
+        checkSurveyCompleted(parseInt(evalId)),
+      ]);
       setResult(data);
+      setSurveyDone(completed);
       setLoading(false);
     };
     load();
@@ -156,7 +162,7 @@ const Result = () => {
 
   return (
     <div className="page-wrapper result-domain">
-      <div className="result-page">
+      <div className="result-page" ref={resultRef}>
 
         {/* Speech Bubble - 안내문 */}
         <blockquote className="speech-bubble">
@@ -315,9 +321,43 @@ const Result = () => {
           </div>
         )}
 
+        {/* Survey section */}
+        <div style={{ textAlign: 'center', marginTop: 40, padding: '24px', background: 'var(--bg-light-gray)', borderRadius: '12px' }}>
+          {surveyDone ? (
+            <span className="badge badge-green" style={{ fontSize: '14px', padding: '8px 16px' }}>설문 완료</span>
+          ) : (
+            <>
+              <p style={{ marginBottom: '12px', fontSize: '15px', color: 'var(--text-secondary)' }}>
+                검사 경험에 대한 설문에 참여해 주세요.
+              </p>
+              <Link to={`/survey/${evalId}`} className="btn btn-primary">설문조사 참여</Link>
+            </>
+          )}
+        </div>
+
         {/* Bottom buttons */}
-        <div style={{ textAlign: 'center', marginTop: 40, marginBottom: 40 }}>
-          <Link to="/results" className="btn btn-secondary" style={{ marginRight: 12 }}>전체 결과 보기</Link>
+        <div style={{ textAlign: 'center', marginTop: 24, marginBottom: 40, display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
+          <Link to="/results" className="btn btn-secondary">전체 결과 보기</Link>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={async () => {
+              try {
+                const { default: html2canvas } = await import('html2canvas');
+                const el = resultRef.current;
+                if (!el) return;
+                const canvas = await html2canvas(el, { useCORS: true, scale: 2 });
+                const link = document.createElement('a');
+                link.download = `competency_result_${evalId}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+              } catch {
+                alert('이미지 저장에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+              }
+            }}
+          >
+            이미지 저장
+          </button>
           <Link to="/main" className="btn btn-primary">메인으로</Link>
         </div>
       </div>

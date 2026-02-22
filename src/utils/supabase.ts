@@ -439,4 +439,71 @@ export const useCoupon = async (couponId: string, userId: string): Promise<void>
   if (error) throw error;
 };
 
+/**
+ * Get active survey questions for a user group type
+ */
+export const getActiveSurveyQuestions = async (userGroupName?: string) => {
+  const client = getSupabase();
+  if (!client) return [];
+
+  const now = new Date().toISOString();
+  let query = client
+    .from('survey_questions')
+    .select('*')
+    .lte('start_date', now)
+    .gte('end_date', now)
+    .order('id');
+
+  if (userGroupName) {
+    query = query.or(`target_type.eq.all,target_type.eq.${userGroupName}`);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return data || [];
+};
+
+/**
+ * Check if survey already completed for an eval
+ */
+export const checkSurveyCompleted = async (evalId: number): Promise<boolean> => {
+  const client = getSupabase();
+  if (!client) return false;
+
+  const { count, error } = await client
+    .from('surveys')
+    .select('*', { count: 'exact', head: true })
+    .eq('eval_id', evalId);
+
+  if (error) return false;
+  return (count || 0) > 0;
+};
+
+/**
+ * Submit survey response
+ */
+export const submitSurvey = async (
+  evalId: number,
+  userId: string,
+  responses: { questionId: number; rating: number; comment?: string }[]
+): Promise<void> => {
+  const client = getSupabase();
+  if (!client) return;
+
+  const rows = responses.map((r) => ({
+    eval_id: evalId,
+    user_id: userId,
+    question_id: r.questionId,
+    rating: r.rating,
+    comment: r.comment || null,
+    created_at: new Date().toISOString(),
+  }));
+
+  const { error } = await client
+    .from('surveys')
+    .insert(rows);
+
+  if (error) throw error;
+};
+
 export default getSupabase;

@@ -7,7 +7,7 @@ import '../../styles/admin.css';
 import '../../styles/base.css';
 
 const UserInfo = () => {
-  const { userId } = useParams();
+  const { id: userId } = useParams();
   const { user: currentUser } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();

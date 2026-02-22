@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import getSupabase from '../../utils/supabase';
+import { exportToCSV } from '../../utils/export';
 import { AGE_LIST, POSITION_LIST, REGION_LIST } from '../../data/competencyInfo';
 import '../../styles/admin.css';
 import '../../styles/base.css';
@@ -149,6 +150,23 @@ const Statistics = () => {
       <div className="admin-page">
       <div className="admin-header-bar">
         <Link to="/admin" className="btn btn-secondary btn-sm">대시보드</Link>
+        <button
+          className="btn btn-secondary btn-sm"
+          onClick={() => {
+            const statsData = [
+              ...ageStats.map((s) => ({ 분류: '연령', 항목: s.label, 인원: s.count })),
+              ...positionStats.map((s) => ({ 분류: '직무', 항목: s.label, 인원: s.count })),
+              ...regionStats.map((s) => ({ 분류: '지역', 항목: s.label, 인원: s.count })),
+            ];
+            exportToCSV(statsData, '통계', [
+              { key: '분류', label: '분류' },
+              { key: '항목', label: '항목' },
+              { key: '인원', label: '인원' },
+            ]);
+          }}
+        >
+          CSV 다운로드
+        </button>
       </div>
 
       {/* Summary Stats */}
