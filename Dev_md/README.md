@@ -28,7 +28,7 @@ Dev_md/
 │   ├── 22_plan-session15-deep-analysis.md  # 세션15 심층 분석 계획 백업
 │   ├── 23_dev-log-session15.md  # 세션15 심층 분석 & 버그 수정 개발일지
 │   ├── 24_plan-session16-phase2-4.md  # 세션16 Phase 2~4 계획 백업
-│   └── 25_dev-log-session16.md  # 세션16 코드 스플리팅, ErrorBoundary, SEO 개발일지
+│   └── 25_dev-log-session16.md  # 세션16 코드 스플리팅, ErrorBoundary, SEO, RLS, TS, Vitest
 └── 2026-02-21/                  # 날짜별 폴더 → 내용별 파일
     ├── 01_plan.md               # 전환 계획서
     ├── 02_dev-log.md            # 개발 일지 (1~13단계)
@@ -69,10 +69,11 @@ Dev_md/
 
 ## 빌드 & 실행
 ```bash
-cd react-app
 npm install
 npm run dev        # 개발 서버 (http://localhost:5173)
 npm run build      # 프로덕션 빌드
+npm run type-check # TypeScript 타입 검사
+npm run test       # Vitest 단위 테스트
 ```
 
 ## 환경변수 (.env)
