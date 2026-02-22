@@ -154,8 +154,8 @@ function App() {
           <Route path="/admin/users/:id" element={<AdminGuard><UserInfo /></AdminGuard>} />
           <Route path="/admin/questions" element={<AdminGuard><QuestionList /></AdminGuard>} />
           <Route path="/admin/questions/new" element={<AdminGuard><QuestionForm /></AdminGuard>} />
-          <Route path="/admin/questions/:id/edit" element={<AdminGuard><QuestionForm /></AdminGuard>} />
-          <Route path="/admin/results/:id" element={<AdminGuard><Result /></AdminGuard>} />
+          <Route path="/admin/questions/:questionId/edit" element={<AdminGuard><QuestionForm /></AdminGuard>} />
+          <Route path="/admin/results/:evalId" element={<AdminGuard><Result /></AdminGuard>} />
           <Route path="/admin/coupons" element={<AdminGuard><CouponList /></AdminGuard>} />
           <Route path="/admin/statistics" element={<AdminGuard><Statistics /></AdminGuard>} />
           <Route path="/admin/board" element={<AdminGuard><BoardList /></AdminGuard>} />

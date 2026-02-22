@@ -162,7 +162,7 @@ const EvalManager = () => {
                   <td>
                     {getResultId(ev) ? (
                       <Link
-                        to={`/admin/results/${getResultId(ev)}`}
+                        to={`/admin/results/${ev.id}`}
                         className="btn btn-primary btn-sm"
                       >
                         결과보기
