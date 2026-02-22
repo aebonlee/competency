@@ -18,6 +18,13 @@ MyCoreCompetency(www.competency.or.kr) 4차 산업혁명 8대 핵심역량 검�
 Dev_md/
 ├── README.md                    # 이 파일
 ├── CLAUDE.md                    # Claude AI 개발 지침
+├── 2026-02-22/                  # 날짜별 폴더
+│   ├── 개발일지.md              # 마이그레이션 전체 개발일지 (세션12~14)
+│   ├── 배포기록.md              # 커밋/푸시/배포 이력 (전체 42개 커밋)
+│   ├── 점검보고서.md            # 프로젝트 종합 점검 보고서
+│   ├── 종합평가_및_추가계획.md   # 완성도 평가 + Phase별 추가 계획
+│   ├── 20_plan-session14-group-enhancement.md  # 세션14 그룹 강화 계획 백업
+│   └── 21_dev-log-session14.md  # 세션14 상세 개발일지
 └── 2026-02-21/                  # 날짜별 폴더 → 내용별 파일
     ├── 01_plan.md               # 전환 계획서
     ├── 02_dev-log.md            # 개발 일지 (1~13단계)
