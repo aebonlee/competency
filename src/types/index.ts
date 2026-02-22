@@ -123,7 +123,7 @@ export interface Purchase {
   id: string;
   user_id: string;
   amount: number;
-  status: 'pending' | 'paid' | 'cancelled' | 'refunded';
+  status: 'pending' | 'paid' | 'failed' | 'refunded';
   payment_id?: string;
   paid_at?: string;
   created_at: string;

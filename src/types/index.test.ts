@@ -45,7 +45,7 @@ describe('Type definitions', () => {
   });
 
   it('should allow valid Purchase with status types', () => {
-    const statuses: Purchase['status'][] = ['pending', 'paid', 'cancelled', 'refunded'];
+    const statuses: Purchase['status'][] = ['pending', 'paid', 'failed', 'refunded'];
     expect(statuses).toHaveLength(4);
   });
 

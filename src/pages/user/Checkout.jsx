@@ -35,7 +35,6 @@ const Checkout = () => {
       const purchase = await createPurchase({
         user_id: user.id,
         amount: AMOUNT,
-        status: 'pending'
       });
 
       // 2. Request payment
@@ -53,18 +52,23 @@ const Checkout = () => {
 
       if (paymentResult.code) {
         setError(paymentResult.message || '결제가 취소되었습니다.');
-        await updatePurchaseStatus(purchase.id, 'cancelled', null);
+        try {
+          await updatePurchaseStatus(String(purchase.id), 'failed');
+        } catch (updateErr) {
+          console.error('Failed to update purchase status:', updateErr);
+        }
         setProcessing(false);
         return;
       }
 
       // 3. Verify payment server-side
+      const pid = String(purchase.id);
       try {
-        await verifyPayment(paymentResult.paymentId, purchase.id);
+        await verifyPayment(paymentResult.paymentId, pid);
       } catch (verifyErr) {
-        console.error('Payment verification failed:', verifyErr);
+        console.error('Payment verification failed (fallback):', verifyErr);
         // Edge Function 미설정 시 직접 상태 업데이트 (fallback)
-        await updatePurchaseStatus(purchase.id, 'paid', paymentResult.paymentId);
+        await updatePurchaseStatus(pid, 'paid', paymentResult.paymentId);
       }
 
       // 4. Create evaluation
@@ -73,7 +77,12 @@ const Checkout = () => {
       navigate(`/confirmation?evalId=${newEval.id}`);
     } catch (err) {
       console.error('Checkout error:', err);
-      setError('오류가 발생했습니다. 다시 시도해주세요.');
+      const msg = err instanceof Error ? err.message : '';
+      if (msg.includes('문항')) {
+        setError('검사 문항 데이터가 준비되지 않았습니다. 관리자에게 문의하세요.');
+      } else {
+        setError('오류가 발생했습니다. 다시 시도해주세요.');
+      }
       setProcessing(false);
     }
   };
