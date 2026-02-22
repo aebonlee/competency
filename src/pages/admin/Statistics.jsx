@@ -9,7 +9,7 @@ import '../../styles/admin.css';
 import '../../styles/base.css';
 
 const Statistics = () => {
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
   const { showToast } = useToast();
   const [ageStats, setAgeStats] = useState([]);
   const [positionStats, setPositionStats] = useState([]);
@@ -52,7 +52,7 @@ const Statistics = () => {
         const ageCounts = {};
         AGE_LIST.forEach((a) => { ageCounts[a.code] = 0; });
         (profiles || []).forEach((p) => {
-          if (p.age && ageCounts.hasOwnProperty(p.age)) {
+          if (p.age && Object.hasOwn(ageCounts, p.age)) {
             ageCounts[p.age]++;
           }
         });
@@ -67,7 +67,7 @@ const Statistics = () => {
         const posCounts = {};
         POSITION_LIST.forEach((p) => { posCounts[p.code] = 0; });
         (profiles || []).forEach((p) => {
-          if (p.position && posCounts.hasOwnProperty(p.position)) {
+          if (p.position && Object.hasOwn(posCounts, p.position)) {
             posCounts[p.position]++;
           }
         });
@@ -83,7 +83,7 @@ const Statistics = () => {
         const regionCounts = {};
         REGION_LIST.forEach((r) => { regionCounts[r] = 0; });
         (profiles || []).forEach((p) => {
-          if (p.country && regionCounts.hasOwnProperty(p.country)) {
+          if (p.country && Object.hasOwn(regionCounts, p.country)) {
             regionCounts[p.country]++;
           }
         });

@@ -7,7 +7,7 @@ import '../../styles/admin.css';
 import '../../styles/base.css';
 
 const QuestionList = () => {
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
   const { showToast } = useToast();
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);

@@ -29,7 +29,7 @@ export const requestPayment = async ({ orderId, orderName, totalAmount, payMetho
       orderName,
       totalAmount,
       currency: 'CURRENCY_KRW',
-      payMethod,
+      payMethod: payMethod as "CARD" | "TRANSFER" | "VIRTUAL_ACCOUNT" | "MOBILE" | "GIFT_CERTIFICATE" | "EASY_PAY",
       customer: {
         fullName: customer.fullName,
         email: customer.email,

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
-import { getEvaluations, validateCoupon, useCoupon, createEvaluation } from '../../utils/supabase';
+import { getEvaluations, validateCoupon, useCoupon as applyCoupon, createEvaluation } from '../../utils/supabase';
 import '../../styles/checkout.css';
 
 const TOOLTIPS = {
@@ -19,7 +19,7 @@ const Main = () => {
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [evals, setEvals] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
   const [couponCode, setCouponCode] = useState('');
   const [couponLoading, setCouponLoading] = useState(false);
   const [tooltip, setTooltip] = useState(null);
@@ -41,14 +41,14 @@ const Main = () => {
     try {
       const result = await validateCoupon(couponCode);
       if (result.valid) {
-        await useCoupon(result.coupon.id, user.id);
+        await applyCoupon(result.coupon.id, user.id);
         const newEval = await createEvaluation(user.id);
         showToast('쿠폰이 적용되었습니다. 검사를 시작하세요!', 'success');
         navigate(`/evaluation/${newEval.id}`);
       } else {
         showToast(result.message, 'error');
       }
-    } catch (err) {
+    } catch {
       showToast('쿠폰 적용에 실패했습니다.', 'error');
     } finally {
       setCouponLoading(false);

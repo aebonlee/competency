@@ -7,7 +7,7 @@ import '../../styles/admin.css';
 import '../../styles/base.css';
 
 const SvQuestionList = () => {
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
   const { showToast } = useToast();
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -62,7 +62,7 @@ const SvQuestionList = () => {
     }
   };
 
-  const getTargetLabel = (targetType) => {
+  const _getTargetLabel = (targetType) => {
     switch (targetType) {
       case 0: return '전체';
       case 1: return '비그룹';

@@ -11,22 +11,16 @@ const Checkout = () => {
   const { showToast } = useToast();
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({ name: '', email: '', phone: '' });
+  const [form, setForm] = useState(() => ({
+    name: profile?.name || '',
+    email: user?.email || '',
+    phone: profile?.phone || ''
+  }));
   const [agreed, setAgreed] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
-
-  useEffect(() => {
-    if (profile || user) {
-      setForm(prev => ({
-        name: prev.name || profile?.name || '',
-        email: prev.email || user?.email || '',
-        phone: prev.phone || profile?.phone || ''
-      }));
-    }
-  }, [profile, user]);
 
   const AMOUNT = 25000;
 

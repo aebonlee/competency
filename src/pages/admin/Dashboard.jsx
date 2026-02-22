@@ -6,7 +6,7 @@ import getSupabase from '../../utils/supabase';
 import '../../styles/admin.css';
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
   const { showToast } = useToast();
   const [loading, setLoading] = useState(true);
 

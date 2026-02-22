@@ -63,7 +63,7 @@ const Evaluation = () => {
 
       showToast('검사가 완료되었습니다!', 'success');
       navigate(`/result/${evalId}`);
-    } catch (err) {
+    } catch {
       showToast('검사 제출에 실패했습니다.', 'error');
       setError('검사 제출에 실패했습니다. 다시 시도해주세요.');
       setSubmitting(false);

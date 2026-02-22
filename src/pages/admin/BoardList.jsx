@@ -7,7 +7,7 @@ import '../../styles/admin.css';
 import '../../styles/base.css';
 
 const BoardList = () => {
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
   const { showToast } = useToast();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);

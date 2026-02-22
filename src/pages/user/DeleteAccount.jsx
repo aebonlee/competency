@@ -18,7 +18,7 @@ const DeleteAccount = () => {
       await deleteAccount(user.id);
       showToast('회원탈퇴가 완료되었습니다.', 'info');
       navigate('/');
-    } catch (err) {
+    } catch {
       showToast('회원탈퇴에 실패했습니다.', 'error');
       setLoading(false);
     }

@@ -119,7 +119,6 @@ const Result = () => {
     result.point1, result.point2, result.point3, result.point4,
     result.point5, result.point6, result.point7, result.point8
   ];
-  const total = scores.reduce((a, b) => a + b, 0);
   const ranked = getRanked(scores);
   const ncsScores = calcNCS(scores);
 

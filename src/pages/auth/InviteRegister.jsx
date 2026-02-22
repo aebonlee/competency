@@ -7,7 +7,7 @@ import '../../styles/auth.css';
 
 const InviteRegister = () => {
   const { code } = useParams();
-  const navigate = useNavigate();
+  const _navigate = useNavigate();
   const [invitation, setInvitation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({

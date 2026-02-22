@@ -8,7 +8,7 @@ import '../../styles/base.css';
 
 const SvQuestionForm = () => {
   const { id } = useParams();
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
   const isEditing = !!id;

@@ -9,7 +9,7 @@ import '../../styles/base.css';
 const GroupCouponList = () => {
   const { user } = useAuth();
   const { showToast } = useToast();
-  const [groupId, setGroupId] = useState(null);
+  const [_groupId, setGroupId] = useState(null);
   const [coupons, setCoupons] = useState([]);
   const [members, setMembers] = useState([]);
   const [selectedCoupon, setSelectedCoupon] = useState('');

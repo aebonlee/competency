@@ -8,7 +8,7 @@ import '../../styles/base.css';
 
 const UserInfo = () => {
   const { id: userId } = useParams();
-  const { user: currentUser } = useAuth();
+  const { user: _currentUser } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
@@ -125,7 +125,7 @@ const UserInfo = () => {
     }
   };
 
-  const getUsertypeLabel = (usertype) => {
+  const _getUsertypeLabel = (usertype) => {
     switch (usertype) {
       case 0: return '개인';
       case 1: return '그룹';

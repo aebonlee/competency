@@ -8,7 +8,7 @@ import '../../styles/base.css';
 
 const BoardView = () => {
   const { id } = useParams();
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
   const { showToast } = useToast();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);

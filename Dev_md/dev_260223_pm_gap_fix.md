@@ -199,3 +199,39 @@ git push origin main → OK
 - [ ] E2E 테스트 (설문 → 결과 → CSV 다운로드 흐름)
 - [ ] 쿠폰 배포 후 알림 이메일 연동
 - [ ] GitHub Actions 배포 확인
+- [ ] PortOne V2 키 발급 및 설정 (아래 가이드 참조)
+
+---
+
+## 11. PortOne V2 카드결제 연동 가이드
+
+### DB 스키마 수정
+
+`supabase/migrations/20260223_add_paid_at.sql` 마이그레이션 추가:
+- `purchases` 테이블에 `paid_at timestamptz` 컬럼 추가
+- 코드(`supabase.ts`, `verify-payment`)에서 사용하지만 스키마에 누락되어 있었음
+
+### PortOne V2 키 발급 절차
+
+1. [PortOne 콘솔](https://admin.portone.io) 접속 (회원가입/로그인)
+2. 아래 3개 키를 발급:
+
+| 키 | 발급 위치 | 용도 |
+|----|-----------|------|
+| **Store ID** | 연동 관리 > 식별코드 > V2 Store ID | 프론트엔드 결제 요청 |
+| **Channel Key** | 결제 연동 > 채널 관리 > KG이니시스 채널의 Channel Key | 프론트엔드 결제 채널 지정 |
+| **API Secret** | 연동 관리 > API Keys > V2 API Secret | 서버사이드 결제 검증 |
+
+### 키 설정 위치
+
+| 환경 | 설정 위치 | 변수명 |
+|------|-----------|--------|
+| **로컬 개발** | `.env` 파일 | `VITE_PORTONE_STORE_ID`, `VITE_PORTONE_CHANNEL_KEY` |
+| **GitHub Actions** | Repository Settings > Secrets and variables > Actions | `VITE_PORTONE_STORE_ID`, `VITE_PORTONE_CHANNEL_KEY` |
+| **Supabase Edge Function** | Supabase Dashboard > Edge Functions > Secrets | `PORTONE_API_SECRET` |
+
+### 검증 방법
+
+1. 키 미설정 시: 데모 모드로 동작 (결제 버튼 클릭 → 시뮬레이션)
+2. 키 설정 후: PortOne 결제 UI가 실제로 표시됨
+3. 테스트 결제: PortOne 콘솔에서 테스트 모드 활성화 후 테스트 카드로 결제 확인

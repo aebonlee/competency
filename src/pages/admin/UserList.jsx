@@ -10,7 +10,7 @@ import '../../styles/base.css';
 const PAGE_SIZE = 20;
 
 const UserList = () => {
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
   const { showToast } = useToast();
   const [users, setUsers] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -86,7 +86,7 @@ const UserList = () => {
   const renderPagination = () => {
     if (totalPages <= 1) return null;
 
-    const pages = [];
+    const _pages = [];
     const maxVisible = 5;
     let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
     let end = Math.min(totalPages, start + maxVisible - 1);

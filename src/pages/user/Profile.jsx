@@ -37,7 +37,7 @@ const Profile = () => {
       await updateProfile(user.id, form);
       await refreshProfile();
       showToast('프로필이 수정되었습니다.', 'success');
-    } catch (err) {
+    } catch {
       showToast('프로필 수정에 실패했습니다.', 'error');
     } finally {
       setLoading(false);

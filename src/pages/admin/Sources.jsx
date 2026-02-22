@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
-import getSupabase from '../../utils/supabase';
 import '../../styles/admin.css';
 import '../../styles/base.css';
 
@@ -22,8 +21,8 @@ const librarySources = [
 ];
 
 const Sources = () => {
-  const { user } = useAuth();
-  const { showToast } = useToast();
+  useAuth();
+  useToast();
   const [loading] = useState(false);
 
   if (loading) {

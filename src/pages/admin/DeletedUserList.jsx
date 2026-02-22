@@ -9,7 +9,7 @@ import '../../styles/base.css';
 const PAGE_SIZE = 20;
 
 const DeletedUserList = () => {
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
   const { showToast } = useToast();
   const [users, setUsers] = useState([]);
   const [totalCount, setTotalCount] = useState(0);

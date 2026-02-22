@@ -8,7 +8,7 @@ import '../../styles/base.css';
 
 const QuestionForm = () => {
   const { questionId } = useParams();
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
   const isEditing = !!questionId;

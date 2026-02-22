@@ -8,7 +8,7 @@ import '../../styles/base.css';
 
 const EvalManager = () => {
   const { userId } = useParams();
-  const { user: currentUser } = useAuth();
+  const { user: _currentUser } = useAuth();
   const { showToast } = useToast();
   const [userName, setUserName] = useState('');
   const [evals, setEvals] = useState([]);

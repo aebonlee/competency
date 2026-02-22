@@ -7,7 +7,7 @@ import '../../styles/admin.css';
 import '../../styles/base.css';
 
 const NoteList = () => {
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
   const { showToast } = useToast();
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);

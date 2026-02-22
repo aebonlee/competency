@@ -7,7 +7,7 @@ import '../../styles/admin.css';
 import '../../styles/base.css';
 
 const SurveyList = () => {
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
   const { showToast } = useToast();
   const [surveys, setSurveys] = useState([]);
   const [averageRating, setAverageRating] = useState(0);
