@@ -1,16 +1,30 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { Line, Bar, Doughnut, Radar } from 'react-chartjs-2';
+import {
+  Chart as ChartJS, CategoryScale, LinearScale, PointElement,
+  LineElement, BarElement, ArcElement, RadialLinearScale,
+  Tooltip, Legend, Filler
+} from 'chart.js';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import getSupabase from '../../utils/supabase';
+import { COMPETENCY_COLORS, COMPETENCY_LABELS_SHORT } from '../../data/competencyInfo';
 import '../../styles/admin.css';
+
+ChartJS.register(
+  CategoryScale, LinearScale, PointElement, LineElement,
+  BarElement, ArcElement, RadialLinearScale, Tooltip, Legend, Filler
+);
+
+const chartFont = { family: "'Noto Sans KR', sans-serif" };
 
 const Dashboard = () => {
   const { user: _user } = useAuth();
   const { showToast } = useToast();
   const [loading, setLoading] = useState(true);
 
-  // Section 1: KPI
+  // Section A: KPI
   const [kpi, setKpi] = useState({
     totalUsers: 0, todayUsers: 0,
     totalEvals: 0, completedEvals: 0, todayEvals: 0,
@@ -18,17 +32,25 @@ const Dashboard = () => {
     totalCoupons: 0, usedCoupons: 0,
   });
 
-  // Section 2: Secondary stats
+  // Section B: Secondary stats
   const [secondary, setSecondary] = useState({
     groups: 0, posts: 0, unreadNotes: 0,
     avgRating: 0, deletedUsers: 0, questions: 0,
   });
 
-  // Section 3: Visualization
+  // Section C–D: Visualization
   const [userDist, setUserDist] = useState({ individual: 0, group: 0, admin: 0, subadmin: 0 });
   const [evalDist, setEvalDist] = useState({ completed: 0, inProgress: 0 });
 
-  // Section 5: Recent activity
+  // Section C: Time-series
+  const [dailySignups, setDailySignups] = useState([]);
+  const [dailyEvals, setDailyEvals] = useState([]);
+  const [monthlyRevenue, setMonthlyRevenue] = useState([]);
+
+  // Section E: Competency
+  const [competencyAvg, setCompetencyAvg] = useState([0, 0, 0, 0, 0, 0, 0, 0]);
+
+  // Section G: Recent activity
   const [recentUsers, setRecentUsers] = useState([]);
   const [recentEvals, setRecentEvals] = useState([]);
   const [recentPurchases, setRecentPurchases] = useState([]);
@@ -42,6 +64,11 @@ const Dashboard = () => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const todayISO = today.toISOString();
+
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+        sevenDaysAgo.setHours(0, 0, 0, 0);
+        const sevenDaysAgoISO = sevenDaysAgo.toISOString();
 
         const results = await Promise.allSettled([
           // Q1: active user count
@@ -78,6 +105,12 @@ const Dashboard = () => {
           supabase.from('eval_list').select('id, eval_type, progress, created_at, profiles:user_id ( name )').order('created_at', { ascending: false }).limit(5),
           // Q17: recent 5 purchases + join
           supabase.from('purchases').select('id, amount, status, created_at, profiles:user_id ( name )').order('created_at', { ascending: false }).limit(5),
+          // Q18: recent 7 days signups
+          supabase.from('user_profiles').select('created_at').gte('created_at', sevenDaysAgoISO).is('deleted_at', null),
+          // Q19: recent 7 days completed evals
+          supabase.from('eval_list').select('created_at').gte('created_at', sevenDaysAgoISO).gte('progress', 100),
+          // Q20: competency scores (all results)
+          supabase.from('results').select('point1,point2,point3,point4,point5,point6,point7,point8'),
         ]);
 
         const v = (i) => (results[i]?.status === 'fulfilled' ? results[i].value : {});
@@ -110,7 +143,7 @@ const Dashboard = () => {
 
         setSecondary({ groups, posts, unreadNotes, avgRating, deletedUsers, questions });
 
-        // Visualization
+        // User type distribution
         const userTypes = v(13).data || [];
         const dist = { individual: 0, group: 0, admin: 0, subadmin: 0 };
         userTypes.forEach(u => {
@@ -130,6 +163,60 @@ const Dashboard = () => {
         setRecentPurchases(
           (v(16).data || []).map(p => ({ ...p, userName: p.profiles?.name || '-' }))
         );
+
+        // Daily signups (7 days)
+        const signupRows = v(17).data || [];
+        const signupMap = {};
+        for (let i = 0; i < 7; i++) {
+          const d = new Date(sevenDaysAgo);
+          d.setDate(d.getDate() + i);
+          signupMap[d.toISOString().slice(0, 10)] = 0;
+        }
+        signupRows.forEach(r => {
+          const key = r.created_at?.slice(0, 10);
+          if (key && signupMap[key] !== undefined) signupMap[key]++;
+        });
+        setDailySignups(Object.entries(signupMap).map(([date, count]) => ({ date, count })));
+
+        // Daily completed evals (7 days)
+        const evalRows = v(18).data || [];
+        const evalMap = {};
+        for (let i = 0; i < 7; i++) {
+          const d = new Date(sevenDaysAgo);
+          d.setDate(d.getDate() + i);
+          evalMap[d.toISOString().slice(0, 10)] = 0;
+        }
+        evalRows.forEach(r => {
+          const key = r.created_at?.slice(0, 10);
+          if (key && evalMap[key] !== undefined) evalMap[key]++;
+        });
+        setDailyEvals(Object.entries(evalMap).map(([date, count]) => ({ date, count })));
+
+        // Monthly revenue (6 months)
+        const now = new Date();
+        const monthMap = {};
+        for (let i = 5; i >= 0; i--) {
+          const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+          const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+          monthMap[key] = 0;
+        }
+        purchases.filter(p => p.status === 'paid').forEach(p => {
+          const key = p.created_at?.slice(0, 7);
+          if (key && monthMap[key] !== undefined) monthMap[key] += (p.amount || 0);
+        });
+        setMonthlyRevenue(Object.entries(monthMap).map(([month, amount]) => ({ month, amount })));
+
+        // Competency averages
+        const compRows = v(19).data || [];
+        if (compRows.length > 0) {
+          const sums = [0, 0, 0, 0, 0, 0, 0, 0];
+          compRows.forEach(r => {
+            for (let i = 0; i < 8; i++) {
+              sums[i] += (r[`point${i + 1}`] || 0);
+            }
+          });
+          setCompetencyAvg(sums.map(s => Math.round((s / compRows.length) * 10) / 10));
+        }
       } catch (err) {
         console.error('Failed to load dashboard data:', err);
         showToast('대시보드 데이터를 불러오는 데 실패했습니다.', 'error');
@@ -145,32 +232,46 @@ const Dashboard = () => {
   const fmtNum = (n) => (n || 0).toLocaleString();
   const fmtWon = (n) => (n || 0).toLocaleString() + '원';
   const pct = (a, b) => (b > 0 ? Math.round((a / b) * 100) : 0);
+  const fmtDate = (d) => `${parseInt(d.slice(5, 7))}/${parseInt(d.slice(8, 10))}`;
+  const fmtMonth = (m) => `${parseInt(m.slice(5, 7))}월`;
 
-  const StackedBar = ({ segments }) => {
-    const total = segments.reduce((s, seg) => s + seg.value, 0);
-    return (
-      <>
-        <div className="dashboard-stacked-bar">
-          {segments.map((seg, i) => (
-            <div
-              key={i}
-              className="bar-segment"
-              style={{ width: total > 0 ? `${(seg.value / total) * 100}%` : '0%', background: seg.color }}
-              title={`${seg.label}: ${fmtNum(seg.value)}`}
-            />
-          ))}
-        </div>
-        <div className="dashboard-bar-legend">
-          {segments.map((seg, i) => (
-            <span key={i}>
-              <span className="legend-dot" style={{ background: seg.color }} />
-              {seg.label} {fmtNum(seg.value)}
-              {total > 0 ? ` (${pct(seg.value, total)}%)` : ''}
-            </span>
-          ))}
-        </div>
-      </>
-    );
+  // Chart common options
+  const lineOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { titleFont: chartFont, bodyFont: chartFont },
+    },
+    scales: {
+      x: { ticks: { font: { ...chartFont, size: 11 } } },
+      y: { beginAtZero: true, ticks: { font: { ...chartFont, size: 11 }, precision: 0 } },
+    },
+  };
+
+  const doughnutOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'bottom', labels: { font: { ...chartFont, size: 11 }, padding: 12 } },
+      tooltip: { titleFont: chartFont, bodyFont: chartFont },
+    },
+  };
+
+  const radarOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { titleFont: chartFont, bodyFont: chartFont },
+    },
+    scales: {
+      r: {
+        beginAtZero: true,
+        pointLabels: { font: { ...chartFont, size: 11 } },
+        ticks: { font: { size: 10 }, stepSize: 20 },
+      },
+    },
   };
 
   if (loading) {
@@ -191,81 +292,288 @@ const Dashboard = () => {
 
       <div className="admin-page">
 
-        {/* Section 1: KPI Cards */}
+        {/* Section A: KPI Cards */}
         <div className="dashboard-stats">
           <div className="dashboard-card blue">
-            <div className="dashboard-card-label">전체 회원</div>
-            <div className="dashboard-card-value">{fmtNum(kpi.totalUsers)}</div>
-            <div className="dashboard-card-sub">오늘 +{fmtNum(kpi.todayUsers)}</div>
+            <div className="dashboard-card-top">
+              <div className="dashboard-card-icon blue">👤</div>
+              <div>
+                <div className="dashboard-card-label">전체 회원</div>
+                <div className="dashboard-card-value">{fmtNum(kpi.totalUsers)}</div>
+              </div>
+            </div>
+            <div className="dashboard-card-sub">
+              오늘 <span className={`dashboard-trend ${kpi.todayUsers > 0 ? 'up' : ''}`}>+{fmtNum(kpi.todayUsers)}</span>
+            </div>
           </div>
+
           <div className="dashboard-card green">
-            <div className="dashboard-card-label">검사 현황</div>
-            <div className="dashboard-card-value">{fmtNum(kpi.totalEvals)}</div>
-            <div className="dashboard-card-sub">완료율 {pct(kpi.completedEvals, kpi.totalEvals)}%</div>
+            <div className="dashboard-card-top">
+              <div className="dashboard-card-icon green">📋</div>
+              <div>
+                <div className="dashboard-card-label">검사 현황</div>
+                <div className="dashboard-card-value">{fmtNum(kpi.totalEvals)}</div>
+              </div>
+            </div>
+            <div className="dashboard-card-progress">
+              <div className="dashboard-card-progress-bar" style={{ width: `${pct(kpi.completedEvals, kpi.totalEvals)}%`, background: '#22c55e' }} />
+            </div>
+            <div className="dashboard-card-sub">완료율 {pct(kpi.completedEvals, kpi.totalEvals)}% · 오늘 +{fmtNum(kpi.todayEvals)}</div>
           </div>
+
           <div className="dashboard-card orange">
-            <div className="dashboard-card-label">결제 현황</div>
-            <div className="dashboard-card-value">{fmtWon(kpi.totalRevenue)}</div>
-            <div className="dashboard-card-sub">오늘 {fmtWon(kpi.todayRevenue)}</div>
+            <div className="dashboard-card-top">
+              <div className="dashboard-card-icon orange">💰</div>
+              <div>
+                <div className="dashboard-card-label">총 매출</div>
+                <div className="dashboard-card-value">{fmtWon(kpi.totalRevenue)}</div>
+              </div>
+            </div>
+            <div className="dashboard-card-sub">
+              오늘 <span className={`dashboard-trend ${kpi.todayRevenue > 0 ? 'up' : ''}`}>+{fmtWon(kpi.todayRevenue)}</span>
+            </div>
           </div>
+
           <div className="dashboard-card red">
-            <div className="dashboard-card-label">쿠폰 현황</div>
-            <div className="dashboard-card-value">{fmtNum(kpi.totalCoupons)}</div>
+            <div className="dashboard-card-top">
+              <div className="dashboard-card-icon red">🎟️</div>
+              <div>
+                <div className="dashboard-card-label">쿠폰 현황</div>
+                <div className="dashboard-card-value">{fmtNum(kpi.totalCoupons)}</div>
+              </div>
+            </div>
+            <div className="dashboard-card-progress">
+              <div className="dashboard-card-progress-bar" style={{ width: `${pct(kpi.usedCoupons, kpi.totalCoupons)}%`, background: 'var(--accent-red)' }} />
+            </div>
             <div className="dashboard-card-sub">사용률 {pct(kpi.usedCoupons, kpi.totalCoupons)}%</div>
           </div>
         </div>
 
-        {/* Section 2: Secondary Stats */}
+        {/* Section B: Secondary Stats */}
         <h2 className="dashboard-section-title">보조 통계</h2>
         <div className="dashboard-secondary-stats">
           <div className="dashboard-mini-stat">
+            <div className="dashboard-mini-stat-icon">👥</div>
             <div className="dashboard-mini-stat-value">{fmtNum(secondary.groups)}</div>
             <div className="dashboard-mini-stat-label">그룹 수</div>
           </div>
           <div className="dashboard-mini-stat">
+            <div className="dashboard-mini-stat-icon">📝</div>
             <div className="dashboard-mini-stat-value">{fmtNum(secondary.posts)}</div>
             <div className="dashboard-mini-stat-label">게시글 수</div>
           </div>
           <div className="dashboard-mini-stat">
+            <div className="dashboard-mini-stat-icon">🔔</div>
             <div className="dashboard-mini-stat-value">{fmtNum(secondary.unreadNotes)}</div>
             <div className="dashboard-mini-stat-label">미확인 알림</div>
           </div>
           <div className="dashboard-mini-stat">
+            <div className="dashboard-mini-stat-icon">⭐</div>
             <div className="dashboard-mini-stat-value">{secondary.avgRating.toFixed(1)}</div>
             <div className="dashboard-mini-stat-label">만족도 평균</div>
           </div>
           <div className="dashboard-mini-stat">
+            <div className="dashboard-mini-stat-icon">🚪</div>
             <div className="dashboard-mini-stat-value">{fmtNum(secondary.deletedUsers)}</div>
             <div className="dashboard-mini-stat-label">탈퇴 회원</div>
           </div>
           <div className="dashboard-mini-stat">
+            <div className="dashboard-mini-stat-icon">❓</div>
             <div className="dashboard-mini-stat-value">{fmtNum(secondary.questions)}</div>
             <div className="dashboard-mini-stat-label">등록 문항</div>
           </div>
         </div>
 
-        {/* Section 3: Visualization */}
-        <h2 className="dashboard-section-title">시각화</h2>
-        <div className="dashboard-viz-row">
-          <div className="card" style={{ padding: '20px' }}>
-            <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px' }}>회원 유형 분포</h3>
-            <StackedBar segments={[
-              { label: '개인', value: userDist.individual, color: '#3b82f6' },
-              { label: '그룹', value: userDist.group, color: '#22c55e' },
-              { label: '관리자', value: userDist.admin, color: '#f59e0b' },
-              { label: '서브관리자', value: userDist.subadmin, color: '#ef4444' },
-            ]} />
+        {/* Section C: Time-series Charts */}
+        <h2 className="dashboard-section-title">추이 분석</h2>
+        <div className="dashboard-chart-grid">
+          {/* C1: Weekly signups */}
+          <div className="dashboard-chart-card">
+            <h3>주간 가입자 추이</h3>
+            <div className="dashboard-chart-wrapper">
+              <Line
+                data={{
+                  labels: dailySignups.map(d => fmtDate(d.date)),
+                  datasets: [{
+                    label: '가입자',
+                    data: dailySignups.map(d => d.count),
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59,130,246,0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#3b82f6',
+                  }],
+                }}
+                options={lineOptions}
+              />
+            </div>
           </div>
-          <div className="card" style={{ padding: '20px' }}>
-            <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px' }}>검사 진행 현황</h3>
-            <StackedBar segments={[
-              { label: '완료', value: evalDist.completed, color: '#22c55e' },
-              { label: '진행중', value: evalDist.inProgress, color: '#f59e0b' },
-            ]} />
+
+          {/* C2: Weekly completed evals */}
+          <div className="dashboard-chart-card">
+            <h3>주간 검사 완료 추이</h3>
+            <div className="dashboard-chart-wrapper">
+              <Line
+                data={{
+                  labels: dailyEvals.map(d => fmtDate(d.date)),
+                  datasets: [{
+                    label: '검사 완료',
+                    data: dailyEvals.map(d => d.count),
+                    borderColor: '#22c55e',
+                    backgroundColor: 'rgba(34,197,94,0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#22c55e',
+                  }],
+                }}
+                options={lineOptions}
+              />
+            </div>
+          </div>
+
+          {/* C3: Monthly revenue */}
+          <div className="dashboard-chart-card">
+            <h3>월별 매출 추이</h3>
+            <div className="dashboard-chart-wrapper">
+              <Bar
+                data={{
+                  labels: monthlyRevenue.map(d => fmtMonth(d.month)),
+                  datasets: [{
+                    label: '매출',
+                    data: monthlyRevenue.map(d => d.amount),
+                    backgroundColor: 'rgba(245,158,11,0.7)',
+                    borderColor: '#f59e0b',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                  }],
+                }}
+                options={{
+                  ...lineOptions,
+                  scales: {
+                    ...lineOptions.scales,
+                    y: { ...lineOptions.scales.y, ticks: { ...lineOptions.scales.y.ticks, callback: (v) => v >= 10000 ? `${v / 10000}만` : v.toLocaleString() } },
+                  },
+                }}
+              />
+            </div>
+          </div>
+
+          {/* C4: Coupon usage */}
+          <div className="dashboard-chart-card">
+            <h3>쿠폰 사용률</h3>
+            <div className="dashboard-chart-wrapper">
+              <Doughnut
+                data={{
+                  labels: ['사용', '미사용'],
+                  datasets: [{
+                    data: [kpi.usedCoupons, kpi.totalCoupons - kpi.usedCoupons],
+                    backgroundColor: ['#ef4444', '#e5e7eb'],
+                    borderWidth: 0,
+                  }],
+                }}
+                options={doughnutOptions}
+              />
+            </div>
           </div>
         </div>
 
-        {/* Section 4: Quick Actions */}
+        {/* Section D: Distribution Charts */}
+        <h2 className="dashboard-section-title">분포 현황</h2>
+        <div className="dashboard-chart-grid">
+          <div className="dashboard-chart-card">
+            <h3>회원 유형 분포</h3>
+            <div className="dashboard-chart-wrapper">
+              <Doughnut
+                data={{
+                  labels: ['개인', '그룹', '관리자', '서브관리자'],
+                  datasets: [{
+                    data: [userDist.individual, userDist.group, userDist.admin, userDist.subadmin],
+                    backgroundColor: ['#3b82f6', '#22c55e', '#f59e0b', '#ef4444'],
+                    borderWidth: 0,
+                  }],
+                }}
+                options={doughnutOptions}
+              />
+            </div>
+          </div>
+          <div className="dashboard-chart-card">
+            <h3>검사 진행 현황</h3>
+            <div className="dashboard-chart-wrapper">
+              <Doughnut
+                data={{
+                  labels: ['완료', '진행중'],
+                  datasets: [{
+                    data: [evalDist.completed, evalDist.inProgress],
+                    backgroundColor: ['#22c55e', '#f59e0b'],
+                    borderWidth: 0,
+                  }],
+                }}
+                options={doughnutOptions}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Section E: Competency Stats */}
+        <h2 className="dashboard-section-title">역량별 통계</h2>
+        <div className="dashboard-competency-grid">
+          <div className="dashboard-chart-card">
+            <h3>전체 평균 역량 레이더</h3>
+            <div className="dashboard-chart-wrapper">
+              <Radar
+                data={{
+                  labels: COMPETENCY_LABELS_SHORT,
+                  datasets: [{
+                    label: '평균 점수',
+                    data: competencyAvg,
+                    backgroundColor: 'rgba(59,130,246,0.15)',
+                    borderColor: '#3b82f6',
+                    borderWidth: 2,
+                    pointBackgroundColor: COMPETENCY_COLORS,
+                    pointBorderColor: COMPETENCY_COLORS,
+                    pointRadius: 5,
+                  }],
+                }}
+                options={radarOptions}
+              />
+            </div>
+          </div>
+          <div className="dashboard-chart-card">
+            <h3>역량별 평균 점수</h3>
+            <div className="dashboard-chart-wrapper">
+              <Bar
+                data={{
+                  labels: COMPETENCY_LABELS_SHORT,
+                  datasets: [{
+                    label: '평균 점수',
+                    data: competencyAvg,
+                    backgroundColor: COMPETENCY_COLORS.map(c => c + 'CC'),
+                    borderColor: COMPETENCY_COLORS,
+                    borderWidth: 1,
+                    borderRadius: 4,
+                  }],
+                }}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  indexAxis: 'y',
+                  plugins: {
+                    legend: { display: false },
+                    tooltip: { titleFont: chartFont, bodyFont: chartFont },
+                  },
+                  scales: {
+                    x: { beginAtZero: true, ticks: { font: { ...chartFont, size: 11 } } },
+                    y: { ticks: { font: { ...chartFont, size: 11 } } },
+                  },
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Section F: Quick Actions */}
         <h2 className="dashboard-section-title">빠른 이동</h2>
         <div className="dashboard-quick-actions">
           <div className="quick-action-group">
@@ -300,7 +608,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Section 5: Recent Activity */}
+        {/* Section G: Recent Activity */}
         <h2 className="dashboard-section-title">최근 활동</h2>
         <div className="dashboard-recent-grid">
           {/* Recent Users */}
