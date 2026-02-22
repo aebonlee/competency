@@ -137,7 +137,7 @@ function App() {
           {/* Group (GroupGuard) */}
           <Route path="/group" element={<GroupGuard><GroupMain /></GroupGuard>} />
           <Route path="/group/users" element={<GroupGuard><GroupUserList /></GroupGuard>} />
-          <Route path="/group/users/:id/result" element={<GroupGuard><GroupUserResult /></GroupGuard>} />
+          <Route path="/group/users/:userId/result" element={<GroupGuard><GroupUserResult /></GroupGuard>} />
           <Route path="/group/evals" element={<GroupGuard><GroupEvalList /></GroupGuard>} />
           <Route path="/group/invite" element={<GroupGuard><GroupInvitation /></GroupGuard>} />
           <Route path="/group/org" element={<GroupGuard><GroupOrg /></GroupGuard>} />
