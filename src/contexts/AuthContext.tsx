@@ -1,15 +1,30 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
+import type { User } from '@supabase/supabase-js';
 import getSupabase from '../utils/supabase';
 import { getProfile, signOut as authSignOut } from '../utils/auth';
+import type { UserProfile } from '../types';
 
-const AuthContext = createContext();
+interface AuthContextValue {
+  user: User | null;
+  profile: UserProfile | null;
+  loading: boolean;
+  isLoggedIn: boolean;
+  isAdmin: boolean;
+  isGroup: boolean;
+  usertype: number;
+  needsProfileCompletion: boolean;
+  signOut: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
+}
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [profile, setProfile] = useState(null);
+const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const loadProfile = useCallback(async (authUser) => {
+  const loadProfile = useCallback(async (authUser: User) => {
     if (!authUser) {
       setProfile(null);
       return;
@@ -33,7 +48,7 @@ export const AuthProvider = ({ children }) => {
           })
           .select()
           .single();
-        if (!error && data) p = data;
+        if (!error && data) p = data as UserProfile;
       }
     }
     setProfile(p);
@@ -83,7 +98,7 @@ export const AuthProvider = ({ children }) => {
   const isGroup = usertype === 1 || usertype === 3;
   const isLoggedIn = !!user;
   // 인구통계학적 정보 미완성 체크 (OAuth 사용자용)
-  const needsProfileCompletion = isLoggedIn && profile && !profile.name;
+  const needsProfileCompletion = isLoggedIn && !!profile && !profile.name;
 
   return (
     <AuthContext.Provider value={{
@@ -103,7 +118,7 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuth = () => {
+export const useAuth = (): AuthContextValue => {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error('useAuth must be used within AuthProvider');

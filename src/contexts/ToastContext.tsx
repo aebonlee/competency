@@ -1,20 +1,33 @@
-import { createContext, useContext, useState, useCallback, useRef } from 'react';
+import { createContext, useContext, useState, useCallback, useRef, type ReactNode } from 'react';
 
-const ToastContext = createContext(null);
+type ToastType = 'info' | 'success' | 'error' | 'warning';
+
+interface Toast {
+  id: number;
+  message: string;
+  type: ToastType;
+}
+
+interface ToastContextValue {
+  showToast: (message: string, type?: ToastType, duration?: number) => number;
+  removeToast: (id: number) => void;
+}
+
+const ToastContext = createContext<ToastContextValue | null>(null);
 
 let toastId = 0;
 
-export function ToastProvider({ children }) {
-  const [toasts, setToasts] = useState([]);
-  const timersRef = useRef({});
+export function ToastProvider({ children }: { children: ReactNode }) {
+  const [toasts, setToasts] = useState<Toast[]>([]);
+  const timersRef = useRef<Record<number, ReturnType<typeof setTimeout>>>({});
 
-  const removeToast = useCallback((id) => {
+  const removeToast = useCallback((id: number) => {
     clearTimeout(timersRef.current[id]);
     delete timersRef.current[id];
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
-  const showToast = useCallback((message, type = 'info', duration = 4000) => {
+  const showToast = useCallback((message: string, type: ToastType = 'info', duration: number = 4000) => {
     const id = ++toastId;
     setToasts((prev) => [...prev, { id, message, type }]);
     timersRef.current[id] = setTimeout(() => removeToast(id), duration);
@@ -70,11 +83,11 @@ export function ToastProvider({ children }) {
   );
 }
 
-export function useToast() {
+export function useToast(): ToastContextValue {
   const ctx = useContext(ToastContext);
   if (!ctx) {
     return {
-      showToast: (msg) => { console.warn('ToastProvider not found:', msg); },
+      showToast: (msg: string) => { console.warn('ToastProvider not found:', msg); return 0; },
       removeToast: () => {}
     };
   }

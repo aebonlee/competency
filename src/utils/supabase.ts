@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import type { Purchase, EvalResult } from '../types';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -16,19 +17,32 @@ const supabase = (supabaseUrl && supabaseAnonKey)
 
 const getSupabase = () => supabase;
 
+// --- Internal types for question pair generation ---
+interface QuestionInput {
+  id: string;
+  q_no: number;
+}
+
+interface QuestionPair {
+  stdq_id: string;
+  cmpq_id: string;
+}
+
+type QuestionsBySection = Record<number, QuestionInput[]>;
+
 /**
  * Create evaluation purchase record
  */
-export const createPurchase = async (purchaseData) => {
+export const createPurchase = async (purchaseData: { user_id: string; amount: number }): Promise<Purchase> => {
   const client = getSupabase();
   if (!client) {
-    const purchase = {
+    const purchase: Purchase = {
       id: crypto.randomUUID(),
       ...purchaseData,
       status: 'pending',
       created_at: new Date().toISOString()
     };
-    const purchases = JSON.parse(localStorage.getItem('mcc_purchases') || '[]');
+    const purchases: Purchase[] = JSON.parse(localStorage.getItem('mcc_purchases') || '[]');
     purchases.push(purchase);
     localStorage.setItem('mcc_purchases', JSON.stringify(purchases));
     return purchase;
@@ -41,16 +55,20 @@ export const createPurchase = async (purchaseData) => {
     .single();
 
   if (error) throw error;
-  return data;
+  return data as Purchase;
 };
 
 /**
  * Update purchase status after payment
  */
-export const updatePurchaseStatus = async (purchaseId, status, paymentId) => {
+export const updatePurchaseStatus = async (
+  purchaseId: string,
+  status: Purchase['status'],
+  paymentId?: string
+): Promise<Purchase | undefined> => {
   const client = getSupabase();
   if (!client) {
-    const purchases = JSON.parse(localStorage.getItem('mcc_purchases') || '[]');
+    const purchases: Purchase[] = JSON.parse(localStorage.getItem('mcc_purchases') || '[]');
     const idx = purchases.findIndex(p => p.id === purchaseId);
     if (idx >= 0) {
       purchases[idx].status = status;
@@ -73,7 +91,7 @@ export const updatePurchaseStatus = async (purchaseId, status, paymentId) => {
     .single();
 
   if (error) throw error;
-  return data;
+  return data as Purchase;
 };
 
 /**
@@ -82,18 +100,15 @@ export const updatePurchaseStatus = async (purchaseId, status, paymentId) => {
  * - Per section: 7 randomly chosen as "standard", remaining 7 as comparison pool
  * - 56 pairs: each standard question from section i paired with a comparison
  *   question from section j (j≠i), comparison duplicates allowed up to 2 times
- *
- * @param {Object} questionsBySection - { 1: [{id, q_no}, ...], ..., 8: [...] }
- * @returns {Array<{stdq_id: number, cmpq_id: number}>} 56 pairs
  */
-function generateQuestionPairs(questionsBySection) {
+function generateQuestionPairs(questionsBySection: QuestionsBySection): QuestionPair[] {
   const SECTION_NUM = 8;
   const QUESTION_NUM = 14;
   const EXTRACT_STD_NUM = 7;
   const REMAIN_NUM = QUESTION_NUM - EXTRACT_STD_NUM; // 7
 
   // Build lookup: section -> q_no -> question id
-  const qLookup = {};
+  const qLookup: Record<number, Record<number, string>> = {};
   for (let s = 1; s <= SECTION_NUM; s++) {
     qLookup[s] = {};
     const qs = questionsBySection[s] || [];
@@ -106,7 +121,7 @@ function generateQuestionPairs(questionsBySection) {
   }
 
   // 1. Extract 7 standard q_nos per section (random, unique within section)
-  const standard = Array.from({ length: SECTION_NUM }, () => new Array(EXTRACT_STD_NUM));
+  const standard: number[][] = Array.from({ length: SECTION_NUM }, () => new Array<number>(EXTRACT_STD_NUM));
   for (let section = 0; section < SECTION_NUM; section++) {
     for (let i = 0; i < EXTRACT_STD_NUM; i++) {
       let unique = false;
@@ -124,7 +139,7 @@ function generateQuestionPairs(questionsBySection) {
   }
 
   // 2. Build remaining q_nos per section (those not in standard)
-  const remainQ = Array.from({ length: SECTION_NUM }, () => new Array(REMAIN_NUM));
+  const remainQ: number[][] = Array.from({ length: SECTION_NUM }, () => new Array<number>(REMAIN_NUM));
   for (let section = 0; section < SECTION_NUM; section++) {
     let idx = 0;
     for (let num = 0; num < QUESTION_NUM; num++) {
@@ -137,10 +152,9 @@ function generateQuestionPairs(questionsBySection) {
     }
   }
 
-  // 3. Extract comparison questions: compared[std_sctn][cmp_sctn] = q_no from cmp_sctn's remain pool
-  //    Duplicate usage per comparison question allowed up to 2 times
-  const dupCnt = Array.from({ length: SECTION_NUM }, () => new Array(REMAIN_NUM).fill(0));
-  const compared = Array.from({ length: SECTION_NUM }, () => new Array(SECTION_NUM).fill(0));
+  // 3. Extract comparison questions
+  const dupCnt: number[][] = Array.from({ length: SECTION_NUM }, () => new Array<number>(REMAIN_NUM).fill(0));
+  const compared: number[][] = Array.from({ length: SECTION_NUM }, () => new Array<number>(SECTION_NUM).fill(0));
 
   for (let cmpSctn = 0; cmpSctn < SECTION_NUM; cmpSctn++) {
     for (let stdSctn = 0; stdSctn < SECTION_NUM; stdSctn++) {
@@ -159,7 +173,7 @@ function generateQuestionPairs(questionsBySection) {
   }
 
   // 4. Build 56 pairs
-  const pairs = [];
+  const pairs: QuestionPair[] = [];
   for (let i = 0; i < SECTION_NUM; i++) {
     let n = 0;
     for (let j = 0; j < SECTION_NUM; j++) {
@@ -179,7 +193,7 @@ function generateQuestionPairs(questionsBySection) {
 /**
  * Create new evaluation entry and generate 56 question pairs
  */
-export const createEvaluation = async (userId, evalType = 1) => {
+export const createEvaluation = async (userId: string, evalType: number = 1) => {
   const client = getSupabase();
   if (!client) {
     const evalEntry = {
@@ -206,7 +220,7 @@ export const createEvaluation = async (userId, evalType = 1) => {
     .order('times', { ascending: false })
     .limit(1);
 
-  const nextTimes = (existing?.[0]?.times || 0) + 1;
+  const nextTimes = ((existing?.[0] as { times?: number })?.times || 0) + 1;
 
   // 1. Insert eval_list record
   const { data: evalData, error: evalError } = await client
@@ -234,10 +248,11 @@ export const createEvaluation = async (userId, evalType = 1) => {
 
   if (qError) throw qError;
 
-  const questionsBySection = {};
-  for (const q of allQuestions) {
-    if (!questionsBySection[q.section]) questionsBySection[q.section] = [];
-    questionsBySection[q.section].push(q);
+  const questionsBySection: QuestionsBySection = {};
+  for (const q of (allQuestions || [])) {
+    const section = (q as { section: number }).section;
+    if (!questionsBySection[section]) questionsBySection[section] = [];
+    questionsBySection[section].push(q as QuestionInput);
   }
 
   // 3. Generate 56 question pairs
@@ -245,7 +260,7 @@ export const createEvaluation = async (userId, evalType = 1) => {
 
   // 4. Bulk insert eval_questions
   const evalQuestions = pairs.map(p => ({
-    eval_id: evalData.id,
+    eval_id: (evalData as { id: string }).id,
     stdq_id: p.stdq_id,
     cmpq_id: p.cmpq_id,
     std_point: null
@@ -263,11 +278,11 @@ export const createEvaluation = async (userId, evalType = 1) => {
 /**
  * Get evaluation list for a user
  */
-export const getEvaluations = async (userId) => {
+export const getEvaluations = async (userId: string) => {
   const client = getSupabase();
   if (!client) {
     const evals = JSON.parse(localStorage.getItem('mcc_evals') || '[]');
-    return evals.filter(e => e.user_id === userId);
+    return evals.filter((e: { user_id: string }) => e.user_id === userId);
   }
 
   const { data, error } = await client
@@ -283,7 +298,7 @@ export const getEvaluations = async (userId) => {
 /**
  * Get evaluation questions for an eval
  */
-export const getEvalQuestions = async (evalId) => {
+export const getEvalQuestions = async (evalId: string) => {
   const client = getSupabase();
   if (!client) return [];
 
@@ -300,7 +315,7 @@ export const getEvalQuestions = async (evalId) => {
 /**
  * Save answer for a question
  */
-export const saveAnswer = async (questionId, stdPoint) => {
+export const saveAnswer = async (questionId: string, stdPoint: number): Promise<void> => {
   const client = getSupabase();
   if (!client) return;
 
@@ -318,7 +333,7 @@ export const saveAnswer = async (questionId, stdPoint) => {
  *   point[std_section] += std_point
  *   point[cmp_section] += (30 - std_point)
  */
-export const calculateResults = async (evalId) => {
+export const calculateResults = async (evalId: string): Promise<EvalResult | null> => {
   const client = getSupabase();
   if (!client) return null;
 
@@ -334,11 +349,11 @@ export const calculateResults = async (evalId) => {
   // Accumulate scores per section (1-8)
   const points = [0, 0, 0, 0, 0, 0, 0, 0];
   for (const eq of eqs) {
-    const stdSection = eq.std_question?.section;
-    const cmpSection = eq.cmp_question?.section;
-    const stdPoint = eq.std_point ?? 0;
-    if (stdSection >= 1 && stdSection <= 8) points[stdSection - 1] += stdPoint;
-    if (cmpSection >= 1 && cmpSection <= 8) points[cmpSection - 1] += (30 - stdPoint);
+    const stdSection = (eq.std_question as { section?: number } | null)?.section;
+    const cmpSection = (eq.cmp_question as { section?: number } | null)?.section;
+    const stdPoint = (eq.std_point as number | null) ?? 0;
+    if (stdSection && stdSection >= 1 && stdSection <= 8) points[stdSection - 1] += stdPoint;
+    if (cmpSection && cmpSection >= 1 && cmpSection <= 8) points[cmpSection - 1] += (30 - stdPoint);
   }
 
   // Upsert into results table
@@ -353,13 +368,13 @@ export const calculateResults = async (evalId) => {
     .single();
 
   if (error) throw error;
-  return data;
+  return data as EvalResult;
 };
 
 /**
  * Get evaluation result
  */
-export const getResult = async (evalId) => {
+export const getResult = async (evalId: string): Promise<EvalResult | null> => {
   const client = getSupabase();
   if (!client) return null;
 
@@ -370,13 +385,13 @@ export const getResult = async (evalId) => {
     .single();
 
   if (error) return null;
-  return data;
+  return data as EvalResult;
 };
 
 /**
  * Verify payment via Edge Function
  */
-export const verifyPayment = async (paymentId, purchaseId) => {
+export const verifyPayment = async (paymentId: string, purchaseId: string) => {
   const client = getSupabase();
   if (!client) {
     await updatePurchaseStatus(purchaseId, 'paid', paymentId);
@@ -394,7 +409,7 @@ export const verifyPayment = async (paymentId, purchaseId) => {
 /**
  * Validate coupon code
  */
-export const validateCoupon = async (code) => {
+export const validateCoupon = async (code: string) => {
   const client = getSupabase();
   if (!client) return { valid: false, message: 'Supabase not configured' };
 
@@ -412,7 +427,7 @@ export const validateCoupon = async (code) => {
 /**
  * Use coupon
  */
-export const useCoupon = async (couponId, userId) => {
+export const useCoupon = async (couponId: string, userId: string): Promise<void> => {
   const client = getSupabase();
   if (!client) return;
 

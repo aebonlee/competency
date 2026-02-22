@@ -2,21 +2,15 @@
  * PortOne V2 Payment Utility
  * KG이니시스 경유 카드결제
  */
+import type { PaymentRequest, PaymentResult } from '../types';
 
 const STORE_ID = import.meta.env.VITE_PORTONE_STORE_ID;
 const CHANNEL_KEY = import.meta.env.VITE_PORTONE_CHANNEL_KEY;
 
 /**
  * Request payment via PortOne V2 SDK
- * @param {Object} params
- * @param {string} params.orderId
- * @param {string} params.orderName
- * @param {number} params.totalAmount
- * @param {string} params.payMethod - 'CARD'
- * @param {Object} params.customer - { fullName, email, phoneNumber }
- * @returns {Promise<Object>} Payment result
  */
-export const requestPayment = async ({ orderId, orderName, totalAmount, payMethod, customer }) => {
+export const requestPayment = async ({ orderId, orderName, totalAmount, payMethod, customer }: PaymentRequest): Promise<PaymentResult> => {
   if (!STORE_ID || !CHANNEL_KEY) {
     console.warn('PortOne credentials not configured. Running in demo mode.');
     return {
@@ -43,12 +37,13 @@ export const requestPayment = async ({ orderId, orderName, totalAmount, payMetho
       },
     });
 
-    return response;
+    return response as PaymentResult;
   } catch (err) {
-    console.error('PortOne payment error:', err);
+    const error = err as Error;
+    console.error('PortOne payment error:', error);
     return {
       code: 'PAYMENT_ERROR',
-      message: err.message || '결제 요청에 실패했습니다.'
+      message: error.message || '결제 요청에 실패했습니다.'
     };
   }
 };

@@ -1,9 +1,23 @@
 /**
- * auth.js — Supabase Auth helper functions for MyCoreCompetency
+ * auth.ts — Supabase Auth helper functions for MyCoreCompetency
  */
 import getSupabase from './supabase';
+import type { UserProfile } from '../types';
 
 const SITE_URL = import.meta.env.VITE_SITE_URL || window.location.origin;
+
+interface SignUpProfileData {
+  name: string;
+  gender?: string;
+  phone?: string;
+  job?: string;
+  position?: string | number;
+  country?: string;
+  age?: string;
+  edulevel?: string;
+  grp?: string;
+  subgrp?: string;
+}
 
 /** Google OAuth login */
 export async function signInWithGoogle() {
@@ -30,7 +44,7 @@ export async function signInWithKakao() {
 }
 
 /** Email/Password login */
-export async function signInWithEmail(email, password) {
+export async function signInWithEmail(email: string, password: string) {
   const client = getSupabase();
   if (!client) throw new Error('Supabase not configured');
   const { data, error } = await client.auth.signInWithPassword({ email, password });
@@ -39,7 +53,7 @@ export async function signInWithEmail(email, password) {
 }
 
 /** Email signup with profile data */
-export async function signUp(email, password, profileData) {
+export async function signUp(email: string, password: string, profileData: SignUpProfileData) {
   const client = getSupabase();
   if (!client) throw new Error('Supabase not configured');
   const { data, error } = await client.auth.signUp({
@@ -81,7 +95,7 @@ export async function signUp(email, password, profileData) {
 }
 
 /** Sign out */
-export async function signOut() {
+export async function signOut(): Promise<void> {
   const client = getSupabase();
   if (!client) return;
   const { error } = await client.auth.signOut();
@@ -89,7 +103,7 @@ export async function signOut() {
 }
 
 /** Get profile */
-export async function getProfile(userId) {
+export async function getProfile(userId: string): Promise<UserProfile | null> {
   const client = getSupabase();
   if (!client) return null;
   const { data, error } = await client
@@ -101,11 +115,11 @@ export async function getProfile(userId) {
     console.error('getProfile error:', error);
     return null;
   }
-  return data;
+  return data as UserProfile;
 }
 
 /** Reset password email */
-export async function resetPassword(email) {
+export async function resetPassword(email: string) {
   const client = getSupabase();
   if (!client) throw new Error('Supabase not configured');
   const { data, error } = await client.auth.resetPasswordForEmail(email, {
@@ -116,7 +130,7 @@ export async function resetPassword(email) {
 }
 
 /** Update profile */
-export async function updateProfile(userId, updates) {
+export async function updateProfile(userId: string, updates: Record<string, unknown>): Promise<UserProfile | null> {
   const client = getSupabase();
   if (!client) return null;
   const { data, error } = await client
@@ -126,11 +140,11 @@ export async function updateProfile(userId, updates) {
     .select()
     .single();
   if (error) throw error;
-  return data;
+  return data as UserProfile;
 }
 
 /** Delete account */
-export async function deleteAccount(userId) {
+export async function deleteAccount(userId: string): Promise<void> {
   const client = getSupabase();
   if (!client) return;
 
