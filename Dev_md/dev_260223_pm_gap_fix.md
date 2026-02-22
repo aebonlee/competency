@@ -152,17 +152,47 @@ JSP→React 전환 GAP 분석 결과(세션 17) 기반으로, Critical 미전환
 
 ---
 
-## 8. 빌드 검증
+## 8. 전체 점검 (Comprehensive Inspection)
+
+### 점검 항목 및 결과
+
+| 점검 영역 | 결과 | 비고 |
+|-----------|------|------|
+| 테이블명 일관성 (user_profiles) | PASS | `.from('profiles')` 인스턴스 0건 |
+| 컬럼명 일관성 (point1~8) | PASS | score_1~8 인스턴스 0건 |
+| 신규 파일 (Survey, export, send-email) | PASS | 타입, 유효성검증, 에러처리 모두 정상 |
+| 수정 파일 (Board, Coupon, Mail, Users, Stats) | PASS | CSV, 배포, Edge Function 모두 정상 |
+| Result.jsx + supabase.ts | PASS | 설문/이미지캡처 정상 |
+| ESLint | PASS | 소스코드 에러 0건 (dist/ 번들 제외) |
+| TypeScript | PASS | 기존 tsconfig 참조 에러만 (변경사항 무관) |
+
+### 점검 중 발견 → 즉시 수정
+
+| 발견 버그 | 파일 | 수정 내용 |
+|-----------|------|-----------|
+| 라우트 파라미터 불일치 | App.jsx | `:id` → `:questionId` (QuestionForm 기대값) |
+| 라우트 파라미터 불일치 | App.jsx | `:id` → `:evalId` (Result.jsx 기대값) |
+| 결과보기 링크 잘못된 ID | EvalManager.jsx | `getResultId(ev)` → `ev.id` (eval_id 전달) |
+
+### 커밋 이력
+
+| 커밋 | 설명 |
+|------|------|
+| `a06ca56` | feat: P0 GAP 해소 + 기존 버그 8건 수정 |
+| `0b924c3` | fix: 라우트 파라미터명 불일치 3건 수정 |
+
+## 9. 빌드 검증
 
 ```
-npm run build → OK (19.79s)
+npm run build → OK (8.27s, 156 modules)
+git push origin main → OK
 ```
 
 ---
 
-## 9. 다음 세션 TODO
+## 10. 다음 세션 TODO
 
 - [ ] Resend API 키 설정 및 이메일 발송 테스트
 - [ ] E2E 테스트 (설문 → 결과 → CSV 다운로드 흐름)
 - [ ] 쿠폰 배포 후 알림 이메일 연동
-- [ ] GroupUserList에서 profiles FK 조인 구문 검증
+- [ ] GitHub Actions 배포 확인
