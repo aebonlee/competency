@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+import AdminLayout from './components/layout/AdminLayout';
 import AuthGuard from './components/AuthGuard';
 import AdminGuard from './components/AdminGuard';
 import GroupGuard from './components/GroupGuard';
@@ -148,31 +149,33 @@ function App() {
           <Route path="/group/statistics" element={<GroupGuard><GroupStatistics /></GroupGuard>} />
           <Route path="/group/settings" element={<GroupGuard><GroupSettings /></GroupGuard>} />
 
-          {/* Admin (AdminGuard) */}
-          <Route path="/admin" element={<AdminGuard><Dashboard /></AdminGuard>} />
-          <Route path="/admin/users" element={<AdminGuard><UserList /></AdminGuard>} />
-          <Route path="/admin/users/:id" element={<AdminGuard><UserInfo /></AdminGuard>} />
-          <Route path="/admin/questions" element={<AdminGuard><QuestionList /></AdminGuard>} />
-          <Route path="/admin/questions/new" element={<AdminGuard><QuestionForm /></AdminGuard>} />
-          <Route path="/admin/questions/:questionId/edit" element={<AdminGuard><QuestionForm /></AdminGuard>} />
-          <Route path="/admin/results/:evalId" element={<AdminGuard><Result /></AdminGuard>} />
-          <Route path="/admin/coupons" element={<AdminGuard><CouponList /></AdminGuard>} />
-          <Route path="/admin/statistics" element={<AdminGuard><Statistics /></AdminGuard>} />
-          <Route path="/admin/board" element={<AdminGuard><BoardList /></AdminGuard>} />
-          <Route path="/admin/surveys" element={<AdminGuard><SurveyList /></AdminGuard>} />
-          <Route path="/admin/notes" element={<AdminGuard><NoteList /></AdminGuard>} />
-          <Route path="/admin/notes/new" element={<AdminGuard><NoteForm /></AdminGuard>} />
-          <Route path="/admin/notes/:id/edit" element={<AdminGuard><NoteForm /></AdminGuard>} />
-          <Route path="/admin/survey-questions" element={<AdminGuard><SvQuestionList /></AdminGuard>} />
-          <Route path="/admin/survey-questions/new" element={<AdminGuard><SvQuestionForm /></AdminGuard>} />
-          <Route path="/admin/survey-questions/:id/edit" element={<AdminGuard><SvQuestionForm /></AdminGuard>} />
-          <Route path="/admin/board/new" element={<AdminGuard><BoardForm /></AdminGuard>} />
-          <Route path="/admin/board/:id" element={<AdminGuard><BoardView /></AdminGuard>} />
-          <Route path="/admin/board/:id/edit" element={<AdminGuard><BoardForm /></AdminGuard>} />
-          <Route path="/admin/deleted-users" element={<AdminGuard><DeletedUserList /></AdminGuard>} />
-          <Route path="/admin/users/:userId/evals" element={<AdminGuard><EvalManager /></AdminGuard>} />
-          <Route path="/admin/mail" element={<AdminGuard><MailForm /></AdminGuard>} />
-          <Route path="/admin/sources" element={<AdminGuard><Sources /></AdminGuard>} />
+          {/* Admin (AdminGuard + Sidebar Layout) */}
+          <Route element={<AdminGuard><AdminLayout /></AdminGuard>}>
+            <Route path="/admin" element={<Dashboard />} />
+            <Route path="/admin/users" element={<UserList />} />
+            <Route path="/admin/users/:id" element={<UserInfo />} />
+            <Route path="/admin/questions" element={<QuestionList />} />
+            <Route path="/admin/questions/new" element={<QuestionForm />} />
+            <Route path="/admin/questions/:questionId/edit" element={<QuestionForm />} />
+            <Route path="/admin/results/:evalId" element={<Result />} />
+            <Route path="/admin/coupons" element={<CouponList />} />
+            <Route path="/admin/statistics" element={<Statistics />} />
+            <Route path="/admin/board" element={<BoardList />} />
+            <Route path="/admin/surveys" element={<SurveyList />} />
+            <Route path="/admin/notes" element={<NoteList />} />
+            <Route path="/admin/notes/new" element={<NoteForm />} />
+            <Route path="/admin/notes/:id/edit" element={<NoteForm />} />
+            <Route path="/admin/survey-questions" element={<SvQuestionList />} />
+            <Route path="/admin/survey-questions/new" element={<SvQuestionForm />} />
+            <Route path="/admin/survey-questions/:id/edit" element={<SvQuestionForm />} />
+            <Route path="/admin/board/new" element={<BoardForm />} />
+            <Route path="/admin/board/:id" element={<BoardView />} />
+            <Route path="/admin/board/:id/edit" element={<BoardForm />} />
+            <Route path="/admin/deleted-users" element={<DeletedUserList />} />
+            <Route path="/admin/users/:userId/evals" element={<EvalManager />} />
+            <Route path="/admin/mail" element={<MailForm />} />
+            <Route path="/admin/sources" element={<Sources />} />
+          </Route>
 
           {/* 404 */}
           <Route path="*" element={<NotFound />} />
