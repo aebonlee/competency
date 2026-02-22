@@ -46,6 +46,12 @@ const BoardView = () => {
           ...data,
           authorName: data.profiles?.name || data.profiles?.email || '-',
         });
+
+        // 조회수 증가 (fire-and-forget)
+        supabase
+          .from('board_posts')
+          .update({ views: (data.views || 0) + 1 })
+          .eq('id', id);
       } catch (err) {
         console.error('Failed to load board post:', err);
         showToast('게시글을 불러오는 데 실패했습니다.', 'error');

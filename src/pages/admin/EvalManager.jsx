@@ -91,8 +91,13 @@ const EvalManager = () => {
     return `${mins}분 ${secs}초`;
   };
 
-  const getElapsedTime = () => {
-    return '-';
+  const getElapsedTime = (ev) => {
+    if (!ev.created_at || !ev.end_date) return '-';
+    const start = new Date(ev.created_at);
+    const end = new Date(ev.end_date);
+    const diffSec = Math.floor((end - start) / 1000);
+    if (diffSec < 0) return '-';
+    return formatElapsedTime(diffSec);
   };
 
   const getResultId = (ev) => {
