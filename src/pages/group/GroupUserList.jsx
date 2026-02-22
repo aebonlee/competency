@@ -12,6 +12,8 @@ const GroupUserList = () => {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [subgroups, setSubgroups] = useState([]);
+  const [selectedSubgroup, setSelectedSubgroup] = useState('');
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -34,6 +36,15 @@ const GroupUserList = () => {
           return;
         }
 
+        // Fetch subgroups
+        const { data: subs } = await supabase
+          .from('group_subgroups')
+          .select('id, name')
+          .eq('group_id', group.id)
+          .order('sort_order', { ascending: true });
+
+        setSubgroups(subs || []);
+
         // Get group members with profiles and latest eval info
         const { data: memberData, error } = await supabase
           .from('group_members')
@@ -44,7 +55,8 @@ const GroupUserList = () => {
             profiles:user_id (
               name,
               email,
-              phone
+              phone,
+              subgrp
             )
           `)
           .eq('group_id', group.id)
@@ -79,6 +91,7 @@ const GroupUserList = () => {
               name: member.profiles?.name || '-',
               email: member.profiles?.email || '-',
               phone: member.profiles?.phone || '-',
+              subgrp: member.profiles?.subgrp || '',
               evalStatus,
               latestEvalId: latestEval?.id || null,
             };
@@ -99,11 +112,15 @@ const GroupUserList = () => {
 
   const filteredMembers = members.filter((m) => {
     const term = searchTerm.toLowerCase();
-    return (
+    const matchesSearch =
       m.name.toLowerCase().includes(term) ||
       m.email.toLowerCase().includes(term) ||
-      m.phone.includes(term)
-    );
+      m.phone.includes(term);
+
+    const matchesSubgroup = !selectedSubgroup ||
+      m.subgrp === selectedSubgroup;
+
+    return matchesSearch && matchesSubgroup;
   });
 
   const getStatusBadge = (status) => {
@@ -140,7 +157,7 @@ const GroupUserList = () => {
         <Link to="/group" className="btn btn-secondary btn-sm">돌아가기</Link>
       </div>
 
-      {/* Search */}
+      {/* Search + Subgroup Filter */}
       <div className="admin-toolbar">
         <div className="admin-search">
           <input
@@ -149,6 +166,23 @@ const GroupUserList = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+          {subgroups.length > 0 && (
+            <select
+              value={selectedSubgroup}
+              onChange={(e) => setSelectedSubgroup(e.target.value)}
+              style={{
+                padding: '8px 14px',
+                border: '1px solid var(--border-medium)',
+                borderRadius: 'var(--radius-sm)',
+                fontSize: '14px',
+              }}
+            >
+              <option value="">전체 서브그룹</option>
+              {subgroups.map((sg) => (
+                <option key={sg.id} value={sg.name}>{sg.name}</option>
+              ))}
+            </select>
+          )}
         </div>
         <span style={{ fontSize: '14px', color: 'var(--text-light)' }}>
           총 {filteredMembers.length}명
@@ -159,7 +193,7 @@ const GroupUserList = () => {
       <div className="group-user-list">
         {filteredMembers.length === 0 ? (
           <div style={{ padding: '60px 20px', textAlign: 'center', color: 'var(--text-light)' }}>
-            {searchTerm ? '검색 결과가 없습니다.' : '등록된 멤버가 없습니다.'}
+            {searchTerm || selectedSubgroup ? '검색 결과가 없습니다.' : '등록된 멤버가 없습니다.'}
           </div>
         ) : (
           <table className="data-table">
@@ -169,6 +203,7 @@ const GroupUserList = () => {
                 <th>이름</th>
                 <th>이메일</th>
                 <th>전화번호</th>
+                {subgroups.length > 0 && <th>서브그룹</th>}
                 <th>검사 상태</th>
                 <th>정보</th>
                 <th>검사내역</th>
@@ -182,6 +217,13 @@ const GroupUserList = () => {
                   <td>{member.name}</td>
                   <td>{member.email}</td>
                   <td>{member.phone}</td>
+                  {subgroups.length > 0 && (
+                    <td>
+                      <span style={{ fontSize: '13px', color: member.subgrp ? 'var(--text-primary)' : 'var(--text-light)' }}>
+                        {member.subgrp || '-'}
+                      </span>
+                    </td>
+                  )}
                   <td>{getStatusBadge(member.evalStatus)}</td>
                   <td>
                     <Link

@@ -4,12 +4,31 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import getSupabase from '../../utils/supabase';
 import '../../styles/group.css';
+import '../../styles/admin.css';
+
+const GROUP_TYPE_LABELS = {
+  company: '기업',
+  university: '대학',
+  institution: '기관',
+  other: '기타',
+};
 
 const GroupMain = () => {
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
   const { showToast } = useToast();
   const [groupInfo, setGroupInfo] = useState(null);
-  const [stats, setStats] = useState({ members: 0, completed: 0, inProgress: 0, total: 0 });
+  const [stats, setStats] = useState({
+    members: 0,
+    completed: 0,
+    inProgress: 0,
+    total: 0,
+    totalCoupons: 0,
+    usedCoupons: 0,
+    subgroupCount: 0,
+    maxMembers: 100,
+  });
+  const [recentMembers, setRecentMembers] = useState([]);
+  const [recentEvals, setRecentEvals] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -41,27 +60,105 @@ const GroupMain = () => {
             .select('*', { count: 'exact', head: true })
             .eq('group_id', group.id);
 
-          // Fetch evaluation stats
-          const { data: evals } = await supabase
-            .from('eval_list')
-            .select('id, progress, user_id')
-            .in('user_id',
-              (await supabase
-                .from('group_members')
-                .select('user_id')
-                .eq('group_id', group.id)
-              ).data?.map(m => m.user_id) || []
-            );
+          // Fetch member user_ids
+          const { data: memberRows } = await supabase
+            .from('group_members')
+            .select('user_id')
+            .eq('group_id', group.id);
 
-          const completedCount = evals?.filter(e => e.progress >= 100).length || 0;
-          const inProgressCount = evals?.filter(e => e.progress > 0 && e.progress < 100).length || 0;
+          const memberIds = memberRows?.map(m => m.user_id) || [];
+
+          // Fetch evaluation stats
+          let completedCount = 0;
+          let inProgressCount = 0;
+          let totalEvals = 0;
+
+          if (memberIds.length > 0) {
+            const { data: evals } = await supabase
+              .from('eval_list')
+              .select('id, progress, user_id')
+              .in('user_id', memberIds);
+
+            totalEvals = evals?.length || 0;
+            completedCount = evals?.filter(e => e.progress >= 100).length || 0;
+            inProgressCount = evals?.filter(e => e.progress > 0 && e.progress < 100).length || 0;
+          }
+
+          // Fetch coupon stats
+          let totalCoupons = 0;
+          let usedCoupons = 0;
+          const { data: coupons } = await supabase
+            .from('coupons')
+            .select('id, used')
+            .eq('group_id', group.id);
+
+          if (coupons) {
+            totalCoupons = coupons.length;
+            usedCoupons = coupons.filter(c => c.used).length;
+          }
+
+          // Fetch subgroup count
+          const { count: subgroupCount } = await supabase
+            .from('group_subgroups')
+            .select('*', { count: 'exact', head: true })
+            .eq('group_id', group.id);
 
           setStats({
             members: memberCount || 0,
             completed: completedCount,
             inProgress: inProgressCount,
-            total: evals?.length || 0,
+            total: totalEvals,
+            totalCoupons,
+            usedCoupons,
+            subgroupCount: subgroupCount || 0,
+            maxMembers: group.max_members || 100,
           });
+
+          // Fetch recent members (5)
+          if (memberIds.length > 0) {
+            const { data: recentMemberData } = await supabase
+              .from('group_members')
+              .select(`
+                id,
+                user_id,
+                joined_at,
+                profiles:user_id ( name, email )
+              `)
+              .eq('group_id', group.id)
+              .order('joined_at', { ascending: false })
+              .limit(5);
+
+            setRecentMembers(recentMemberData || []);
+          }
+
+          // Fetch recent evals (5)
+          if (memberIds.length > 0) {
+            const { data: recentEvalData } = await supabase
+              .from('eval_list')
+              .select('id, progress, user_id, created_at')
+              .in('user_id', memberIds)
+              .order('created_at', { ascending: false })
+              .limit(5);
+
+            // Attach member names
+            if (recentEvalData?.length > 0) {
+              const evalUserIds = [...new Set(recentEvalData.map(e => e.user_id))];
+              const { data: profiles } = await supabase
+                .from('profiles')
+                .select('id, name')
+                .in('id', evalUserIds);
+
+              const profileMap = {};
+              profiles?.forEach(p => { profileMap[p.id] = p.name; });
+
+              setRecentEvals(
+                recentEvalData.map(e => ({
+                  ...e,
+                  userName: profileMap[e.user_id] || '-',
+                }))
+              );
+            }
+          }
         }
       } catch (err) {
         console.error('Failed to load group data:', err);
@@ -101,6 +198,16 @@ const GroupMain = () => {
     );
   }
 
+  const completionRate = stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
+  const memberUsage = stats.maxMembers > 0 ? Math.round((stats.members / stats.maxMembers) * 100) : 0;
+  const couponUsage = stats.totalCoupons > 0 ? Math.round((stats.usedCoupons / stats.totalCoupons) * 100) : 0;
+
+  const getProgressBadge = (progress) => {
+    if (progress >= 100) return <span className="badge badge-green">완료</span>;
+    if (progress > 0) return <span className="badge badge-yellow">{progress}%</span>;
+    return <span className="badge badge-gray">대기</span>;
+  };
+
   return (
     <div className="page-wrapper">
       <section className="page-header">
@@ -109,108 +216,136 @@ const GroupMain = () => {
 
       <div className="group-page">
 
-      {/* Group Info Card */}
-      <div className="card mb-3">
-        <h2 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '8px' }}>
-          {groupInfo.name}
-        </h2>
-        {groupInfo.org && (
-          <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
-            {groupInfo.org}
-          </p>
+      {/* Group Info Header */}
+      <div className="group-info-header">
+        {groupInfo.logo_url && (
+          <img
+            src={groupInfo.logo_url}
+            alt="그룹 로고"
+            onError={(e) => { e.target.style.display = 'none'; }}
+          />
         )}
-        {groupInfo.description && (
-          <p style={{ fontSize: '14px', color: 'var(--text-light)', marginTop: '8px' }}>
-            {groupInfo.description}
-          </p>
-        )}
-      </div>
-
-      {/* Stats Cards */}
-      <div className="group-stats">
-        <div className="group-stat-card">
-          <div className="group-stat-value">{stats.members}</div>
-          <div className="group-stat-label">총 멤버 수</div>
-        </div>
-        <div className="group-stat-card">
-          <div className="group-stat-value">{stats.completed}</div>
-          <div className="group-stat-label">검사 완료</div>
-        </div>
-        <div className="group-stat-card">
-          <div className="group-stat-value">{stats.inProgress}</div>
-          <div className="group-stat-label">검사 진행중</div>
-        </div>
-        <div className="group-stat-card">
-          <div className="group-stat-value">{stats.total}</div>
-          <div className="group-stat-label">총 검사 수</div>
+        <div className="group-info-header-text">
+          <h2>
+            {groupInfo.name}
+            {groupInfo.group_type && groupInfo.group_type !== 'other' && (
+              <span className="group-type-badge">
+                {GROUP_TYPE_LABELS[groupInfo.group_type] || groupInfo.group_type}
+              </span>
+            )}
+          </h2>
+          {groupInfo.org && <p>{groupInfo.org}</p>}
         </div>
       </div>
 
-      {/* Quick Links */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
-        <Link to="/group/users" className="card" style={{ textDecoration: 'none', textAlign: 'center', padding: '20px' }}>
-          <div style={{ fontSize: '24px', marginBottom: '8px' }}>
-            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--primary-blue)" strokeWidth="2">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-          </div>
-          <span style={{ fontWeight: 600, fontSize: '14px' }}>멤버 관리</span>
-        </Link>
-        <Link to="/group/evals" className="card" style={{ textDecoration: 'none', textAlign: 'center', padding: '20px' }}>
-          <div style={{ fontSize: '24px', marginBottom: '8px' }}>
-            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--primary-blue)" strokeWidth="2">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-              <polyline points="14 2 14 8 20 8" />
-              <line x1="16" y1="13" x2="8" y2="13" />
-              <line x1="16" y1="17" x2="8" y2="17" />
-            </svg>
-          </div>
-          <span style={{ fontWeight: 600, fontSize: '14px' }}>검사 현황</span>
-        </Link>
-        <Link to="/group/invitation" className="card" style={{ textDecoration: 'none', textAlign: 'center', padding: '20px' }}>
-          <div style={{ fontSize: '24px', marginBottom: '8px' }}>
-            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--primary-blue)" strokeWidth="2">
-              <rect x="2" y="4" width="20" height="16" rx="2" />
-              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
-          </div>
-          <span style={{ fontWeight: 600, fontSize: '14px' }}>초대 관리</span>
-        </Link>
-        <Link to="/group/org" className="card" style={{ textDecoration: 'none', textAlign: 'center', padding: '20px' }}>
-          <div style={{ fontSize: '24px', marginBottom: '8px' }}>
-            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--primary-blue)" strokeWidth="2">
-              <rect x="2" y="2" width="8" height="6" rx="1" />
-              <rect x="14" y="16" width="8" height="6" rx="1" />
-              <rect x="2" y="16" width="8" height="6" rx="1" />
-              <path d="M6 8v3h12v3" />
-              <path d="M6 11v8" />
-            </svg>
-          </div>
-          <span style={{ fontWeight: 600, fontSize: '14px' }}>조직도</span>
-        </Link>
-        <Link to="/group/coupons" className="card" style={{ textDecoration: 'none', textAlign: 'center', padding: '20px' }}>
-          <div style={{ fontSize: '24px', marginBottom: '8px' }}>
-            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--primary-blue)" strokeWidth="2">
-              <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4" />
-              <path d="M4 6v12c0 1.1.9 2 2 2h14v-4" />
-              <path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z" />
-            </svg>
-          </div>
-          <span style={{ fontWeight: 600, fontSize: '14px' }}>쿠폰 관리</span>
-        </Link>
-        <Link to="/group/settings" className="card" style={{ textDecoration: 'none', textAlign: 'center', padding: '20px' }}>
-          <div style={{ fontSize: '24px', marginBottom: '8px' }}>
-            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--primary-blue)" strokeWidth="2">
-              <circle cx="12" cy="12" r="3" />
-              <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-            </svg>
-          </div>
-          <span style={{ fontWeight: 600, fontSize: '14px' }}>그룹 설정</span>
-        </Link>
+      {/* KPI Cards (5) */}
+      <div className="group-stats-5">
+        <div className="dashboard-card blue">
+          <div className="dashboard-card-label">총 멤버</div>
+          <div className="dashboard-card-value">{stats.members}</div>
+          <div className="dashboard-card-sub">max 대비 {memberUsage}%</div>
+        </div>
+        <div className="dashboard-card green">
+          <div className="dashboard-card-label">검사 완료</div>
+          <div className="dashboard-card-value">{stats.completed}</div>
+          <div className="dashboard-card-sub">완료율 {completionRate}%</div>
+        </div>
+        <div className="dashboard-card orange">
+          <div className="dashboard-card-label">검사 진행중</div>
+          <div className="dashboard-card-value">{stats.inProgress}</div>
+          <div className="dashboard-card-sub">총 {stats.total}건</div>
+        </div>
+        <div className="dashboard-card red">
+          <div className="dashboard-card-label">쿠폰 현황</div>
+          <div className="dashboard-card-value">{stats.totalCoupons}</div>
+          <div className="dashboard-card-sub">사용률 {couponUsage}%</div>
+        </div>
+        <div className="dashboard-card blue">
+          <div className="dashboard-card-label">서브그룹</div>
+          <div className="dashboard-card-value">{stats.subgroupCount}</div>
+          <div className="dashboard-card-sub">&nbsp;</div>
+        </div>
       </div>
+
+      {/* Recent Activity (2 columns) */}
+      <div className="dashboard-section-title">최근 활동</div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '32px' }}>
+        {/* Recent Members */}
+        <div className="dashboard-card">
+          <div className="dashboard-card-header">
+            <h3>최근 가입 멤버</h3>
+            <Link to="/group/users" className="dashboard-view-all">전체 보기</Link>
+          </div>
+          {recentMembers.length === 0 ? (
+            <div className="dashboard-empty">최근 가입 멤버가 없습니다.</div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {recentMembers.map((m) => (
+                <div key={m.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: '1px solid var(--border-light)' }}>
+                  <Link
+                    to={`/group/users/${m.user_id}/info`}
+                    style={{ fontSize: '14px', color: 'var(--primary-blue)', textDecoration: 'none' }}
+                  >
+                    {m.profiles?.name || m.profiles?.email || '-'}
+                  </Link>
+                  <span style={{ fontSize: '12px', color: 'var(--text-light)' }}>
+                    {m.joined_at ? new Date(m.joined_at).toLocaleDateString() : ''}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Recent Evals */}
+        <div className="dashboard-card">
+          <div className="dashboard-card-header">
+            <h3>최근 검사</h3>
+            <Link to="/group/evals" className="dashboard-view-all">전체 보기</Link>
+          </div>
+          {recentEvals.length === 0 ? (
+            <div className="dashboard-empty">최근 검사가 없습니다.</div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {recentEvals.map((e) => (
+                <div key={e.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: '1px solid var(--border-light)' }}>
+                  <span style={{ fontSize: '14px' }}>{e.userName}</span>
+                  {getProgressBadge(e.progress)}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Quick Actions (3 groups) */}
+      <div className="dashboard-section-title">빠른 이동</div>
+      <div className="dashboard-quick-actions" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+        <div className="quick-action-group">
+          <div className="quick-action-group-label">멤버</div>
+          <div className="quick-action-links">
+            <Link to="/group/users">멤버 목록</Link>
+            <Link to="/group/invite">초대 관리</Link>
+            <Link to="/group/org">조직도</Link>
+          </div>
+        </div>
+        <div className="quick-action-group">
+          <div className="quick-action-group-label">검사/통계</div>
+          <div className="quick-action-links">
+            <Link to="/group/evals">검사 현황</Link>
+            <Link to="/group/statistics">통계</Link>
+          </div>
+        </div>
+        <div className="quick-action-group">
+          <div className="quick-action-group-label">관리</div>
+          <div className="quick-action-links">
+            <Link to="/group/manager">서브관리자</Link>
+            <Link to="/group/coupons">쿠폰 관리</Link>
+            <Link to="/group/settings">그룹 설정</Link>
+          </div>
+        </div>
+      </div>
+
       </div>
     </div>
   );

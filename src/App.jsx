@@ -40,6 +40,7 @@ import GroupOrg from './pages/group/GroupOrg';
 import GroupManager from './pages/group/GroupManager';
 import GroupCouponList from './pages/group/GroupCouponList';
 import GroupSettings from './pages/group/GroupSettings';
+import GroupStatistics from './pages/group/GroupStatistics';
 
 // Admin pages
 import Dashboard from './pages/admin/Dashboard';
@@ -107,6 +108,7 @@ function App() {
         <Route path="/group/users/:userId/info" element={<GroupGuard><GroupUserInfo /></GroupGuard>} />
         <Route path="/group/users/:userId/evals" element={<GroupGuard><GroupUserEvalList /></GroupGuard>} />
         <Route path="/group/coupons" element={<GroupGuard><GroupCouponList /></GroupGuard>} />
+        <Route path="/group/statistics" element={<GroupGuard><GroupStatistics /></GroupGuard>} />
         <Route path="/group/settings" element={<GroupGuard><GroupSettings /></GroupGuard>} />
 
         {/* Admin (AdminGuard) */}

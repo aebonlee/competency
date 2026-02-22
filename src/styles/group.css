@@ -104,9 +104,139 @@
   position: relative;
 }
 
+/* 5-column Stats Grid */
+.group-stats-5 {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+/* Group Info Header (logo + name) */
+.group-info-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px;
+  background: var(--bg-white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  margin-bottom: 24px;
+}
+
+.group-info-header img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light);
+}
+
+.group-info-header-text h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.group-info-header-text p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.group-type-badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 12px;
+  background: var(--bg-light);
+  color: var(--primary-blue);
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+/* Logo Preview */
+.group-logo-preview {
+  margin-top: 12px;
+  padding: 16px;
+  border: 1px dashed var(--border-medium);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  background: var(--bg-light);
+}
+
+.group-logo-preview img {
+  max-width: 200px;
+  max-height: 120px;
+  object-fit: contain;
+}
+
+/* Subgroup Management */
+.subgroup-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.subgroup-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background: var(--bg-white);
+}
+
+.subgroup-item-name {
+  font-size: 14px;
+  font-weight: 600;
+  flex: 1;
+}
+
+.subgroup-item-count {
+  font-size: 13px;
+  color: var(--text-light);
+  margin: 0 16px;
+}
+
+.subgroup-item-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.subgroup-add-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.subgroup-add-form input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .group-stats {
     grid-template-columns: repeat(2, 1fr);
+  }
+  .group-stats-5 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .group-info-header {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .group-stats-5 {
+    grid-template-columns: 1fr;
   }
 }
