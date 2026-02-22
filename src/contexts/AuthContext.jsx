@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }) => {
 
   // usertype: 0=개인, 1=그룹, 2=관리자, 3=서브그룹
   const usertype = profile?.usertype ?? 0;
-  const ADMIN_EMAILS = ['aebon@kakao.com', 'aebon@kyonggi.ac.kr'];
+  const ADMIN_EMAILS = ['aebon@kakao.com', 'aebon@kyonggi.ac.kr', 'ryuwebpd@gmail.com'];
   const isAdmin = usertype === 2 || !!(user?.email && ADMIN_EMAILS.includes(user.email));
   const isGroup = usertype === 1 || usertype === 3;
   const isLoggedIn = !!user;
