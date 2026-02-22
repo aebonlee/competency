@@ -37,11 +37,27 @@ const InviteRegister = () => {
     setSubmitting(true);
     setError('');
     try {
-      await signUp(form.email, form.password, {
+      const signUpResult = await signUp(form.email, form.password, {
         name: form.name, gender: form.gender, phone: form.phone,
         age: form.age, edulevel: form.edulevel, position: parseInt(form.position) || 0,
         job: form.job, country: form.country
       });
+
+      // Mark coupon as used
+      if (invitation && signUpResult?.user) {
+        const client = getSupabase();
+        if (client) {
+          await client
+            .from('coupons')
+            .update({
+              is_used: true,
+              used_by: signUpResult.user.id,
+              used_at: new Date().toISOString()
+            })
+            .eq('code', code);
+        }
+      }
+
       setSuccess(true);
     } catch (err) {
       setError(err.message || '회원가입에 실패했습니다.');

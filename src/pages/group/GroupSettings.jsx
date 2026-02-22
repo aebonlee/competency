@@ -238,6 +238,16 @@ const GroupSettings = () => {
       if (!supabase) return;
 
       await supabase
+        .from('group_subgroups')
+        .delete()
+        .eq('group_id', groupId);
+
+      await supabase
+        .from('coupons')
+        .delete()
+        .eq('group_id', groupId);
+
+      await supabase
         .from('group_members')
         .delete()
         .eq('group_id', groupId);

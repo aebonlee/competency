@@ -131,7 +131,7 @@ const GroupStatistics = () => {
         if (subgroups && subgroups.length > 0) {
           // Get member profiles with subgroup info
           const { data: profiles } = await supabase
-            .from('profiles')
+            .from('user_profiles')
             .select('id, subgrp')
             .in('id', memberIds);
 
@@ -157,7 +157,7 @@ const GroupStatistics = () => {
 
         // Get age distribution
         const { data: profiles2 } = await supabase
-          .from('profiles')
+          .from('user_profiles')
           .select('id, age')
           .in('id', memberIds);
 
