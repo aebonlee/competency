@@ -94,9 +94,9 @@ const Navbar = () => {
                 <Link to="/profile" className="nav-dropdown-item" onClick={() => setOpenMenu(null)}>
                   프로필 수정
                 </Link>
-                {isGroup && (
+                {(isGroup || isAdmin) && (
                   <Link to="/group" className="nav-dropdown-item" onClick={() => setOpenMenu(null)}>
-                    그룹회원 메인
+                    그룹 관리
                   </Link>
                 )}
                 {isAdmin && (

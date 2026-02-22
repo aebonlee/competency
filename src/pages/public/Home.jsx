@@ -23,17 +23,23 @@ const STEPS = [
 ];
 
 const Home = () => {
-  const { isLoggedIn, loading } = useAuth();
+  const { isLoggedIn, isAdmin, isGroup, loading } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('q1');
   const activeStep = STEPS.find(s => s.id === activeTab);
 
-  // OAuth 콜백 후 또는 이미 로그인 된 상태에서 홈 접근 시 /main으로 리다이렉트
+  // 로그인 상태에서 홈 접근 시 역할별 리다이렉트
   useEffect(() => {
     if (!loading && isLoggedIn) {
-      navigate('/main', { replace: true });
+      if (isAdmin) {
+        navigate('/admin', { replace: true });
+      } else if (isGroup) {
+        navigate('/group', { replace: true });
+      } else {
+        navigate('/main', { replace: true });
+      }
     }
-  }, [isLoggedIn, loading, navigate]);
+  }, [isLoggedIn, isAdmin, isGroup, loading, navigate]);
 
   return (
     <div className="page-wrapper">

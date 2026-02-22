@@ -11,10 +11,15 @@ const TOOLTIPS = {
 };
 
 const Login = () => {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, isAdmin, isGroup } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || '/main';
+  const getDefaultRoute = () => {
+    if (isAdmin) return '/admin';
+    if (isGroup) return '/group';
+    return '/main';
+  };
+  const from = location.state?.from?.pathname || getDefaultRoute();
 
   const [step, setStep] = useState('method');
   const [form, setForm] = useState({ email: '', password: '' });

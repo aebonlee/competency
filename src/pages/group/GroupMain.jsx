@@ -13,10 +13,27 @@ const GROUP_TYPE_LABELS = {
   other: '기타',
 };
 
+const GROUP_TYPES = [
+  { value: 'company', label: '기업' },
+  { value: 'university', label: '대학' },
+  { value: 'institution', label: '기관' },
+  { value: 'other', label: '기타' },
+];
+
 const GroupMain = () => {
   const { user } = useAuth();
   const { showToast } = useToast();
   const [groupInfo, setGroupInfo] = useState(null);
+  const [noGroup, setNoGroup] = useState(false);
+
+  // Group creation state
+  const [creating, setCreating] = useState(false);
+  const [createForm, setCreateForm] = useState({
+    name: '',
+    org: '',
+    group_type: 'other',
+    description: '',
+  });
   const [stats, setStats] = useState({
     members: 0,
     completed: 0,
@@ -49,6 +66,12 @@ const GroupMain = () => {
 
         if (groupError && groupError.code !== 'PGRST116') {
           throw groupError;
+        }
+
+        if (!group) {
+          setNoGroup(true);
+          setLoading(false);
+          return;
         }
 
         if (group) {
@@ -181,22 +204,113 @@ const GroupMain = () => {
     );
   }
 
-  if (!groupInfo) {
+  const handleCreateGroup = async (e) => {
+    e.preventDefault();
+    if (!createForm.name.trim()) {
+      showToast('그룹명을 입력해 주세요.', 'warning');
+      return;
+    }
+    setCreating(true);
+    try {
+      const supabase = getSupabase();
+      if (!supabase) return;
+
+      const { data, error } = await supabase
+        .from('groups')
+        .insert({
+          name: createForm.name.trim(),
+          org: createForm.org.trim(),
+          group_type: createForm.group_type,
+          description: createForm.description.trim(),
+          owner_id: user.id,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      showToast('그룹이 생성되었습니다!', 'success');
+      setGroupInfo(data);
+      setNoGroup(false);
+    } catch (err) {
+      console.error('Failed to create group:', err);
+      showToast('그룹 생성에 실패했습니다.', 'error');
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  if (noGroup && !groupInfo) {
     return (
       <div className="page-wrapper">
         <section className="page-header">
           <div className="container"><h1>그룹 관리</h1></div>
         </section>
         <div className="group-page">
-          <div className="card text-center" style={{ padding: '60px 20px' }}>
-            <p style={{ fontSize: '16px', color: 'var(--text-light)' }}>
-              등록된 그룹이 없습니다. 관리자에게 문의해 주세요.
+          <div className="card" style={{ maxWidth: '600px', margin: '0 auto' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '8px' }}>
+              새 그룹 만들기
+            </h3>
+            <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '24px' }}>
+              기업, 대학, 기관 등의 그룹을 생성하여 멤버를 관리하고 검사 현황을 확인할 수 있습니다.
             </p>
+            <form onSubmit={handleCreateGroup}>
+              <div className="form-group">
+                <label htmlFor="create_name">그룹명 *</label>
+                <input
+                  id="create_name"
+                  type="text"
+                  value={createForm.name}
+                  onChange={(e) => setCreateForm(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="예: OO대학교, OO기업"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="create_org">기관/조직명</label>
+                <input
+                  id="create_org"
+                  type="text"
+                  value={createForm.org}
+                  onChange={(e) => setCreateForm(prev => ({ ...prev, org: e.target.value }))}
+                  placeholder="기관 또는 조직명"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="create_type">그룹 유형</label>
+                <select
+                  id="create_type"
+                  value={createForm.group_type}
+                  onChange={(e) => setCreateForm(prev => ({ ...prev, group_type: e.target.value }))}
+                >
+                  {GROUP_TYPES.map((t) => (
+                    <option key={t.value} value={t.value}>{t.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label htmlFor="create_desc">설명</label>
+                <textarea
+                  id="create_desc"
+                  rows="3"
+                  value={createForm.description}
+                  onChange={(e) => setCreateForm(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="그룹에 대한 간략한 설명"
+                />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                <button type="submit" className="btn btn-primary" disabled={creating}>
+                  {creating ? '생성 중...' : '그룹 생성'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
     );
   }
+
+  if (!groupInfo) return null;
 
   const completionRate = stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
   const memberUsage = stats.maxMembers > 0 ? Math.round((stats.members / stats.maxMembers) * 100) : 0;
