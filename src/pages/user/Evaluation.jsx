@@ -16,6 +16,7 @@ const Evaluation = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [started, setStarted] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const load = async () => {
@@ -64,6 +65,7 @@ const Evaluation = () => {
       navigate(`/result/${evalId}`);
     } catch (err) {
       showToast('검사 제출에 실패했습니다.', 'error');
+      setError('검사 제출에 실패했습니다. 다시 시도해주세요.');
       setSubmitting(false);
     }
   };
@@ -158,6 +160,10 @@ const Evaluation = () => {
                 {submitting ? '제출 중...' : allAnswered ? '검사 완료' : `${answeredCount}/${totalCount} 답변 완료`}
               </button>
             </div>
+          </div>
+          {error && <div className="auth-error" role="alert">{error}</div>}
+          <div aria-live="polite" className="sr-only">
+            {answeredCount}/{totalCount} 문항 답변 완료
           </div>
           <ProgressBar current={answeredCount} total={totalCount} />
         </div>

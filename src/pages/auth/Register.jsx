@@ -169,7 +169,7 @@ const Register = () => {
               </div>
             </div>
 
-            {error && <div className="auth-error">{error}</div>}
+            {error && <div className="auth-error" role="alert">{error}</div>}
 
             <button type="submit" className="auth-next-btn auth-btn-full" disabled={loading}>
               {loading ? '가입 중...' : '회원가입'}

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.competency.or.kr)",
+      "WebFetch(domain:www.dreamitbiz.com)",
+      "Bash(npx vite build)",
+      "Bash(git pull:*)"
+    ]
+  }
+}
