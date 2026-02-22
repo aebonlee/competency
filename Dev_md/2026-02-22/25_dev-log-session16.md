@@ -227,12 +227,53 @@ CSS 분할:
 | - | 잔여 버그 수정 (소요시간, 조회수) | **완료** |
 
 ### 미실행 항목 (향후)
-- Phase 3-1: Google Analytics 적용
-- Phase 3-2: verify-payment Edge Function 확인
 - Phase 3-3: RLS 정책 전면 점검
 - Phase 4-1: TypeScript 전환
 - Phase 4-3: 테스트 작성 (Vitest)
-- Phase 4-5: 접근성(a11y) 점검
+
+---
+
+## 6. 추가 작업 (세션 16 후반)
+
+### 6.1 Google Analytics 적용 (Phase 3-1)
+- 레거시 JSP에서 `UA-162917381-1` 트래킹 ID 확인
+- `index.html`에 gtag.js 스크립트 추가
+
+### 6.2 결제 검증 흐름 수정 (Phase 3-2)
+**CRITICAL 발견**: `verifyPayment()` 함수가 정의만 되고 호출되지 않음
+- `Checkout.jsx`에 `verifyPayment` + `updatePurchaseStatus` import 추가
+- 결제 성공 후 서버사이드 검증 호출 (Edge Function 미설정 시 fallback)
+- 결제 취소 시 purchase status 'cancelled' 업데이트
+
+### 6.3 접근성(a11y) 개선 (Phase 4-5)
+
+| 파일 | 수정 내용 |
+|------|----------|
+| Modal.jsx | `role="dialog"`, `aria-modal`, `aria-label="닫기"`, Esc 키 닫기, focus 관리 |
+| AssessmentRadio.jsx | `role="radiogroup"`, `aria-label`, sr-only 라벨 텍스트 |
+| Navbar.jsx | 햄버거 버튼 `aria-label`, `aria-expanded` |
+| App.jsx | skip-nav 링크 + `<main>` 랜드마크 |
+| base.css | `.sr-only`, `.skip-nav` 유틸리티 클래스 |
+
+### 6.4 빌드 결과 (후반)
+```
+vite v7.3.1 — 153 modules, 31 JS chunks, 4.35s ✓
+메인 번들: 485.95 KB (gzip 154.22 KB)
+```
+
+### 6.5 최종 Phase 달성 현황
+
+| Phase | 항목 | 상태 |
+|-------|------|------|
+| Phase 1 | DB 스키마 정합성 긴급 수정 | **완료** (세션12) |
+| Phase 2 | 누락 테이블 마이그레이션 SQL | **완료** (SQL 준비, Supabase 실행 대기) |
+| Phase 3-1 | Google Analytics 적용 | **완료** (세션16) |
+| Phase 3-2 | 결제 검증 흐름 수정 | **완료** (세션16, Edge Function은 Supabase 별도) |
+| Phase 3-3 | RLS 정책 전면 점검 | 미실행 |
+| Phase 3-4 | Error Boundary 전역 적용 | **완료** (세션16) |
+| Phase 4-2 | 코드 스플리팅 | **완료** (세션16) |
+| Phase 4-4 | SEO 최적화 | **완료** (세션16) |
+| Phase 4-5 | 접근성(a11y) 개선 | **완료** (세션16, 핵심 5건) |
 
 ---
 
