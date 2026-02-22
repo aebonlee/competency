@@ -12,11 +12,11 @@
 }
 
 .admin-sidebar {
-  width: 240px;
+  width: 220px;
   flex-shrink: 0;
   background: var(--bg-white);
   border-right: 1px solid var(--border-light);
-  padding: 24px 0;
+  padding: 12px 0;
   position: sticky;
   top: 64px;
   height: calc(100vh - 64px);
@@ -24,14 +24,14 @@
 }
 
 .admin-sidebar-title {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--text-light);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 0 20px 16px;
+  padding: 0 16px 10px;
   border-bottom: 1px solid var(--border-light);
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .admin-sidebar-nav {
@@ -40,24 +40,24 @@
 }
 
 .admin-sidebar-group {
-  padding: 8px 0;
+  padding: 2px 0;
 }
 
 .admin-sidebar-group-label {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   color: var(--text-light);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  padding: 8px 20px 6px;
+  padding: 6px 16px 2px;
 }
 
 .admin-sidebar-link {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 20px;
-  font-size: 14px;
+  gap: 8px;
+  padding: 6px 16px;
+  font-size: 13px;
   color: var(--text-secondary);
   text-decoration: none;
   transition: background 0.15s, color 0.15s;
@@ -77,8 +77,8 @@
 }
 
 .admin-sidebar-icon {
-  font-size: 16px;
-  width: 20px;
+  font-size: 14px;
+  width: 18px;
   text-align: center;
   flex-shrink: 0;
 }
