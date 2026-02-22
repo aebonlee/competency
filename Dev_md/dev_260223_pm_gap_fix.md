@@ -163,6 +163,7 @@ JSP→React 전환 GAP 분석 결과(세션 17) 기반으로, Critical 미전환
 | 신규 파일 (Survey, export, send-email) | PASS | 타입, 유효성검증, 에러처리 모두 정상 |
 | 수정 파일 (Board, Coupon, Mail, Users, Stats) | PASS | CSV, 배포, Edge Function 모두 정상 |
 | Result.jsx + supabase.ts | PASS | 설문/이미지캡처 정상 |
+| 임포트/익스포트 일관성 | PASS | 40개 파일 검증, 깨진 임포트 0건 |
 | ESLint | PASS | 소스코드 에러 0건 (dist/ 번들 제외) |
 | TypeScript | PASS | 기존 tsconfig 참조 에러만 (변경사항 무관) |
 
@@ -173,13 +174,15 @@ JSP→React 전환 GAP 분석 결과(세션 17) 기반으로, Critical 미전환
 | 라우트 파라미터 불일치 | App.jsx | `:id` → `:questionId` (QuestionForm 기대값) |
 | 라우트 파라미터 불일치 | App.jsx | `:id` → `:evalId` (Result.jsx 기대값) |
 | 결과보기 링크 잘못된 ID | EvalManager.jsx | `getResultId(ev)` → `ev.id` (eval_id 전달) |
+| 그룹 결과 라우트 파라미터 | App.jsx | `/group/users/:id/result` → `:userId` |
 
 ### 커밋 이력
 
 | 커밋 | 설명 |
 |------|------|
 | `a06ca56` | feat: P0 GAP 해소 + 기존 버그 8건 수정 |
-| `0b924c3` | fix: 라우트 파라미터명 불일치 3건 수정 |
+| `0b924c3` | fix: 라우트 파라미터명 불일치 3건 수정 (admin) |
+| `a5f8ba8` | fix: /group/users/:id/result → :userId (group) |
 
 ## 9. 빌드 검증
 
