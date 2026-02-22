@@ -102,7 +102,9 @@ function NotFound() {
 function App() {
   return (
     <>
+      <a href="#main-content" className="skip-nav">본문으로 건너뛰기</a>
       <Navbar />
+      <main id="main-content">
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
           {/* Public */}
@@ -172,6 +174,7 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
+      </main>
       <Footer />
     </>
   );

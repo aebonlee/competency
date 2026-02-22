@@ -40,8 +40,8 @@ const Navbar = () => {
           <span>MyCoreCompetency</span>
         </Link>
 
-        <button className="navbar-toggle" onClick={() => setMobileOpen(!mobileOpen)}>
-          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+        <button className="navbar-toggle" onClick={() => setMobileOpen(!mobileOpen)} aria-label={mobileOpen ? '메뉴 닫기' : '메뉴 열기'} aria-expanded={mobileOpen}>
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             {mobileOpen ? (
               <><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>
             ) : (

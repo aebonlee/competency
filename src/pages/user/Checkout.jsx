@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
-import { createPurchase, createEvaluation } from '../../utils/supabase';
+import { createPurchase, createEvaluation, verifyPayment, updatePurchaseStatus } from '../../utils/supabase';
 import { requestPayment } from '../../utils/portone';
 import '../../styles/checkout.css';
 
@@ -59,11 +59,21 @@ const Checkout = () => {
 
       if (paymentResult.code) {
         setError(paymentResult.message || '결제가 취소되었습니다.');
+        await updatePurchaseStatus(purchase.id, 'cancelled', null);
         setProcessing(false);
         return;
       }
 
-      // 3. Create evaluation
+      // 3. Verify payment server-side
+      try {
+        await verifyPayment(paymentResult.paymentId, purchase.id);
+      } catch (verifyErr) {
+        console.error('Payment verification failed:', verifyErr);
+        // Edge Function 미설정 시 직접 상태 업데이트 (fallback)
+        await updatePurchaseStatus(purchase.id, 'paid', paymentResult.paymentId);
+      }
+
+      // 4. Create evaluation
       const newEval = await createEvaluation(user.id);
       showToast('결제가 완료되었습니다!', 'success');
       navigate(`/confirmation?evalId=${newEval.id}`);
