@@ -67,6 +67,7 @@ const DeletedUserList = lazy(() => import('./pages/admin/DeletedUserList'));
 const EvalManager = lazy(() => import('./pages/admin/EvalManager'));
 const MailForm = lazy(() => import('./pages/admin/MailForm'));
 const Sources = lazy(() => import('./pages/admin/Sources'));
+const PurchaseList = lazy(() => import('./pages/admin/PurchaseList'));
 
 function LoadingFallback() {
   return (
@@ -175,6 +176,7 @@ function App() {
             <Route path="/admin/users/:userId/evals" element={<EvalManager />} />
             <Route path="/admin/mail" element={<MailForm />} />
             <Route path="/admin/sources" element={<Sources />} />
+            <Route path="/admin/purchases" element={<PurchaseList />} />
           </Route>
 
           {/* 404 */}

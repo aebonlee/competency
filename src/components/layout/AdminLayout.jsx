@@ -34,6 +34,7 @@ const menuGroups = [
   {
     label: '결제 / 쿠폰',
     items: [
+      { to: '/admin/purchases', label: '결제 내역', icon: '💳' },
       { to: '/admin/coupons', label: '쿠폰 관리', icon: '🎟️' },
     ],
   },
