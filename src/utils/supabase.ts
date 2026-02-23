@@ -81,7 +81,6 @@ export const updatePurchaseStatus = async (
 
   const updateData: Record<string, unknown> = { status };
   if (paymentId) updateData.payment_id = paymentId;
-  if (status === 'paid') updateData.paid_at = new Date().toISOString();
 
   const { data, error } = await client
     .from('purchases')
