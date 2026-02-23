@@ -49,10 +49,9 @@ export const requestPayment = ({ orderId, orderName, totalAmount, payMethod, cus
     const IMP = getIMP();
 
     if (!IMP || !IMP_CODE) {
-      console.warn('PortOne credentials not configured. Running in demo mode.');
       resolve({
-        paymentId: `demo-pay-${Date.now()}`,
-        txId: `demo-tx-${Date.now()}`
+        code: 'NOT_CONFIGURED',
+        message: '결제 시스템이 설정되지 않았습니다. 관리자에게 문의하세요.',
       });
       return;
     }
