@@ -418,6 +418,33 @@
 }
 
 /* ============================================
+   Distribution 3-column grid
+   ============================================ */
+.dashboard-chart-grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* ============================================
+   Recent Activity 2-column grid
+   ============================================ */
+.dashboard-recent-grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* ============================================
+   Payment Table (full width)
+   ============================================ */
+.dashboard-payment-table {
+  margin-bottom: 32px;
+}
+
+.payment-id-cell {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* ============================================
    Responsive
    ============================================ */
 @media (max-width: 768px) {
@@ -431,7 +458,11 @@
     grid-template-columns: repeat(3, 1fr);
   }
   .dashboard-chart-grid,
+  .dashboard-chart-grid-3,
   .dashboard-competency-grid {
+    grid-template-columns: 1fr;
+  }
+  .dashboard-recent-grid-2 {
     grid-template-columns: 1fr;
   }
   .dashboard-quick-actions {

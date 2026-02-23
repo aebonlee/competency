@@ -41,6 +41,7 @@ const Dashboard = () => {
   // Section C–D: Visualization
   const [userDist, setUserDist] = useState({ individual: 0, group: 0, admin: 0, subadmin: 0 });
   const [evalDist, setEvalDist] = useState({ completed: 0, inProgress: 0 });
+  const [paymentDist, setPaymentDist] = useState({ paid: 0, pending: 0, failed: 0 });
 
   // Section C: Time-series
   const [dailySignups, setDailySignups] = useState([]);
@@ -103,8 +104,8 @@ const Dashboard = () => {
           supabase.from('user_profiles').select('id, name, email, created_at').is('deleted_at', null).order('created_at', { ascending: false }).limit(5),
           // Q16: recent 5 evals + join
           supabase.from('eval_list').select('id, eval_type, progress, created_at, profiles:user_id ( name )').order('created_at', { ascending: false }).limit(5),
-          // Q17: recent 5 purchases + join
-          supabase.from('purchases').select('id, amount, status, created_at, profiles:user_id ( name )').order('created_at', { ascending: false }).limit(5),
+          // Q17: recent 10 purchases + join
+          supabase.from('purchases').select('id, amount, status, payment_id, created_at, profiles:user_id ( name, email )').order('created_at', { ascending: false }).limit(10),
           // Q18: recent 7 days signups
           supabase.from('user_profiles').select('created_at').gte('created_at', sevenDaysAgoISO).is('deleted_at', null),
           // Q19: recent 7 days completed evals
@@ -161,8 +162,14 @@ const Dashboard = () => {
           (v(15).data || []).map(ev => ({ ...ev, userName: ev.profiles?.name || '-' }))
         );
         setRecentPurchases(
-          (v(16).data || []).map(p => ({ ...p, userName: p.profiles?.name || '-' }))
+          (v(16).data || []).map(p => ({ ...p, userName: p.profiles?.name || '-', userEmail: p.profiles?.email || '-' }))
         );
+
+        // Payment status distribution (from Q6 purchases)
+        const paidCount = purchases.filter(p => p.status === 'paid').length;
+        const pendingCount = purchases.filter(p => p.status === 'pending').length;
+        const failedCount = purchases.filter(p => p.status === 'failed').length;
+        setPaymentDist({ paid: paidCount, pending: pendingCount, failed: failedCount });
 
         // Daily signups (7 days)
         const signupRows = v(17).data || [];
@@ -481,7 +488,7 @@ const Dashboard = () => {
 
         {/* Section D: Distribution Charts */}
         <h2 className="dashboard-section-title">분포 현황</h2>
-        <div className="dashboard-chart-grid">
+        <div className="dashboard-chart-grid dashboard-chart-grid-3">
           <div className="dashboard-chart-card">
             <h3>회원 유형 분포</h3>
             <div className="dashboard-chart-wrapper">
@@ -507,6 +514,22 @@ const Dashboard = () => {
                   datasets: [{
                     data: [evalDist.completed, evalDist.inProgress],
                     backgroundColor: ['#22c55e', '#f59e0b'],
+                    borderWidth: 0,
+                  }],
+                }}
+                options={doughnutOptions}
+              />
+            </div>
+          </div>
+          <div className="dashboard-chart-card">
+            <h3>결제 상태 분포</h3>
+            <div className="dashboard-chart-wrapper">
+              <Doughnut
+                data={{
+                  labels: ['완료', '대기', '실패'],
+                  datasets: [{
+                    data: [paymentDist.paid, paymentDist.pending, paymentDist.failed],
+                    backgroundColor: ['#22c55e', '#f59e0b', '#ef4444'],
                     borderWidth: 0,
                   }],
                 }}
@@ -610,7 +633,7 @@ const Dashboard = () => {
 
         {/* Section G: Recent Activity */}
         <h2 className="dashboard-section-title">최근 활동</h2>
-        <div className="dashboard-recent-grid">
+        <div className="dashboard-recent-grid dashboard-recent-grid-2">
           {/* Recent Users */}
           <div className="card">
             <div className="dashboard-card-header">
@@ -667,37 +690,49 @@ const Dashboard = () => {
               </table>
             )}
           </div>
+        </div>
 
-          {/* Recent Purchases */}
-          <div className="card">
-            <div className="dashboard-card-header">
-              <h3>최근 결제</h3>
-              <Link to="/admin/statistics" className="dashboard-view-all">전체 보기</Link>
-            </div>
-            {recentPurchases.length === 0 ? (
-              <p className="dashboard-empty">데이터가 없습니다.</p>
-            ) : (
-              <table className="data-table">
-                <thead>
-                  <tr><th>이름</th><th>금액</th><th>상태</th></tr>
-                </thead>
-                <tbody>
-                  {recentPurchases.map(p => (
-                    <tr key={p.id}>
-                      <td>{p.userName}</td>
-                      <td>{fmtWon(p.amount)}</td>
-                      <td>
-                        {p.status === 'paid'
-                          ? <span className="badge badge-green">완료</span>
-                          : <span className="badge badge-yellow">대기</span>
-                        }
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
+        {/* Recent Purchases — full width */}
+        <div className="dashboard-payment-table card">
+          <div className="dashboard-card-header">
+            <h3>최근 결제</h3>
+            <Link to="/admin/statistics" className="dashboard-view-all">전체 보기</Link>
           </div>
+          {recentPurchases.length === 0 ? (
+            <p className="dashboard-empty">데이터가 없습니다.</p>
+          ) : (
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>결제일시</th>
+                  <th>이름</th>
+                  <th>이메일</th>
+                  <th>금액</th>
+                  <th>결제ID</th>
+                  <th>상태</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentPurchases.map(p => (
+                  <tr key={p.id}>
+                    <td>{new Date(p.created_at).toLocaleString('sv-SE', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).replace('-', '.').replace('-', '.')}</td>
+                    <td>{p.userName}</td>
+                    <td>{p.userEmail}</td>
+                    <td>{fmtWon(p.amount)}</td>
+                    <td><span className="payment-id-cell">{p.payment_id ? (p.payment_id.length > 12 ? p.payment_id.slice(0, 12) + '...' : p.payment_id) : '-'}</span></td>
+                    <td>
+                      {p.status === 'paid'
+                        ? <span className="badge badge-green">완료</span>
+                        : p.status === 'failed'
+                          ? <span className="badge badge-red">실패</span>
+                          : <span className="badge badge-yellow">대기</span>
+                      }
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
 
       </div>
