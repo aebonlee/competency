@@ -28,14 +28,27 @@ export const requestPayment = async ({ orderId, orderName, totalAmount, payMetho
       paymentId: `payment-${orderId}-${Date.now()}`,
       orderName,
       totalAmount,
-      currency: 'KRW',
+      currency: 'CURRENCY_KRW',
       payMethod: payMethod as "CARD" | "TRANSFER" | "VIRTUAL_ACCOUNT" | "MOBILE" | "GIFT_CERTIFICATE" | "EASY_PAY",
       customer: {
         fullName: customer.fullName,
+        phoneNumber: customer.phoneNumber,
         email: customer.email,
-        phoneNumber: customer.phoneNumber?.replace(/-/g, ''),
       },
+      redirectUrl: `${window.location.origin}/confirmation`,
     });
+
+    if (!response) {
+      return { code: 'USER_CANCEL', message: '결제가 취소되었습니다.' };
+    }
+
+    if ('code' in response && response.code) {
+      console.error('PortOne response error:', JSON.stringify(response));
+      return {
+        code: String(response.code),
+        message: String((response as Record<string, unknown>).message || '결제에 실패했습니다.')
+      };
+    }
 
     return response as PaymentResult;
   } catch (err) {
