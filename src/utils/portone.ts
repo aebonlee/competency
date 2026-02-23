@@ -1,62 +1,88 @@
 /**
- * PortOne V2 Payment Utility
+ * PortOne V1 (iamport) Payment Utility
  * KG이니시스 경유 카드결제
+ * www.dreamitbiz.com과 동일한 V1 SDK 사용
  */
 import type { PaymentRequest, PaymentResult } from '../types';
 
-const STORE_ID = import.meta.env.VITE_PORTONE_STORE_ID;
-const CHANNEL_KEY = import.meta.env.VITE_PORTONE_CHANNEL_KEY;
+const IMP_CODE = import.meta.env.VITE_IMP_CODE;
+const PG_PROVIDER = import.meta.env.VITE_PG_PROVIDER;
+
+let initialized = false;
+
+interface IMPResponse {
+  success: boolean;
+  imp_uid: string;
+  merchant_uid: string;
+  error_code?: string;
+  error_msg?: string;
+}
+
+interface IMPInstance {
+  init: (code: string) => void;
+  request_pay: (params: Record<string, unknown>, callback: (response: IMPResponse) => void) => void;
+}
+
+declare global {
+  interface Window {
+    IMP?: IMPInstance;
+  }
+}
+
+function getIMP(): IMPInstance | null {
+  if (!window.IMP) {
+    console.error('iamport SDK not loaded');
+    return null;
+  }
+  if (!initialized && IMP_CODE) {
+    window.IMP.init(IMP_CODE);
+    initialized = true;
+  }
+  return window.IMP;
+}
 
 /**
- * Request payment via PortOne V2 SDK
+ * Request payment via PortOne V1 SDK
  */
-export const requestPayment = async ({ orderId, orderName, totalAmount, payMethod, customer }: PaymentRequest): Promise<PaymentResult> => {
-  if (!STORE_ID || !CHANNEL_KEY) {
-    console.warn('PortOne credentials not configured. Running in demo mode.');
-    return {
-      paymentId: `demo-pay-${Date.now()}`,
-      txId: `demo-tx-${Date.now()}`
-    };
-  }
+export const requestPayment = ({ orderId, orderName, totalAmount, payMethod, customer }: PaymentRequest): Promise<PaymentResult> => {
+  return new Promise((resolve) => {
+    const IMP = getIMP();
 
-  try {
-    const PortOne = await import('@portone/browser-sdk/v2');
+    if (!IMP || !IMP_CODE) {
+      console.warn('PortOne credentials not configured. Running in demo mode.');
+      resolve({
+        paymentId: `demo-pay-${Date.now()}`,
+        txId: `demo-tx-${Date.now()}`
+      });
+      return;
+    }
 
-    const response = await PortOne.requestPayment({
-      storeId: STORE_ID,
-      channelKey: CHANNEL_KEY,
-      paymentId: `payment-${orderId}-${Date.now()}`,
-      orderName,
-      totalAmount,
-      currency: 'CURRENCY_KRW',
-      payMethod: payMethod as "CARD" | "TRANSFER" | "VIRTUAL_ACCOUNT" | "MOBILE" | "GIFT_CERTIFICATE" | "EASY_PAY",
-      customer: {
-        fullName: customer.fullName,
-        phoneNumber: customer.phoneNumber,
-        email: customer.email,
+    const payMethodMap: Record<string, string> = { CARD: 'card', TRANSFER: 'trans' };
+
+    IMP.request_pay(
+      {
+        pg: PG_PROVIDER,
+        pay_method: payMethodMap[payMethod] || 'card',
+        merchant_uid: `order_${orderId}_${Date.now()}`,
+        name: orderName,
+        amount: totalAmount,
+        buyer_email: customer.email,
+        buyer_name: customer.fullName,
+        buyer_tel: customer.phoneNumber,
       },
-      redirectUrl: `${window.location.origin}/confirmation`,
-    });
-
-    if (!response) {
-      return { code: 'USER_CANCEL', message: '결제가 취소되었습니다.' };
-    }
-
-    if ('code' in response && response.code) {
-      console.error('PortOne response error:', JSON.stringify(response));
-      return {
-        code: String(response.code),
-        message: String((response as Record<string, unknown>).message || '결제에 실패했습니다.')
-      };
-    }
-
-    return response as PaymentResult;
-  } catch (err) {
-    const error = err as Error;
-    console.error('PortOne payment error:', error);
-    return {
-      code: 'PAYMENT_ERROR',
-      message: error.message || '결제 요청에 실패했습니다.'
-    };
-  }
+      (response: IMPResponse) => {
+        if (response.success) {
+          resolve({
+            paymentId: response.imp_uid,
+            txId: response.merchant_uid,
+          });
+        } else {
+          resolve({
+            code: response.error_code || 'PAYMENT_FAILED',
+            message: response.error_msg || '결제가 취소되었습니다.',
+          });
+        }
+      }
+    );
+  });
 };
