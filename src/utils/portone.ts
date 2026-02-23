@@ -28,12 +28,12 @@ export const requestPayment = async ({ orderId, orderName, totalAmount, payMetho
       paymentId: `payment-${orderId}-${Date.now()}`,
       orderName,
       totalAmount,
-      currency: 'CURRENCY_KRW',
+      currency: 'KRW',
       payMethod: payMethod as "CARD" | "TRANSFER" | "VIRTUAL_ACCOUNT" | "MOBILE" | "GIFT_CERTIFICATE" | "EASY_PAY",
       customer: {
         fullName: customer.fullName,
         email: customer.email,
-        phoneNumber: customer.phoneNumber,
+        phoneNumber: customer.phoneNumber?.replace(/-/g, ''),
       },
     });
 
