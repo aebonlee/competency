@@ -77,15 +77,13 @@ const Checkout = () => {
       navigate(`/confirmation?evalId=${newEval.id}`);
     } catch (err) {
       console.error('Checkout error:', err);
-      const msg = err instanceof Error ? err.message : String(err);
+      const msg = err instanceof Error ? err.message
+        : (err && typeof err === 'object' && 'message' in err) ? String(err.message)
+        : JSON.stringify(err);
       if (msg.includes('문항')) {
         setError('검사 문항 데이터가 준비되지 않았습니다. 관리자에게 문의하세요.');
-      } else if (msg.includes('purchase') || msg.includes('insert')) {
-        setError('주문 생성에 실패했습니다. 잠시 후 다시 시도해주세요.');
-      } else if (msg.includes('eval') || msg.includes('question')) {
-        setError('검사 생성에 실패했습니다. 관리자에게 문의하세요.');
       } else {
-        setError(`오류가 발생했습니다: ${msg || '알 수 없는 오류'}`);
+        setError(`오류가 발생했습니다: ${msg}`);
       }
       setProcessing(false);
     }
