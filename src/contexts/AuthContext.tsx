@@ -51,6 +51,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (!error && data) p = data as UserProfile;
       }
     }
+    // ─── 가입 사이트 자동 추적 (visited_sites) ───
+    // signup_domain 미설정 시 자동 설정 + visited_sites 배열에 현재 도메인 추가
+    try {
+      const supabase = getSupabase();
+      if (supabase) {
+        const { data: statusData } = await supabase.rpc('check_user_status', {
+          target_user_id: authUser.id,
+          current_domain: window.location.hostname,
+        });
+
+        // 차단/탈퇴 유저 강제 로그아웃
+        if (statusData && statusData.status && statusData.status !== 'active') {
+          console.warn('계정 상태:', statusData.status, statusData.reason);
+          await supabase.auth.signOut();
+          setProfile(null);
+          return;
+        }
+      }
+    } catch (e) {
+      // check_user_status 함수 미존재 시 무시 (구버전 호환)
+      console.warn('check_user_status 호출 실패:', (e as Error).message);
+    }
+
     setProfile(p);
   }, []);
 
