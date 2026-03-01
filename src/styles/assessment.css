@@ -236,13 +236,75 @@
   outline-offset: 2px;
 }
 
+/* Fullpage Layout — 1문항/1페이지 */
+.assessment-fullpage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  z-index: 50;
+  padding: 20px;
+}
+
+.question-card-fullpage {
+  max-width: 600px;
+  width: 100%;
+  padding: 32px 0;
+  animation: slideInUp 0.5s ease both;
+}
+
+/* Complete / Submit Page */
+.assessment-complete {
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  animation: slideInUp 0.5s ease both;
+}
+
+.assessment-complete h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+
+.assessment-complete p {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+}
+
+/* Slide-in animation */
+@keyframes slideInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Disabled radio — transition 중 비활성화 */
+.assessment-options-disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
 /* Progress Bar */
 .assessment-progress {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 100;
+  z-index: 200;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(8px);
   padding: 12px 20px;
