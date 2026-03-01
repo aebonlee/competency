@@ -18,6 +18,7 @@ const Evaluation = () => {
   const [started, setStarted] = useState(false);
   const [error, setError] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [transitioning, setTransitioning] = useState(false);
   const transitioningRef = useRef(false);
 
   const totalCount = questions.length;
@@ -73,11 +74,12 @@ const Evaluation = () => {
     };
   }, [started]);
 
-  // Answer handler — useRef로 stale closure 방지
+  // Answer handler — ref로 중복 클릭 차단, state로 UI disabled 반영
   const handleAnswer = useCallback(async (questionId, value) => {
     if (transitioningRef.current) return;
 
     transitioningRef.current = true;
+    setTransitioning(true);
     setAnswers(prev => ({ ...prev, [questionId]: value }));
 
     try {
@@ -90,6 +92,7 @@ const Evaluation = () => {
     setTimeout(() => {
       setCurrentIndex(prev => prev + 1);
       transitioningRef.current = false;
+      setTransitioning(false);
     }, 600);
   }, []);
 
@@ -210,7 +213,7 @@ const Evaluation = () => {
               questionId={currentQuestion.id}
               value={answers[currentQuestion.id] ?? null}
               onChange={handleAnswer}
-              disabled={transitioningRef.current}
+              disabled={transitioning}
             />
             <div className="question-text question-text-bottom">
               {currentQuestion.cmp_question?.q_text || `비교 문항 #${currentQuestion.cmpq_id}`}
