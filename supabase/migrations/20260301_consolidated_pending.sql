@@ -22,7 +22,7 @@
 CREATE TABLE IF NOT EXISTS public.group_members (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  group_id UUID NOT NULL REFERENCES public.groups(id) ON DELETE CASCADE,
+  group_id INTEGER NOT NULL REFERENCES public.groups(id) ON DELETE CASCADE,
   joined_at TIMESTAMPTZ DEFAULT now(),
   UNIQUE(user_id, group_id)
 );
@@ -67,7 +67,7 @@ CREATE POLICY "group_members_delete" ON public.group_members
 CREATE TABLE IF NOT EXISTS public.group_managers (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  group_id UUID NOT NULL REFERENCES public.groups(id) ON DELETE CASCADE,
+  group_id INTEGER NOT NULL REFERENCES public.groups(id) ON DELETE CASCADE,
   role TEXT DEFAULT 'manager',
   assigned_at TIMESTAMPTZ DEFAULT now(),
   UNIQUE(user_id, group_id)
@@ -109,7 +109,7 @@ CREATE POLICY "group_managers_delete" ON public.group_managers
 -- ============================================================
 CREATE TABLE IF NOT EXISTS public.group_invitations (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  group_id UUID NOT NULL REFERENCES public.groups(id) ON DELETE CASCADE,
+  group_id INTEGER NOT NULL REFERENCES public.groups(id) ON DELETE CASCADE,
   email TEXT NOT NULL,
   invited_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   status TEXT DEFAULT 'pending',
@@ -171,7 +171,7 @@ ALTER TABLE public.groups
 -- ============================================================
 CREATE TABLE IF NOT EXISTS public.group_subgroups (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  group_id UUID NOT NULL REFERENCES public.groups(id) ON DELETE CASCADE,
+  group_id INTEGER NOT NULL REFERENCES public.groups(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
   sort_order INTEGER DEFAULT 0
 );
