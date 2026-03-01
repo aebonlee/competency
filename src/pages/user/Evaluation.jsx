@@ -224,6 +224,18 @@ const Evaluation = () => {
 
   return (
     <div className="assessment-page">
+      {/* ── iPhone X Device Frame — 데스크톱 전용 장식 (레거시 devices.css 매칭) ── */}
+      <div className="device device-iphone-x" aria-hidden="true">
+        <div className="device-frame">
+          <div className="device-content" />
+        </div>
+        <div className="device-stripe" />
+        <div className="device-header" />
+        <div className="device-sensors" />
+        <div className="device-btns" />
+        <div className="device-power" />
+      </div>
+
       {/* ── Intro (레거시 section1) ── */}
       {step === 'intro' && (
         <div className="assessment-fullpage">
