@@ -137,23 +137,25 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 }
 
-/* Radio Options — 4점 척도 (레거시 디자인 매칭) */
+/* Radio Options — 4점 척도 세로 배치 (레거시 매칭) */
 .assessment-scale {
   display: flex;
   justify-content: center;
-  padding: 16px 0;
+  padding: 12px 0;
 }
 
 .assessment-options {
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
 }
 
 .assessment-option {
   display: flex;
   flex-direction: column;
   align-items: center;
+  z-index: 2;
 }
 
 /* Hide actual radio input */
@@ -164,7 +166,7 @@
   height: 0;
 }
 
-/* Label — text below circle */
+/* Label — circle on top, text below */
 .assessment-option label {
   display: flex;
   flex-direction: column;
@@ -175,7 +177,7 @@
   color: #595959;
   position: relative;
   padding-top: 48px;
-  min-width: 52px;
+  min-width: 80px;
   text-align: center;
 }
 
@@ -189,34 +191,34 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 40px;
-  height: 40px;
+  width: 3.2em;
+  height: 3.2em;
   background-color: #bbbdbf;
   border-radius: 50%;
   border: 1px solid #fff;
   box-shadow: 0 2px 4px 0 rgba(82, 82, 82, .5);
   color: #fff;
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 700;
   transition: transform 0.15s ease;
 }
 
-/* Position-based colors — always visible */
+/* Position-based colors + sizes — 레거시 매칭 */
 .assessment-option:nth-child(1) label:before {
   background-color: #024959;
 }
 
 .assessment-option:nth-child(2) label:before {
   background-color: #027373;
-  width: 30px;
-  height: 30px;
+  width: 2.5em;
+  height: 2.5em;
   top: 9px;
 }
 
 .assessment-option:nth-child(3) label:before {
   background-color: #F2B705;
-  width: 30px;
-  height: 30px;
+  width: 2.5em;
+  height: 2.5em;
   top: 9px;
 }
 
@@ -234,6 +236,20 @@
 .assessment-option input[type="radio"]:focus-visible + label:before {
   outline: 2px solid var(--primary-blue);
   outline-offset: 2px;
+}
+
+/* Vertical connecting bar — 레거시 assessment-bar 재현 */
+.assessment-bar {
+  position: absolute;
+  top: 24px;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  background: #e1e1e1;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 3px 0 rgba(132, 132, 132, .5);
+  z-index: 1;
 }
 
 /* Fullpage Layout — 1문항/1페이지 */
@@ -351,23 +367,20 @@
   .assessment-intro h1 {
     font-size: 24px;
   }
-  .assessment-options {
-    gap: 10px;
-  }
   .assessment-option label {
     padding-top: 40px;
     font-size: 10px;
-    min-width: 44px;
+    min-width: 70px;
   }
   .assessment-option label:before {
-    width: 34px;
-    height: 34px;
+    width: 2.8em;
+    height: 2.8em;
     top: 3px;
   }
   .assessment-option:nth-child(2) label:before,
   .assessment-option:nth-child(3) label:before {
-    width: 26px;
-    height: 26px;
+    width: 2.2em;
+    height: 2.2em;
     top: 7px;
   }
   .question-text {

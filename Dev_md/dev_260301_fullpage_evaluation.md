@@ -80,7 +80,42 @@ started=true, currentQuestion null  → 제출/완료 페이지
 
 ---
 
-## 4. 검증
+## 4. 추가 수정 — 라디오 세로 배치 + 연결 바 (레거시 심층 분석)
 
-- `npx vite build` — 빌드 성공 확인
-- 번들 크기 변화 없음 (index.js 323.85 KB)
+레거시 JSP(`evaluation.jsp`) + CSS(`app.css`, `serveyform.css`) 심층 분석 결과 다음 차이점 발견:
+
+### 레거시 vs React 라디오 배치 비교
+
+| 항목 | 레거시 (JSP) | React (수정 전) | React (수정 후) |
+|------|-------------|----------------|----------------|
+| 라디오 방향 | `flex-direction: column` (세로) | `flex-direction: row` (가로) | `flex-direction: column` (세로) |
+| 연결 바 | `assessment-bar` 세로 바 있음 | 없음 | `assessment-bar` 세로 바 추가 |
+| 원형 크기 단위 | `em` (3.2em, 2.5em) | `px` (40px, 30px) | `em` (3.2em, 2.5em) |
+
+### 변경 파일
+
+**`src/styles/assessment.css`:**
+- `.assessment-options` → `flex-direction: column` + `position: relative`
+- `.assessment-option label` → `min-width: 80px`, 세로 배치 최적화
+- `.assessment-option label:before` → em 단위로 변경 (3.2em / 2.5em)
+- `.assessment-bar` 신규 — position: absolute 세로 연결 바 (4px, #e1e1e1)
+- 반응형 라디오 크기도 em 단위 업데이트
+
+**`src/components/AssessmentRadio.jsx`:**
+- `<div className="assessment-bar" />` 추가 — assessment-options 내부 마지막 자식
+
+### 레거시 참조 코드
+
+```
+tomcat/webapps/ROOT/evaluation.jsp:294-320  — 문항 HTML 구조
+tomcat/webapps/ROOT/app.css:4095-4233       — assessment-options, assessment-bar CSS
+tomcat/webapps/ROOT/serveyform.css:367-424  — 문항 텍스트, 색상 CSS
+tomcat/webapps/ROOT/evaluation.jsp:367-404  — fullpage.js 설정 (onLeave, afterLoad)
+```
+
+---
+
+## 5. 검증
+
+- `npx vite build` — 빌드 성공 (2회)
+- 번들 크기: index.js 323.90 KB (변화 없음)
