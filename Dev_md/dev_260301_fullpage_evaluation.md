@@ -1,4 +1,4 @@
-# 세션 24 개발일지 — 검사 페이지 1문항/1페이지 + 뒤로가기 방지 전환
+# 세션 24 개발일지 — 검사 페이지 1문항/1풀스크린 전환 (레거시 1:1 매칭)
 
 **날짜**: 2026-03-01
 **세션**: 24
@@ -8,114 +8,92 @@
 
 ## 1. 작업 개요
 
-레거시 JSP 사이트(competency.or.kr)는 fullPage.js를 사용하여 **1문항/1풀스크린** + **응답 후 자동 전환** + **뒤로가기 차단** 방식으로 검사를 진행함. 현재 React 버전은 56개 문항을 한 페이지에 스크롤로 표시하여 레거시와 UX가 상이했으므로, 레거시와 동일한 방식으로 전환.
+레거시 JSP 사이트(competency.or.kr)는 fullPage.js를 사용하여 **1문항/1풀스크린** + **뒤로가기 차단** 방식.
+현재 React 버전은 56개 문항을 한 페이지에 스크롤로 표시하는 방식이었음.
+레거시 코드(evaluation.jsp + app.css + serveyform.css + fullpage.css)를 라인 단위로 분석하여 1:1 매칭 구현.
 
 ---
 
-## 2. 변경 파일 (3개)
+## 2. 레거시 분석 결과
 
-### 2-1. `src/pages/user/Evaluation.jsx` — 핵심 로직 변경
+### 2-1. 레거시 HTML 구조 (evaluation.jsp:294-320)
 
-**새 state:**
-- `currentIndex` (0-based) — 현재 표시 중인 문항 인덱스
-- `transitioning` — 전환 애니메이션 중 중복 클릭 방지 플래그
-
-**이어하기(Resume) 지원:**
-- 로드 시 기존 답변 스캔 → 첫 미응답 문항 인덱스로 `currentIndex` 설정
-- 전부 응답 완료 시 → 제출 페이지(currentIndex === totalCount)로 이동
-
-**화면 흐름:**
+```html
+<tr class="section real">
+  <td class="assessment-text">위쪽 문장</td>
+  <td>
+    <div class="assessment-scale">
+      <div class="assessment-options">
+        <div class="assessment-option"> <!-- × 4 (세로 배치) -->
+          <input type="radio" class="option-input radio" name="point[id]" value="30">
+          <label for="point[id]_30"></label>  <!-- 비어있는 라벨 -->
+        </div>
+        <div class="assessment-bar">
+          <div class="assessment-rating"><span>4</span></div>
+        </div>
+      </div>
+    </div>
+  </td>
+  <td class="assessment-text">아래쪽 문장</td>
+</tr>
 ```
-started=false  → 인트로 + 안내문 (기존 유지)
-started=true, currentQuestion 존재  → 1문항 풀스크린 표시
-started=true, currentQuestion null  → 제출/완료 페이지
-```
 
-**handleAnswer 변경:**
-- 라디오 선택 → DB 저장 → 600ms 후 자동 다음 문항 (`currentIndex + 1`)
-- `transitioning=true` 동안 추가 입력 차단
+### 2-2. 레거시 핵심 CSS (app.css)
 
-**뒤로가기 방지:**
-- `useEffect` — `window.history.pushState` + `popstate` 이벤트 리스너
-- 브라우저 뒤로가기 시 "검사 중에는 뒤로 갈 수 없습니다" 토스트 표시
+- `assessment-options` — flex-direction: column (세로 배치)
+- `assessment-option` — flex-basis: 50px, margin-top: 10px
+- `label:before` — position: absolute, left: 50%, margin-left: -1.55em
+- 원형 크기: 1번/4번 3.2em, 2번/3번 2.5em (margin-left: -1.25em)
+- `assessment-bar` — position: absolute, width: 4px, height: calc(100% - 3.5em)
 
-**스크롤 잠금:**
-- `started` 시 `document.body.style.overflow = 'hidden'`, 언마운트 시 복원
+### 2-3. 레거시 fullpage.js 설정 (evaluation.jsp:367-404)
 
-**키보드 단축키:**
-- 숫자 1~4로 라디오 선택 가능 (1=매우 그렇다 30점, 4=매우 아니다 0점)
+- `autoScrolling: true` — 한 번에 한 섹션
+- `onLeave` — 미응답 시 다운 스크롤 차단, 응답 후 업 스크롤 차단
+- `afterLoad` — 진행 현황 텍스트 업데이트 (X/56)
+- `.fp-section { visibility: hidden; opacity: 0; }` + `.active { visible; opacity: 1; }`
 
-### 2-2. `src/styles/assessment.css` — 풀페이지 레이아웃 + 전환 애니메이션
+### 2-4. 레거시 레이아웃
 
-**추가된 CSS 클래스:**
-- `.assessment-fullpage` — position: fixed, 전체 뷰포트, flex 중앙정렬, z-index: 50
-- `.question-card-fullpage` — max-width: 600px, slideInUp 애니메이션 적용
-- `.assessment-complete` — 제출 페이지 스타일
-- `@keyframes slideInUp` — 0.5s 슬라이드업 애니메이션 (opacity + translateY)
-- `.assessment-options-disabled` — opacity: 0.6, pointer-events: none
-
-**수정:**
-- `.assessment-progress` z-index: 100 → 200 (풀페이지 위에 표시)
-
-### 2-3. `src/components/AssessmentRadio.jsx` — disabled prop 추가
-
-- `disabled` prop (기본값 `false`) 추가
-- disabled 시 `assessment-options-disabled` 클래스 적용 + input disabled 속성
-- 전환 중 라디오 비활성화 → 중복 선택 방지
+- `question-wrapper` max-width: **367px**
+- progress-bar 위치: `top: calc(50% - 280px)` (뷰포트 상단)
+- 모바일(768px 이하): `td { display: block }` → 세로 스태킹
 
 ---
 
-## 3. 기존 코드 대비 변경점
+## 3. 변경 파일 (3개)
 
-| 항목 | 이전 | 이후 |
-|------|------|------|
-| 문항 표시 | 56개 한 페이지 스크롤 | 1문항/1풀스크린 |
-| 다음 문항 이동 | 수동 스크롤 | 응답 후 600ms 자동 전환 |
-| 뒤로가기 | 허용 | popstate 차단 + 토스트 경고 |
-| 스크롤 | 허용 | body overflow: hidden |
-| 키보드 | 미지원 | 1~4 숫자키 선택 |
-| 이어하기 | 전체 표시 (기답변 체크) | 첫 미응답 문항으로 자동 이동 |
-| ProgressBar | answeredCount 기준 | currentIndex + 1 기준 |
-| 제출 | 하단 버튼 (allAnswered 시 활성) | 별도 완료 페이지 |
+### 3-1. `src/styles/assessment.css` — 전면 재작성
 
----
+**레거시 매칭 핵심 변경:**
 
-## 4. 추가 수정 — 라디오 세로 배치 + 연결 바 (레거시 심층 분석)
+| CSS 속성 | 수정 전 | 수정 후 (레거시 매칭) |
+|----------|---------|---------------------|
+| `.assessment-fullpage` z-index | 50 | **1100** (navbar 1000 위) |
+| `.assessment-progress` z-index | 200 | **1200** (fullpage 위) |
+| `.question-card-fullpage` max-width | 600px | **367px** (레거시 동일) |
+| `.assessment-scale` | display: flex | **position: relative** |
+| `.assessment-options` | gap: 16px | **margin: 0 0.2em** |
+| `.assessment-option` | — | **flex-basis: 50px, margin-top: 10px** |
+| `label` padding | padding-top: 48px | **padding: 3.5em 0 0 0** |
+| `label:before` positioning | transform: translateX(-50%) | **margin-left: -1.55em** |
+| `label:before` size | px 단위 | **em 단위 (3.2em/2.5em)** |
+| `.assessment-bar` | top/bottom: 24px | **top: 20px, height: calc(100% - 3.5em)** |
+| checked transform | translateX(-50%) scale(1.1) | **scale(1.1)** |
 
-레거시 JSP(`evaluation.jsp`) + CSS(`app.css`, `serveyform.css`) 심층 분석 결과 다음 차이점 발견:
+### 3-2. `src/components/AssessmentRadio.jsx`
 
-### 레거시 vs React 라디오 배치 비교
+- `assessment-bar` 내부에 `assessment-rating` div 추가 (레거시 동일 구조)
 
-| 항목 | 레거시 (JSP) | React (수정 전) | React (수정 후) |
-|------|-------------|----------------|----------------|
-| 라디오 방향 | `flex-direction: column` (세로) | `flex-direction: row` (가로) | `flex-direction: column` (세로) |
-| 연결 바 | `assessment-bar` 세로 바 있음 | 없음 | `assessment-bar` 세로 바 추가 |
-| 원형 크기 단위 | `em` (3.2em, 2.5em) | `px` (40px, 30px) | `em` (3.2em, 2.5em) |
+### 3-3. `src/pages/user/Evaluation.jsx`
 
-### 변경 파일
-
-**`src/styles/assessment.css`:**
-- `.assessment-options` → `flex-direction: column` + `position: relative`
-- `.assessment-option label` → `min-width: 80px`, 세로 배치 최적화
-- `.assessment-option label:before` → em 단위로 변경 (3.2em / 2.5em)
-- `.assessment-bar` 신규 — position: absolute 세로 연결 바 (4px, #e1e1e1)
-- 반응형 라디오 크기도 em 단위 업데이트
-
-**`src/components/AssessmentRadio.jsx`:**
-- `<div className="assessment-bar" />` 추가 — assessment-options 내부 마지막 자식
-
-### 레거시 참조 코드
-
-```
-tomcat/webapps/ROOT/evaluation.jsp:294-320  — 문항 HTML 구조
-tomcat/webapps/ROOT/app.css:4095-4233       — assessment-options, assessment-bar CSS
-tomcat/webapps/ROOT/serveyform.css:367-424  — 문항 텍스트, 색상 CSS
-tomcat/webapps/ROOT/evaluation.jsp:367-404  — fullpage.js 설정 (onLeave, afterLoad)
-```
+- `transitioning` state → `transitioningRef` (useRef) 변경 — stale closure 방지
+- `handleAnswer` useCallback 의존성 배열 수정 (빈 배열 → ref 사용으로 안전)
+- keyboard effect에 `handleAnswer` 의존성 추가
 
 ---
 
-## 5. 검증
+## 4. 검증
 
-- `npx vite build` — 빌드 성공 (2회)
-- 번들 크기: index.js 323.90 KB (변화 없음)
+- `npx vite build` — 빌드 성공 (3회)
+- 번들 크기: index.js 324.04 KB (변화 없음)

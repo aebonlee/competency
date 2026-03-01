@@ -22,7 +22,9 @@ const AssessmentRadio = ({ questionId, value, onChange, disabled = false }) => {
             </label>
           </div>
         ))}
-        <div className="assessment-bar" />
+        <div className="assessment-bar">
+          <div className="assessment-rating"><span>4</span></div>
+        </div>
       </div>
     </div>
   );

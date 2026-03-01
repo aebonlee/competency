@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useToast } from '../../contexts/ToastContext';
 import { getEvalQuestions, saveAnswer, calculateResults } from '../../utils/supabase';
@@ -18,7 +18,7 @@ const Evaluation = () => {
   const [started, setStarted] = useState(false);
   const [error, setError] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [transitioning, setTransitioning] = useState(false);
+  const transitioningRef = useRef(false);
 
   const totalCount = questions.length;
 
@@ -36,7 +36,6 @@ const Evaluation = () => {
       // Resume: find first unanswered question
       const firstUnanswered = data.findIndex(q => q.std_point === null || q.std_point < 0);
       if (firstUnanswered === -1 && data.length > 0) {
-        // All answered → go to submit page
         setCurrentIndex(data.length);
       } else if (firstUnanswered > 0) {
         setCurrentIndex(firstUnanswered);
@@ -47,7 +46,7 @@ const Evaluation = () => {
     load();
   }, [evalId]);
 
-  // Back button prevention
+  // Back button prevention (레거시 onLeave 매칭)
   useEffect(() => {
     if (!started) return;
 
@@ -64,7 +63,7 @@ const Evaluation = () => {
     };
   }, [started, showToast]);
 
-  // Scroll lock when started
+  // Scroll lock (레거시 html.fp-enabled body { overflow: hidden } 매칭)
   useEffect(() => {
     if (started) {
       document.body.style.overflow = 'hidden';
@@ -74,11 +73,32 @@ const Evaluation = () => {
     };
   }, [started]);
 
+  // Answer handler — useRef로 stale closure 방지
+  const handleAnswer = useCallback(async (questionId, value) => {
+    if (transitioningRef.current) return;
+
+    transitioningRef.current = true;
+    setAnswers(prev => ({ ...prev, [questionId]: value }));
+
+    try {
+      await saveAnswer(questionId, value);
+    } catch (err) {
+      console.error('Save answer error:', err);
+    }
+
+    // Auto-advance after 600ms (레거시는 수동 스크롤이지만 UX 개선)
+    setTimeout(() => {
+      setCurrentIndex(prev => prev + 1);
+      transitioningRef.current = false;
+    }, 600);
+  }, []);
+
   // Keyboard shortcuts (1~4)
   useEffect(() => {
-    if (!started || transitioning || currentIndex >= totalCount) return;
+    if (!started || currentIndex >= totalCount) return;
 
     const handleKeyDown = (e) => {
+      if (transitioningRef.current) return;
       const keyMap = { '1': 30, '2': 20, '3': 10, '4': 0 };
       const val = keyMap[e.key];
       if (val !== undefined) {
@@ -89,26 +109,7 @@ const Evaluation = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [started, transitioning, currentIndex, totalCount, questions]);
-
-  const handleAnswer = useCallback(async (questionId, value) => {
-    if (transitioning) return;
-
-    setTransitioning(true);
-    setAnswers(prev => ({ ...prev, [questionId]: value }));
-
-    try {
-      await saveAnswer(questionId, value);
-    } catch (err) {
-      console.error('Save answer error:', err);
-    }
-
-    // Auto-advance after 600ms
-    setTimeout(() => {
-      setCurrentIndex(prev => prev + 1);
-      setTransitioning(false);
-    }, 600);
-  }, [transitioning]);
+  }, [started, currentIndex, totalCount, questions, handleAnswer]);
 
   const handleSubmit = async () => {
     if (submitting) return;
@@ -158,14 +159,14 @@ const Evaluation = () => {
     );
   }
 
-  // Current question
+  // 현재 문항 — currentIndex < totalCount 일 때만 존재
   const currentQuestion = currentIndex < totalCount ? questions[currentIndex] : null;
 
   return (
     <div className="assessment-page">
       {!started ? (
         <>
-          {/* Intro */}
+          {/* Intro (레거시 section1) */}
           <div className="assessment-intro">
             <h1>MyCoreCompetency<br />핵심역량 검사</h1>
             <h2>( {totalCount} 문항 )</h2>
@@ -175,7 +176,7 @@ const Evaluation = () => {
             </div>
           </div>
 
-          {/* Guide */}
+          {/* Guide (레거시 section2) */}
           <div className="assessment-container">
             <div className="assessment-guide">
               <div className="speech-bubble">MyCoreCompetency 핵심역량 검사 안내문</div>
@@ -198,7 +199,7 @@ const Evaluation = () => {
           </div>
         </>
       ) : currentQuestion ? (
-        /* Single question fullpage */
+        /* ── 1문항/1풀스크린 (레거시 section.real 매칭) ── */
         <div className="assessment-fullpage">
           <div key={currentIndex} className="question-card-fullpage">
             <div className="question-number">문항 {currentIndex + 1} / {totalCount}</div>
@@ -209,7 +210,7 @@ const Evaluation = () => {
               questionId={currentQuestion.id}
               value={answers[currentQuestion.id] ?? null}
               onChange={handleAnswer}
-              disabled={transitioning}
+              disabled={transitioningRef.current}
             />
             <div className="question-text question-text-bottom">
               {currentQuestion.cmp_question?.q_text || `비교 문항 #${currentQuestion.cmpq_id}`}
@@ -222,7 +223,7 @@ const Evaluation = () => {
           <ProgressBar current={currentIndex + 1} total={totalCount} />
         </div>
       ) : (
-        /* Submit page — all answered */
+        /* ── 완료/제출 페이지 (레거시 SAVE 섹션 매칭) ── */
         <div className="assessment-fullpage">
           <div className="assessment-complete">
             <h2>모든 문항을 완료했습니다!</h2>
