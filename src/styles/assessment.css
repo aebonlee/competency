@@ -10,101 +10,20 @@
   background: #ffffff;
 }
 
+/* Mesa.svg 배경 — 데스크톱만 (레거시 serveyform.css 320-328 매칭) */
+@media (min-width: 1025px) {
+  .assessment-page {
+    background: url('/images/Mesa.svg') center / cover no-repeat fixed;
+  }
+}
+
 .assessment-container {
   max-width: 600px;
   margin: 0 auto;
   padding: var(--nav-height) 20px 0;
 }
 
-/* ── Intro Section (레거시 section1) ── */
-.assessment-intro {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 40px 20px;
-}
-
-.assessment-intro h1 {
-  font-size: 32px;
-  font-weight: 700;
-  letter-spacing: -1px;
-  color: var(--text-primary);
-  margin-bottom: 16px;
-}
-
-.assessment-intro h2 {
-  font-size: 18px;
-  color: var(--text-light);
-  font-weight: 400;
-  margin-bottom: 40px;
-}
-
-/* Scroll indicator (레거시 scroll-btn + mouse) */
-.scroll-indicator {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  color: var(--accent-red);
-  font-weight: 700;
-  font-size: 13px;
-  animation: bounce 2s ease infinite;
-}
-
-.scroll-mouse {
-  width: 24px;
-  height: 40px;
-  border: 2px solid var(--accent-red);
-  border-radius: 12px;
-  position: relative;
-}
-
-.scroll-mouse::after {
-  content: '';
-  position: absolute;
-  top: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 4px;
-  height: 8px;
-  background: var(--accent-red);
-  border-radius: 2px;
-  animation: scrollDown 1.5s ease infinite;
-}
-
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-}
-
-@keyframes scrollDown {
-  0% { opacity: 1; transform: translateX(-50%) translateY(0); }
-  100% { opacity: 0; transform: translateX(-50%) translateY(12px); }
-}
-
-/* ── Guide Section (레거시 section2) ── */
-.assessment-guide {
-  background: #f6f6f6;
-  padding: 24px;
-  border-radius: var(--radius-md);
-  margin: 40px 0;
-  line-height: 1.8;
-  font-size: 15px;
-  font-weight: 400;
-}
-
-.assessment-guide .speech-bubble {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--border-light);
-}
-
-/* ── Fullpage Layout — 1문항/1페이지 (레거시 fullpage.js 매칭) ── */
+/* ── Fullpage Layout — 모든 섹션 공통 (레거시 fullpage.js 매칭) ── */
 .assessment-fullpage {
   position: fixed;
   top: 0;
@@ -121,7 +40,188 @@
   overflow: hidden;
 }
 
-/* 문항 카드 (레거시 question-wrapper max-width: 367px 매칭) */
+/* 데스크톱에서 Mesa.svg 배경 위 카드 스타일 */
+@media (min-width: 1025px) {
+  .assessment-fullpage {
+    background: rgba(255, 255, 255, 0.92);
+  }
+}
+
+/* ── Intro Section (레거시 section1) ── */
+.assessment-intro-content {
+  text-align: center;
+  max-width: 367px;
+  width: 100%;
+  animation: slideInUp 0.5s ease both;
+}
+
+.assessment-intro-content h1 {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.assessment-intro-content h2 {
+  font-size: 18px;
+  color: var(--text-light);
+  font-weight: 400;
+  margin-bottom: 40px;
+}
+
+/* ── Scroll Button + Mouse (레거시 serveyform.css 661-719 매칭) ── */
+.scroll-btn-legacy {
+  display: block;
+  text-align: center;
+  cursor: pointer;
+}
+
+.scroll-btn-legacy > p {
+  display: inline-block;
+  line-height: 18px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #DC343B;
+  letter-spacing: 2px;
+}
+
+.mouse-legacy {
+  position: relative;
+  display: block;
+  width: 35px;
+  height: 55px;
+  margin: 0 auto 20px;
+  box-sizing: border-box;
+  border: 3px solid #444;
+  border-radius: 23px;
+}
+
+.mouse-legacy > span {
+  position: absolute;
+  display: block;
+  bottom: 29%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  background: #444;
+  border-radius: 50%;
+  animation: ani-mouse 2.5s linear infinite;
+}
+
+@keyframes ani-mouse {
+  0%   { opacity: 1; bottom: 29%; }
+  15%  { opacity: 1; bottom: 50%; }
+  50%  { opacity: 0; bottom: 50%; }
+  100% { opacity: 0; bottom: 29%; }
+}
+
+/* ── Guide Section (레거시 section2) ── */
+.guide-content {
+  max-width: 367px;
+  width: 100%;
+  text-align: center;
+  animation: slideInUp 0.5s ease both;
+}
+
+.test-info-legacy {
+  margin-bottom: 10px;
+}
+
+/* Speech Bubble (레거시 serveyform.css 758-776 매칭) */
+.speech-bubble-legacy {
+  filter: drop-shadow(-1px -1px 2px rgba(0, 0, 0, 0.1)) drop-shadow(1px 2px 2px rgba(0, 0, 0, 0.15));
+  margin: 0 1rem;
+  padding: 0.2rem 0;
+  position: relative;
+  font-size: 1rem;
+  font-weight: 700;
+  background: linear-gradient(122deg, rgba(16, 107, 181, 1) 0%, rgba(16, 107, 181, 0.9) 100%);
+  color: #fff;
+  text-align: center;
+  border: none;
+}
+
+.speech-bubble-legacy p {
+  color: #fff;
+  margin-bottom: 0;
+  padding: 12px 16px;
+  font-size: 20px;
+}
+
+/* Guide Text (레거시 test-text 매칭) */
+.test-text-legacy {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  font-size: 15px;
+  font-weight: 200;
+  padding: 20px;
+  background-color: #f6f6f6;
+  line-height: 20px;
+  text-align: left;
+}
+
+/* ── Example Sections (레거시 section3, section4) ── */
+.example-content {
+  max-width: 367px;
+  width: 100%;
+  text-align: center;
+  animation: slideInUp 0.5s ease both;
+}
+
+.example-label {
+  font-weight: bold;
+  color: #DC343B;
+  font-size: 16px;
+  margin: 12px 0;
+}
+
+/* Example Popovers (레거시 serveyform.css 809-835 Bootstrap popover 매칭) */
+.example-popover {
+  position: absolute;
+  background-color: #106bb5;
+  color: #fff;
+  font-size: 12px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  width: 160px;
+  z-index: 10;
+  line-height: 1.4;
+  top: 0;
+  text-align: left;
+}
+
+.example-popover-left {
+  right: calc(100% + 15px);
+}
+
+.example-popover-left::after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 100%;
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent transparent transparent #106bb5;
+}
+
+.example-popover-right {
+  left: calc(100% + 15px);
+}
+
+.example-popover-right::after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  right: 100%;
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent #106bb5 transparent transparent;
+}
+
+/* ── 문항 카드 (레거시 question-wrapper max-width: 367px 매칭) ── */
 .question-card-fullpage {
   max-width: 367px;
   width: 100%;
@@ -370,7 +470,7 @@
 
 /* ── Responsive (레거시 serveyform.css 411-424 매칭) ── */
 @media (max-width: 768px) {
-  .assessment-intro h1 {
+  .assessment-intro-content h1 {
     font-size: 24px;
   }
   .question-text {
@@ -389,5 +489,25 @@
     height: 2.2em;
     width: 2.2em;
     margin-left: -1.1em;
+  }
+  /* 모바일 팝오버 — 작은 화면에서 크기 축소 */
+  .example-popover {
+    width: 120px;
+    font-size: 10px;
+    padding: 6px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .example-popover {
+    width: 100px;
+    font-size: 9px;
+    padding: 4px 6px;
+  }
+  .example-popover-left {
+    right: calc(100% + 8px);
+  }
+  .example-popover-right {
+    left: calc(100% + 8px);
   }
 }
