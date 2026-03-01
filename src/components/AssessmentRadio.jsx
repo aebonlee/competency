@@ -15,10 +15,9 @@ const AssessmentRadio = ({ questionId, value, onChange }) => {
               value={val}
               checked={value === val}
               onChange={() => onChange(questionId, val)}
-              aria-label={LABELS[idx]}
             />
             <label htmlFor={`q${questionId}_${val}`}>
-              <span className="sr-only">{LABELS[idx]}</span>
+              {LABELS[idx]}
             </label>
           </div>
         ))}

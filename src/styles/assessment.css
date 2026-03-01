@@ -118,22 +118,26 @@
 
 .question-text {
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--text-primary);
   line-height: 1.6;
-  padding: 12px 0;
-  text-align: center;
+  padding: 10px 20px;
+  margin: 0 20px;
 }
 
 .question-text-top {
   margin-bottom: 8px;
+  border-left: 7px solid #024959;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 }
 
 .question-text-bottom {
   margin-top: 8px;
+  border-right: 7px solid #F29F05;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 }
 
-/* Radio Options — 4점 척도 */
+/* Radio Options — 4점 척도 (레거시 디자인 매칭) */
 .assessment-scale {
   display: flex;
   justify-content: center;
@@ -142,53 +146,94 @@
 
 .assessment-options {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 16px;
-  position: relative;
 }
 
 .assessment-option {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
 }
 
+/* Hide actual radio input */
 .assessment-option input[type="radio"] {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 36px;
-  height: 36px;
-  border: 3px solid var(--border-medium);
-  border-radius: 50%;
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Label — text below circle */
+.assessment-option label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  font-size: 11px;
+  font-weight: 600;
+  color: #595959;
   position: relative;
+  padding-top: 48px;
+  min-width: 52px;
+  text-align: center;
 }
 
-.assessment-option:nth-child(1) input { width: 44px; height: 44px; }
-.assessment-option:nth-child(2) input { width: 36px; height: 36px; }
-.assessment-option:nth-child(3) input { width: 36px; height: 36px; }
-.assessment-option:nth-child(4) input { width: 44px; height: 44px; }
-
-.assessment-option input[type="radio"]:hover {
-  border-color: var(--primary-blue);
-}
-
-.assessment-option input[type="radio"]:checked {
-  border-color: var(--primary-blue);
-  background: var(--primary-blue);
-}
-
-.assessment-option input[type="radio"]:checked::after {
+/* Circle — label:before pseudo-element */
+.assessment-option label:before {
   content: '';
   position: absolute;
-  top: 50%;
+  top: 4px;
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: 8px;
-  height: 8px;
-  background: white;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  background-color: #bbbdbf;
   border-radius: 50%;
+  border: 1px solid #fff;
+  box-shadow: 0 2px 4px 0 rgba(82, 82, 82, .5);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  transition: transform 0.15s ease;
+}
+
+/* Position-based colors — always visible */
+.assessment-option:nth-child(1) label:before {
+  background-color: #024959;
+}
+
+.assessment-option:nth-child(2) label:before {
+  background-color: #027373;
+  width: 30px;
+  height: 30px;
+  top: 9px;
+}
+
+.assessment-option:nth-child(3) label:before {
+  background-color: #F2B705;
+  width: 30px;
+  height: 30px;
+  top: 9px;
+}
+
+.assessment-option:nth-child(4) label:before {
+  background-color: #F29F05;
+}
+
+/* Checked state — checkmark */
+.assessment-option input[type="radio"]:checked + label:before {
+  content: '✓';
+  transform: translateX(-50%) scale(1.1);
+}
+
+/* Focus state for accessibility */
+.assessment-option input[type="radio"]:focus-visible + label:before {
+  outline: 2px solid var(--primary-blue);
+  outline-offset: 2px;
 }
 
 /* Progress Bar */
@@ -245,16 +290,26 @@
     font-size: 24px;
   }
   .assessment-options {
-    gap: 12px;
+    gap: 10px;
   }
-  .assessment-option:nth-child(1) input,
-  .assessment-option:nth-child(4) input {
-    width: 38px;
-    height: 38px;
+  .assessment-option label {
+    padding-top: 40px;
+    font-size: 10px;
+    min-width: 44px;
   }
-  .assessment-option:nth-child(2) input,
-  .assessment-option:nth-child(3) input {
-    width: 30px;
-    height: 30px;
+  .assessment-option label:before {
+    width: 34px;
+    height: 34px;
+    top: 3px;
+  }
+  .assessment-option:nth-child(2) label:before,
+  .assessment-option:nth-child(3) label:before {
+    width: 26px;
+    height: 26px;
+    top: 7px;
+  }
+  .question-text {
+    margin: 0 10px;
+    font-size: 14px;
   }
 }
