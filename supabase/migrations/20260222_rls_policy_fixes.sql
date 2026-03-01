@@ -43,7 +43,7 @@ CREATE POLICY "user_profiles_select" ON public.user_profiles
 -- 기존: user_id = auth.uid() OR is_admin()
 -- 수정: + 그룹 소유자/매니저가 자기 그룹 멤버 검사 조회
 -- ============================================================
-DROP POLICY IF EXISTS "mcc_eval_select_own" ON public.eval_list;
+DROP POLICY IF EXISTS "eval_list_select" ON public.eval_list;
 
 CREATE POLICY "eval_list_select" ON public.eval_list
   FOR SELECT USING (
@@ -68,7 +68,7 @@ CREATE POLICY "eval_list_select" ON public.eval_list
 -- 기존: eval_id → eval_list.user_id = auth.uid() OR is_admin()
 -- 수정: 인증 사용자 전체 (집계 통계 목적)
 -- ============================================================
-DROP POLICY IF EXISTS "mcc_results_select_own" ON public.results;
+DROP POLICY IF EXISTS "results_select" ON public.results;
 
 CREATE POLICY "results_select" ON public.results
   FOR SELECT USING (
@@ -78,6 +78,7 @@ CREATE POLICY "results_select" ON public.results
 -- ============================================================
 -- 4. notes — DELETE 정책 추가 (누락)
 -- ============================================================
+DROP POLICY IF EXISTS "notes_delete" ON public.notes;
 CREATE POLICY "notes_delete" ON public.notes
   FOR DELETE USING (
     is_admin()
@@ -88,6 +89,7 @@ CREATE POLICY "notes_delete" ON public.notes
 -- 5. group_invitations — UPDATE 정책 추가 (누락)
 -- 초대 취소 (status = 'cancelled') 등
 -- ============================================================
+DROP POLICY IF EXISTS "group_invitations_update" ON public.group_invitations;
 CREATE POLICY "group_invitations_update" ON public.group_invitations
   FOR UPDATE USING (
     EXISTS (
@@ -104,6 +106,7 @@ CREATE POLICY "group_invitations_update" ON public.group_invitations
 -- 6. coupons — DELETE 정책 추가 (누락)
 -- 그룹 삭제 시 관련 쿠폰 삭제용
 -- ============================================================
+DROP POLICY IF EXISTS "coupons_delete" ON public.coupons;
 CREATE POLICY "coupons_delete" ON public.coupons
   FOR DELETE USING (
     is_admin()
@@ -118,7 +121,7 @@ CREATE POLICY "coupons_delete" ON public.coupons
 -- 7. coupons — SELECT 정책 수정 (익명 사용자 쿠폰 코드 확인)
 -- InviteRegister에서 인증 없이 쿠폰 코드 유효성 확인 필요
 -- ============================================================
-DROP POLICY IF EXISTS "mcc_coupons_select" ON public.coupons;
+DROP POLICY IF EXISTS "coupons_select" ON public.coupons;
 
 CREATE POLICY "coupons_select" ON public.coupons
   FOR SELECT USING (
