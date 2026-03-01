@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import usePageTitle from '../../utils/usePageTitle';
 import { COMPETENCY_INFO } from '../../data/competencyInfo';
 import '../../styles/competency.css';
 
@@ -19,6 +20,7 @@ const CIRCLE_CLASSES = [
 ];
 
 const Competency = () => {
+  usePageTitle('4차산업혁명 8대 핵심역량');
   const abilityRefs = useRef([]);
 
   const scrollToAbility = (index) => {

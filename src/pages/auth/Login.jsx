@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import usePageTitle from '../../utils/usePageTitle';
 import { signInWithGoogle, signInWithKakao, signInWithEmail } from '../../utils/auth';
 import '../../styles/auth.css';
 
@@ -11,6 +12,7 @@ const TOOLTIPS = {
 };
 
 const Login = () => {
+  usePageTitle('로그인');
   const { isLoggedIn, isAdmin, isGroup } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();

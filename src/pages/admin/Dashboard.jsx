@@ -696,7 +696,7 @@ const Dashboard = () => {
         <div className="dashboard-payment-table card">
           <div className="dashboard-card-header">
             <h3>최근 결제</h3>
-            <Link to="/admin/statistics" className="dashboard-view-all">전체 보기</Link>
+            <Link to="/admin/purchases" className="dashboard-view-all">전체 보기</Link>
           </div>
           {recentPurchases.length === 0 ? (
             <p className="dashboard-empty">데이터가 없습니다.</p>

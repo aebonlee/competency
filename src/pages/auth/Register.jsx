@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import usePageTitle from '../../utils/usePageTitle';
 import { signUp } from '../../utils/auth';
 import { POSITION_LIST, AGE_LIST, EDUCATION_LIST, REGION_LIST } from '../../data/competencyInfo';
 import '../../styles/auth.css';
 
 const Register = () => {
+  usePageTitle('회원가입');
   const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
 

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
+import usePageTitle from '../../utils/usePageTitle';
 import { getEvaluations, validateCoupon, useCoupon as applyCoupon, createEvaluation } from '../../utils/supabase';
 import '../../styles/checkout.css';
 
@@ -15,6 +16,7 @@ const TOOLTIPS = {
 };
 
 const Main = () => {
+  usePageTitle('검사하기');
   const { user, profile } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();

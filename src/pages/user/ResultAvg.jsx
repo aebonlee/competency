@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import getSupabase from '../../utils/supabase';
+import usePageTitle from '../../utils/usePageTitle';
 import { COMPETENCY_LABELS_SHORT, COMPETENCY_COLORS, AGE_LIST, POSITION_LIST } from '../../data/competencyInfo';
 import '../../styles/result.css';
 
 const ResultAvg = () => {
+  usePageTitle('나이별 & 직무별 통계');
   const [overallAvg, setOverallAvg] = useState(null);
   const [ageAvg, setAgeAvg] = useState([]);
   const [posAvg, setPosAvg] = useState([]);

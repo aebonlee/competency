@@ -1,7 +1,9 @@
+import usePageTitle from '../../utils/usePageTitle';
 import { COMPETENCY_2015_MAP, COMPETENCY_INFO } from '../../data/competencyInfo';
 import '../../styles/competency.css';
 
 const Competency2015 = () => {
+  usePageTitle('2015교육과정 핵심역량');
   const entries = Object.entries(COMPETENCY_2015_MAP);
 
   return (

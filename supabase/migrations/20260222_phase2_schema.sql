@@ -136,10 +136,10 @@ CREATE POLICY "group_invitations_delete" ON public.group_invitations
   );
 
 -- ============================================================
--- 4. board_posts.views DEFAULT 0
+-- 4. board_posts.views 컬럼 추가 + DEFAULT 0
 -- ============================================================
 ALTER TABLE public.board_posts
-  ALTER COLUMN views SET DEFAULT 0;
+  ADD COLUMN IF NOT EXISTS views INTEGER DEFAULT 0;
 
 -- ============================================================
 -- 5. groups 확장 컬럼

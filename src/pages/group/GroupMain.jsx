@@ -112,12 +112,12 @@ const GroupMain = () => {
           let usedCoupons = 0;
           const { data: coupons } = await supabase
             .from('coupons')
-            .select('id, used')
+            .select('id, is_used')
             .eq('group_id', group.id);
 
           if (coupons) {
             totalCoupons = coupons.length;
-            usedCoupons = coupons.filter(c => c.used).length;
+            usedCoupons = coupons.filter(c => c.is_used).length;
           }
 
           // Fetch subgroup count

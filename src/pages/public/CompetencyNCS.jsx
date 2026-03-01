@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import DOMPurify from 'dompurify';
+import usePageTitle from '../../utils/usePageTitle';
 import { NCS_MAP, COMPETENCY_INFO } from '../../data/competencyInfo';
 import '../../styles/competency.css';
 
@@ -47,6 +48,7 @@ const NCS_DEFINITIONS = [
 ];
 
 const CompetencyNCS = () => {
+  usePageTitle('NCS 직업기초능력');
   const [svgHtml, setSvgHtml] = useState(SVG_FALLBACK_LOADING);
   const svgContainerRef = useRef(null);
   const entries = Object.entries(NCS_MAP);

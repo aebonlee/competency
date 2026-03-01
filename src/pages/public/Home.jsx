@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import usePageTitle from '../../utils/usePageTitle';
 import { COMPETENCY_INFO } from '../../data/competencyInfo';
 import '../../styles/home.css';
 
@@ -23,6 +24,7 @@ const STEPS = [
 ];
 
 const Home = () => {
+  usePageTitle('');
   const { isLoggedIn, isAdmin, isGroup, loading } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('q1');
