@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a4a7a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#106bb5;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#DC343B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f05a5a;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Decorative circles -->
+  <circle cx="950" cy="120" r="180" fill="rgba(255,255,255,0.04)"/>
+  <circle cx="1050" cy="400" r="250" fill="rgba(255,255,255,0.03)"/>
+  <circle cx="150" cy="500" r="120" fill="rgba(255,255,255,0.04)"/>
+
+  <!-- Accent bar -->
+  <rect x="100" y="200" width="60" height="4" fill="url(#accent)" rx="2"/>
+
+  <!-- MCC Badge -->
+  <rect x="100" y="130" width="90" height="40" rx="6" fill="rgba(255,255,255,0.15)"/>
+  <text x="145" y="157" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#fff" text-anchor="middle">MCC</text>
+
+  <!-- Title -->
+  <text x="100" y="260" font-family="Arial, 'Noto Sans KR', sans-serif" font-size="52" font-weight="700" fill="#ffffff">MyCoreCompetency</text>
+
+  <!-- Subtitle -->
+  <text x="100" y="320" font-family="Arial, 'Noto Sans KR', sans-serif" font-size="30" fill="rgba(255,255,255,0.9)">4차 산업혁명 8대 핵심역량 검사</text>
+
+  <!-- Description -->
+  <text x="100" y="380" font-family="Arial, 'Noto Sans KR', sans-serif" font-size="20" fill="rgba(255,255,255,0.6)">56쌍 문항으로 측정하는 핵심역량 진단 서비스</text>
+
+  <!-- 8 competency dots -->
+  <circle cx="120" cy="440" r="12" fill="#ED1B23"/>
+  <circle cx="155" cy="440" r="12" fill="#F15A28"/>
+  <circle cx="190" cy="440" r="12" fill="#D7DF22"/>
+  <circle cx="225" cy="440" r="12" fill="#EC008C"/>
+  <circle cx="260" cy="440" r="12" fill="#662C91"/>
+  <circle cx="295" cy="440" r="12" fill="#59c7c4"/>
+  <circle cx="330" cy="440" r="12" fill="#38B549"/>
+  <circle cx="365" cy="440" r="12" fill="#00AEEF"/>
+
+  <!-- Domain -->
+  <text x="100" y="560" font-family="Arial, sans-serif" font-size="18" fill="rgba(255,255,255,0.4)">competency.dreamitbiz.com</text>
+</svg>
