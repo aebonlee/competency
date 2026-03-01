@@ -50,8 +50,9 @@ ALTER TABLE public.coupons
   ADD COLUMN IF NOT EXISTS assigned_user TEXT;
 
 -- ============================================================
--- 4. check_user_status RPC 함수
+-- 4. check_user_status RPC 함수 (기존 함수 삭제 후 재생성)
 -- ============================================================
+DROP FUNCTION IF EXISTS public.check_user_status(UUID, TEXT);
 CREATE OR REPLACE FUNCTION public.check_user_status(
   target_user_id UUID,
   current_domain TEXT DEFAULT NULL
