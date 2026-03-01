@@ -15,10 +15,12 @@ const ResultAvg = () => {
       if (!client) { setLoading(false); return; }
 
       try {
-        // Fetch all completed results with user profile info
+        // Fetch completed results (최근 10,000건 제한)
         const { data: results } = await client
           .from('results')
-          .select('point1, point2, point3, point4, point5, point6, point7, point8, eval_id');
+          .select('point1, point2, point3, point4, point5, point6, point7, point8, eval_id')
+          .order('created_at', { ascending: false })
+          .limit(10000);
 
         if (!results || results.length === 0) {
           setLoading(false);

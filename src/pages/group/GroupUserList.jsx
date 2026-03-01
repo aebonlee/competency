@@ -64,39 +64,47 @@ const GroupUserList = () => {
 
         if (error) throw error;
 
-        // For each member, fetch their latest eval status
-        const membersWithEval = await Promise.all(
-          (memberData || []).map(async (member) => {
-            const { data: evals } = await supabase
-              .from('eval_list')
-              .select('id, progress, end_date')
-              .eq('user_id', member.user_id)
-              .order('created_at', { ascending: false })
-              .limit(1);
+        // Fetch all evals for group members in a single query
+        const userIds = (memberData || []).map(m => m.user_id);
+        let evalMap = {};
+        if (userIds.length > 0) {
+          const { data: allEvals } = await supabase
+            .from('eval_list')
+            .select('id, user_id, progress, end_date, created_at')
+            .in('user_id', userIds)
+            .order('created_at', { ascending: false });
 
-            const latestEval = evals?.[0] || null;
-            let evalStatus = '미실시';
-            if (latestEval) {
-              if (latestEval.progress >= 100) {
-                evalStatus = '완료';
-              } else if (latestEval.progress > 0) {
-                evalStatus = '진행중';
-              } else {
-                evalStatus = '대기';
-              }
+          // Keep only latest eval per user
+          (allEvals || []).forEach(ev => {
+            if (!evalMap[ev.user_id]) {
+              evalMap[ev.user_id] = ev;
             }
+          });
+        }
 
-            return {
-              ...member,
-              name: member.profiles?.name || '-',
-              email: member.profiles?.email || '-',
-              phone: member.profiles?.phone || '-',
-              subgrp: member.profiles?.subgrp || '',
-              evalStatus,
-              latestEvalId: latestEval?.id || null,
-            };
-          })
-        );
+        const membersWithEval = (memberData || []).map(member => {
+          const latestEval = evalMap[member.user_id] || null;
+          let evalStatus = '미실시';
+          if (latestEval) {
+            if (latestEval.progress >= 100) {
+              evalStatus = '완료';
+            } else if (latestEval.progress > 0) {
+              evalStatus = '진행중';
+            } else {
+              evalStatus = '대기';
+            }
+          }
+
+          return {
+            ...member,
+            name: member.profiles?.name || '-',
+            email: member.profiles?.email || '-',
+            phone: member.profiles?.phone || '-',
+            subgrp: member.profiles?.subgrp || '',
+            evalStatus,
+            latestEvalId: latestEval?.id || null,
+          };
+        });
 
         setMembers(membersWithEval);
       } catch (err) {

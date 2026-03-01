@@ -63,7 +63,8 @@ export async function signUp(email: string, password: string, profileData: SignU
       data: {
         full_name: profileData.name,
         gender: profileData.gender,
-        phone: profileData.phone
+        phone: profileData.phone,
+        signup_domain: window.location.hostname,
       }
     }
   });
@@ -86,7 +87,8 @@ export async function signUp(email: string, password: string, profileData: SignU
         edulevel: profileData.edulevel || '',
         usertype: 0,
         grp: profileData.grp || '',
-        subgrp: profileData.subgrp || ''
+        subgrp: profileData.subgrp || '',
+        signup_domain: window.location.hostname,
       });
     if (profileError) console.error('Profile creation error:', profileError);
   }

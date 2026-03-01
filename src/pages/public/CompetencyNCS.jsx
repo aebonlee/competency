@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import DOMPurify from 'dompurify';
 import { NCS_MAP, COMPETENCY_INFO } from '../../data/competencyInfo';
 import '../../styles/competency.css';
 
@@ -59,7 +60,8 @@ const CompetencyNCS = () => {
       })
       .then(text => {
         const svgMatch = text.match(/<svg[\s\S]*<\/svg>/);
-        setSvgHtml(svgMatch ? svgMatch[0] : text);
+        const raw = svgMatch ? svgMatch[0] : text;
+        setSvgHtml(DOMPurify.sanitize(raw, { USE_PROFILES: { svg: true, svgFilters: true }, ADD_ATTR: ['class'] }));
       })
       .catch(() => {
         setSvgHtml('<div style="text-align:center;padding:40px;color:#999;">Infographic SVG could not be loaded.</div>');

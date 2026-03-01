@@ -116,8 +116,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // usertype: 0=개인, 1=그룹, 2=관리자, 3=서브그룹
   const usertype = profile?.usertype ?? 0;
-  const ADMIN_EMAILS = ['aebon@kakao.com', 'aebon@kyonggi.ac.kr', 'ryuwebpd@gmail.com'];
-  const isAdmin = usertype === 2 || !!(user?.email && ADMIN_EMAILS.includes(user.email));
+  const isAdmin = usertype === 2;
   const isGroup = usertype === 1 || usertype === 3;
   const isLoggedIn = !!user;
   // 인구통계학적 정보 미완성 체크 (OAuth 사용자용)

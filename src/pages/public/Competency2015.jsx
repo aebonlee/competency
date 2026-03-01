@@ -1,27 +1,8 @@
-import { useState, useEffect } from 'react';
 import { COMPETENCY_2015_MAP, COMPETENCY_INFO } from '../../data/competencyInfo';
 import '../../styles/competency.css';
 
-const SVG_FALLBACK_LOADING = '<div style="text-align:center;padding:40px;color:#888;">Loading infographic...</div>';
-
 const Competency2015 = () => {
-  const [svgHtml, setSvgHtml] = useState(SVG_FALLBACK_LOADING);
   const entries = Object.entries(COMPETENCY_2015_MAP);
-
-  useEffect(() => {
-    fetch('/images/competency-2015.svg')
-      .then(res => {
-        if (!res.ok) throw new Error('SVG not found');
-        return res.text();
-      })
-      .then(text => {
-        const svgMatch = text.match(/<svg[\s\S]*<\/svg>/);
-        setSvgHtml(svgMatch ? svgMatch[0] : text);
-      })
-      .catch(() => {
-        setSvgHtml('<div style="text-align:center;padding:40px;color:#999;">Infographic SVG could not be loaded.</div>');
-      });
-  }, []);
 
   return (
     <div className="page-wrapper">
@@ -36,7 +17,11 @@ const Competency2015 = () => {
         <div className="container-narrow">
           <h1 className="c2015-title">2015개정 교육과정 핵심역량</h1>
 
-          <div className="c2015" dangerouslySetInnerHTML={{ __html: svgHtml }} />
+          <div className="c2015">
+            <object type="image/svg+xml" data="/images/competency-2015.svg" aria-label="2015 교육과정 핵심역량 인포그래픽" style={{ width: '100%' }}>
+              인포그래픽을 표시할 수 없습니다.
+            </object>
+          </div>
 
           <div className="c2015-text">
             <p>
