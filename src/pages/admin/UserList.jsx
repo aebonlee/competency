@@ -8,6 +8,7 @@ import '../../styles/admin.css';
 import '../../styles/base.css';
 
 const PAGE_SIZE = 20;
+const COMPETENCY_DOMAIN = 'competency.dreamitbiz.com';
 
 const UserList = () => {
   const { user: _user } = useAuth();
@@ -17,9 +18,10 @@ const UserList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchInput, setSearchInput] = useState('');
+  const [siteFilter, setSiteFilter] = useState('competency');
   const [loading, setLoading] = useState(true);
 
-  const fetchUsers = useCallback(async (page, search) => {
+  const fetchUsers = useCallback(async (page, search, site) => {
     setLoading(true);
     try {
       const supabase = getSupabase();
@@ -35,6 +37,10 @@ const UserList = () => {
         .from('user_profiles')
         .select('*', { count: 'exact' })
         .is('deleted_at', null);
+
+      if (site === 'competency') {
+        query = query.eq('signup_domain', COMPETENCY_DOMAIN);
+      }
 
       if (search) {
         query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%,phone.ilike.%${search}%`);
@@ -57,8 +63,8 @@ const UserList = () => {
   }, [showToast]);
 
   useEffect(() => {
-    fetchUsers(currentPage, searchTerm);
-  }, [currentPage, searchTerm, fetchUsers]);
+    fetchUsers(currentPage, searchTerm, siteFilter);
+  }, [currentPage, searchTerm, siteFilter, fetchUsers]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -167,6 +173,14 @@ const UserList = () => {
       {/* Search Toolbar */}
       <div className="admin-toolbar">
         <form onSubmit={handleSearch} className="admin-search">
+          <select
+            value={siteFilter}
+            onChange={(e) => { setSiteFilter(e.target.value); setCurrentPage(1); }}
+            style={{ width: 'auto', minWidth: '140px' }}
+          >
+            <option value="competency">Competency 사이트</option>
+            <option value="all">전체 사이트</option>
+          </select>
           <input
             type="text"
             placeholder="이름, 이메일, 전화번호 검색..."

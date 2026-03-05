@@ -18,6 +18,7 @@ ChartJS.register(
 );
 
 const chartFont = { family: "'Noto Sans KR', sans-serif" };
+const COMPETENCY_DOMAIN = 'competency.dreamitbiz.com';
 
 const Dashboard = () => {
   const { user: _user } = useAuth();
@@ -72,10 +73,10 @@ const Dashboard = () => {
         const sevenDaysAgoISO = sevenDaysAgo.toISOString();
 
         const results = await Promise.allSettled([
-          // Q1: active user count
-          supabase.from('user_profiles').select('*', { count: 'exact', head: true }).is('deleted_at', null),
-          // Q2: today signups
-          supabase.from('user_profiles').select('*', { count: 'exact', head: true }).gte('created_at', todayISO).is('deleted_at', null),
+          // Q1: active user count (competency site only)
+          supabase.from('user_profiles').select('*', { count: 'exact', head: true }).is('deleted_at', null).eq('signup_domain', COMPETENCY_DOMAIN),
+          // Q2: today signups (competency site only)
+          supabase.from('user_profiles').select('*', { count: 'exact', head: true }).gte('created_at', todayISO).is('deleted_at', null).eq('signup_domain', COMPETENCY_DOMAIN),
           // Q3: total evals
           supabase.from('eval_list').select('*', { count: 'exact', head: true }),
           // Q4: completed evals
@@ -94,20 +95,20 @@ const Dashboard = () => {
           supabase.from('notes').select('*', { count: 'exact', head: true }).eq('is_read', false),
           // Q11: surveys (rating)
           supabase.from('surveys').select('rating'),
-          // Q12: deleted users
-          supabase.from('user_profiles').select('*', { count: 'exact', head: true }).not('deleted_at', 'is', null),
+          // Q12: deleted users (competency site only)
+          supabase.from('user_profiles').select('*', { count: 'exact', head: true }).not('deleted_at', 'is', null).eq('signup_domain', COMPETENCY_DOMAIN),
           // Q13: questions count
           supabase.from('questions').select('*', { count: 'exact', head: true }),
-          // Q14: user type distribution
-          supabase.from('user_profiles').select('usertype').is('deleted_at', null),
-          // Q15: recent 5 users
-          supabase.from('user_profiles').select('id, name, email, created_at').is('deleted_at', null).order('created_at', { ascending: false }).limit(5),
+          // Q14: user type distribution (competency site only)
+          supabase.from('user_profiles').select('usertype').is('deleted_at', null).eq('signup_domain', COMPETENCY_DOMAIN),
+          // Q15: recent 5 users (competency site only)
+          supabase.from('user_profiles').select('id, name, email, created_at').is('deleted_at', null).eq('signup_domain', COMPETENCY_DOMAIN).order('created_at', { ascending: false }).limit(5),
           // Q16: recent 5 evals + join
           supabase.from('eval_list').select('id, eval_type, progress, created_at, profiles:user_id ( name )').order('created_at', { ascending: false }).limit(5),
           // Q17: recent 10 purchases + join
           supabase.from('purchases').select('id, amount, status, payment_id, created_at, profiles:user_id ( name, email )').order('created_at', { ascending: false }).limit(10),
-          // Q18: recent 7 days signups
-          supabase.from('user_profiles').select('created_at').gte('created_at', sevenDaysAgoISO).is('deleted_at', null),
+          // Q18: recent 7 days signups (competency site only)
+          supabase.from('user_profiles').select('created_at').gte('created_at', sevenDaysAgoISO).is('deleted_at', null).eq('signup_domain', COMPETENCY_DOMAIN),
           // Q19: recent 7 days completed evals
           supabase.from('eval_list').select('created_at').gte('created_at', sevenDaysAgoISO).gte('progress', 100),
           // Q20: competency scores (all results)
