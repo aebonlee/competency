@@ -35,18 +35,7 @@ type QuestionsBySection = Record<number, QuestionInput[]>;
  */
 export const createPurchase = async (purchaseData: { user_id: string; amount: number }): Promise<Purchase> => {
   const client = getSupabase();
-  if (!client) {
-    const purchase: Purchase = {
-      id: crypto.randomUUID(),
-      ...purchaseData,
-      status: 'pending',
-      created_at: new Date().toISOString()
-    };
-    const purchases: Purchase[] = JSON.parse(localStorage.getItem('mcc_purchases') || '[]');
-    purchases.push(purchase);
-    localStorage.setItem('mcc_purchases', JSON.stringify(purchases));
-    return purchase;
-  }
+  if (!client) throw new Error('Supabase가 설정되지 않았습니다.');
 
   const { data, error } = await client
     .from('purchases')
@@ -67,17 +56,7 @@ export const updatePurchaseStatus = async (
   paymentId?: string
 ): Promise<Purchase | undefined> => {
   const client = getSupabase();
-  if (!client) {
-    const purchases: Purchase[] = JSON.parse(localStorage.getItem('mcc_purchases') || '[]');
-    const idx = purchases.findIndex(p => p.id === purchaseId);
-    if (idx >= 0) {
-      purchases[idx].status = status;
-      purchases[idx].payment_id = paymentId;
-      if (status === 'paid') purchases[idx].paid_at = new Date().toISOString();
-      localStorage.setItem('mcc_purchases', JSON.stringify(purchases));
-    }
-    return purchases[idx];
-  }
+  if (!client) throw new Error('Supabase가 설정되지 않았습니다.');
 
   const updateData: Record<string, unknown> = { status };
   if (paymentId) updateData.payment_id = paymentId;
@@ -194,21 +173,7 @@ function generateQuestionPairs(questionsBySection: QuestionsBySection): Question
  */
 export const createEvaluation = async (userId: string, evalType: number = 1) => {
   const client = getSupabase();
-  if (!client) {
-    const evalEntry = {
-      id: Date.now(),
-      user_id: userId,
-      eval_type: evalType,
-      times: 1,
-      progress: 0,
-      start_date: new Date().toISOString(),
-      end_date: null
-    };
-    const evals = JSON.parse(localStorage.getItem('mcc_evals') || '[]');
-    evals.push(evalEntry);
-    localStorage.setItem('mcc_evals', JSON.stringify(evals));
-    return evalEntry;
-  }
+  if (!client) throw new Error('Supabase가 설정되지 않았습니다.');
 
   // Get the next times value for this user
   const { data: existing } = await client
@@ -279,10 +244,7 @@ export const createEvaluation = async (userId: string, evalType: number = 1) => 
  */
 export const getEvaluations = async (userId: string) => {
   const client = getSupabase();
-  if (!client) {
-    const evals = JSON.parse(localStorage.getItem('mcc_evals') || '[]');
-    return evals.filter((e: { user_id: string }) => e.user_id === userId);
-  }
+  if (!client) throw new Error('Supabase가 설정되지 않았습니다.');
 
   const { data, error } = await client
     .from('eval_list')
