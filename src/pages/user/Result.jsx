@@ -5,7 +5,9 @@ import { getResult, checkSurveyCompleted } from '../../utils/supabase';
 import { CompetencyPolarChart, CompetencyDoughnutChart } from '../../components/CompetencyChart';
 import Modal from '../../components/Modal';
 import { COMPETENCY_INFO, COMPETENCY_COLORS, COMPETENCY_LABELS } from '../../data/competencyInfo';
+import AIReportSection from '../../components/AIReportSection';
 import '../../styles/result.css';
+import '../../styles/ai-report.css';
 
 // 역량별 SVG 아이콘 경로 & CSS 클래스
 const COMP_ICONS = [
@@ -319,6 +321,9 @@ const Result = () => {
             </div>
           </div>
         )}
+
+        {/* AI Report section */}
+        <AIReportSection evalId={evalId} scores={scores} />
 
         {/* Survey section */}
         <div style={{ textAlign: 'center', marginTop: 40, padding: '24px', background: 'var(--bg-light-gray)', borderRadius: '12px' }}>

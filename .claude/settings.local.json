@@ -4,7 +4,12 @@
       "WebFetch(domain:www.competency.or.kr)",
       "WebFetch(domain:www.dreamitbiz.com)",
       "Bash(npx vite build)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "WebFetch(domain:api.github.com)",
+      "Bash(npm run build:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ]
   }
 }

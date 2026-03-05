@@ -180,6 +180,23 @@ export interface CompetencyInfo {
   description: string;
 }
 
+// ---- AI Report ----
+export interface AIReport {
+  id: string;
+  eval_id: number;
+  user_id: string;
+  provider: 'claude' | 'openai';
+  model: string;
+  report_content: string;
+  scores_snapshot: Record<string, number>;
+  user_context: { age?: string; position?: string; gender?: string } | null;
+  prompt_tokens: number;
+  completion_tokens: number;
+  generation_time_ms: number;
+  created_at: string;
+  cached?: boolean;
+}
+
 // ---- Utils ----
 export interface PaymentRequest {
   orderId: string;
