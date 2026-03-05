@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
-import { createPurchase, createEvaluation, verifyPayment, updatePurchaseStatus } from '../../utils/supabase';
+import { createPurchase, createEvaluation, verifyPayment } from '../../utils/supabase';
 import { requestPayment } from '../../utils/portone';
 import '../../styles/checkout.css';
 
@@ -62,14 +62,7 @@ const Checkout = () => {
       }
 
       // 3. Verify payment server-side
-      const pid = String(purchase.id);
-      try {
-        await verifyPayment(paymentResult.paymentId, pid);
-      } catch (verifyErr) {
-        console.error('Payment verification failed (fallback):', verifyErr);
-        // Edge Function 미설정 시 직접 상태 업데이트 (fallback)
-        await updatePurchaseStatus(pid, 'paid', paymentResult.paymentId);
-      }
+      await verifyPayment(paymentResult.paymentId, String(purchase.id));
 
       // 4. Create evaluation
       const newEval = await createEvaluation(user.id);

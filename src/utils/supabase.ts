@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import type { Purchase, EvalResult } from '../types';
+import type { Purchase, EvalResult, AIReport } from '../types';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -354,10 +354,7 @@ export const getResult = async (evalId: string): Promise<EvalResult | null> => {
  */
 export const verifyPayment = async (paymentId: string, purchaseId: string) => {
   const client = getSupabase();
-  if (!client) {
-    await updatePurchaseStatus(purchaseId, 'paid', paymentId);
-    return { verified: true };
-  }
+  if (!client) throw new Error('Supabase가 설정되지 않았습니다.');
 
   const { data, error } = await client.functions.invoke('verify-payment', {
     body: { paymentId, purchaseId }
@@ -465,6 +462,52 @@ export const submitSurvey = async (
     .insert(rows);
 
   if (error) throw error;
+};
+
+/**
+ * Generate AI report via Edge Function
+ */
+export const generateAIReport = async (
+  evalId: number,
+  provider: 'claude' | 'openai',
+  forceRegenerate: boolean = false
+): Promise<AIReport> => {
+  const client = getSupabase();
+  if (!client) throw new Error('Supabase가 설정되지 않았습니다.');
+
+  const { data, error } = await client.functions.invoke('generate-ai-report', {
+    body: { evalId, provider, forceRegenerate }
+  });
+
+  if (error) throw error;
+  if (data?.error) throw new Error(data.error);
+  return data as AIReport;
+};
+
+/**
+ * Get saved AI report from DB
+ */
+export const getAIReport = async (
+  evalId: number,
+  provider?: 'claude' | 'openai'
+): Promise<AIReport | AIReport[] | null> => {
+  const client = getSupabase();
+  if (!client) return null;
+
+  let query = client
+    .from('ai_reports')
+    .select('*')
+    .eq('eval_id', evalId);
+
+  if (provider) {
+    const { data, error } = await query.eq('provider', provider).single();
+    if (error) return null;
+    return data as AIReport;
+  }
+
+  const { data, error } = await query.order('created_at', { ascending: false });
+  if (error) return null;
+  return (data as AIReport[]) || [];
 };
 
 export default getSupabase;

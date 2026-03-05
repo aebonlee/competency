@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import usePageTitle from '../../utils/usePageTitle';
-import { getEvaluations, validateCoupon, useCoupon as applyCoupon, createEvaluation } from '../../utils/supabase';
+import { getEvaluations, validateCoupon, useCoupon as applyCoupon, createEvaluation, createPurchase, updatePurchaseStatus } from '../../utils/supabase';
 import '../../styles/checkout.css';
 
 const TOOLTIPS = {
@@ -44,6 +44,9 @@ const Main = () => {
       const result = await validateCoupon(couponCode);
       if (result.valid) {
         await applyCoupon(result.coupon.id, user.id);
+        // 쿠폰 사용 시 무료 결제 기록 생성 (매출 추적/감사용)
+        const purchase = await createPurchase({ user_id: user.id, amount: 0 });
+        await updatePurchaseStatus(String(purchase.id), 'paid', `coupon:${result.coupon.id}`);
         const newEval = await createEvaluation(user.id);
         showToast('쿠폰이 적용되었습니다. 검사를 시작하세요!', 'success');
         navigate(`/evaluation/${newEval.id}`);
