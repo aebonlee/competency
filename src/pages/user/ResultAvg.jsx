@@ -212,7 +212,7 @@ const ResultAvg = () => {
   return (
     <div className="page-wrapper result-domain">
       <div id="cont">
-        <div style={{ position: 'relative', marginTop: '80px' }}>
+        <div style={{ position: 'relative', marginTop: '24px' }}>
 
           {/* 나이별 — legacy #age */}
           <div id="age" style={{ marginBottom: '40px' }}>
