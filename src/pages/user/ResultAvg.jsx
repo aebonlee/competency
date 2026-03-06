@@ -196,7 +196,7 @@ const ResultAvg = () => {
 
   if (loading) {
     return (
-      <div className="page-wrapper">
+      <div className="page-wrapper result-domain">
         <div style={{ display: 'flex', justifyContent: 'center', minHeight: '60vh', alignItems: 'center' }}>
           <div className="loading-spinner" />
         </div>
@@ -209,80 +209,77 @@ const ResultAvg = () => {
 
   return (
     <div className="page-wrapper result-domain">
-      <section className="page-header">
-        <div className="container">
-          <h1>나이별 &amp; 직무별 통계</h1>
-          <p>전체 검사자 기준 평균 역량 점수</p>
-        </div>
-      </section>
+      {/* legacy: no page-header, content starts directly under nav */}
+      <div id="cont">
+        <div style={{ position: 'relative', marginTop: '80px' }}>
 
-      <div id="cont" style={{ position: 'relative', marginTop: '20px' }}>
-        {/* 인구통계학적 통계 (나이별) — legacy #age */}
-        <div className="avg-section">
-          <div className="avg-chart-title">
-            <h1>인구통계학적 통계</h1>
-          </div>
-          <div className="avg-chart-center">
-            <div className="avg-chart-box">
-              <AvgBarChart title={`${myAgeLabel} 평균 검사결과`} data={ageAvg} />
+          {/* 인구통계학적 통계 (나이별) — legacy #age */}
+          <div id="age" style={{ marginBottom: '40px' }}>
+            <div className="avg-chart-title">
+              <h1>인구통계학적 통계</h1>
             </div>
-          </div>
-        </div>
-
-        {/* 성별 통계 — legacy #mf */}
-        <div className="avg-section">
-          <div className="avg-chart-title">
-            <h1>성별 통계</h1>
-          </div>
-          <div className="avg-chart-center">
-            <div className="avg-chart-box">
-              <AvgBarChart title={`${myGenderLabel} 평균 검사결과`} data={genderAvg} />
-            </div>
-          </div>
-        </div>
-
-        {/* 24 직무별 통계 — legacy #position */}
-        <div className="avg-section">
-          <div className="avg-chart-title">
-            <h1>24 직무별 통계</h1>
-          </div>
-
-          {/* 6열 직무 버튼 그리드 — legacy .ncsSearch_field1 */}
-          <ul className="avg-job-grid">
-            {POSITION_LIST.map(p => (
-              <li key={p.code}>
-                <button
-                  className={`avg-job-btn${activeJob === p.code ? ' active' : ''}`}
-                  onClick={() => handleJobClick(p.code)}
-                >
-                  <span className="avg-job-num">{String(p.code).padStart(2, '0')}</span>
-                  <span className="avg-job-name">{p.name}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-
-          {/* 선택된 직무 차트 — legacy .jChart show/hide */}
-          {activeJob && posAvgMap[activeJob] && (
-            <div className="avg-chart-center" ref={jobChartRef}>
+            <div className="avg-chart-center">
               <div className="avg-chart-box">
-                <AvgBarChart
-                  title={POSITION_LIST.find(p => p.code === activeJob)?.name || ''}
-                  data={posAvgMap[activeJob]}
-                />
+                <AvgBarChart title={`${myAgeLabel} 평균 검사결과`} data={ageAvg} />
               </div>
             </div>
-          )}
+          </div>
 
-          {!activeJob && (
-            <p className="avg-hint">
-              위 직무 버튼을 클릭하면 해당 직무의 평균 검사결과 차트가 표시됩니다.
-            </p>
-          )}
+          {/* 성별 통계 — legacy #mf */}
+          <div id="mf" style={{ marginBottom: '40px' }}>
+            <div className="avg-chart-title">
+              <h1>성별 통계</h1>
+            </div>
+            <div className="avg-chart-center">
+              <div className="avg-chart-box">
+                <AvgBarChart title={`${myGenderLabel} 평균 검사결과`} data={genderAvg} />
+              </div>
+            </div>
+          </div>
+
+          {/* 24 직무별 통계 — legacy #position */}
+          <div id="position">
+            <div className="avg-chart-title">
+              <h1>24 직무별 통계</h1>
+            </div>
+
+            {/* 6열 직무 버튼 그리드 — legacy .ncsSearch_field1 */}
+            <ul className="avg-job-grid">
+              {POSITION_LIST.map(p => (
+                <li key={p.code}>
+                  <button
+                    className={`avg-job-btn${activeJob === p.code ? ' active' : ''}`}
+                    onClick={() => handleJobClick(p.code)}
+                  >
+                    <span className="avg-job-num">{String(p.code).padStart(2, '0')}</span>
+                    <span className="avg-job-name">{p.name}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+
+            {/* 선택된 직무 차트 — legacy .jChart show/hide */}
+            <div className="avg-chart-center">
+              {activeJob && posAvgMap[activeJob] && (
+                <div className="avg-chart-box" ref={jobChartRef}>
+                  <AvgBarChart
+                    title={POSITION_LIST.find(p => p.code === activeJob)?.name || ''}
+                    data={posAvgMap[activeJob]}
+                  />
+                </div>
+              )}
+            </div>
+
+            {!activeJob && (
+              <p className="avg-hint">
+                위 직무 버튼을 클릭하면 해당 직무의 평균 검사결과 차트가 표시됩니다.
+              </p>
+            )}
+          </div>
+
         </div>
-
-        <div style={{ marginBottom: 40 }} />
       </div>
+      <div style={{ marginBottom: '40px' }} />
     </div>
   );
 };
