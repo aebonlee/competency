@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
-import { createPurchase, createEvaluation, verifyPayment } from '../../utils/supabase';
+import { createPurchase, createEvaluation, verifyPayment, updatePurchaseStatus } from '../../utils/supabase';
 import { requestPayment } from '../../utils/portone';
 import '../../styles/checkout.css';
 

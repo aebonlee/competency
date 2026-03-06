@@ -14,35 +14,41 @@ const AIReport = () => {
   const [loading, setLoading] = useState(true);
   const [scoresLoading, setScoresLoading] = useState(false);
 
-  // 완료된 검사 목록 로드
+  // 점수 로드 함수 (effect 외부에서만 호출)
+  const loadScores = async (evalId) => {
+    setScoresLoading(true);
+    setScores(null);
+    const result = await getResult(evalId);
+    if (result) {
+      setScores([
+        result.point1, result.point2, result.point3, result.point4,
+        result.point5, result.point6, result.point7, result.point8,
+      ]);
+    }
+    setScoresLoading(false);
+  };
+
+  // 완료된 검사 목록 로드 + 최신 검사 자동 선택
   useEffect(() => {
     if (!user) return;
     getEvaluations(user.id).then(data => {
       const completed = data.filter(ev => ev.progress === 100);
       setCompletedEvals(completed);
       if (completed.length > 0) {
-        setSelectedEvalId(completed[0].id);
+        const firstId = completed[0].id;
+        setSelectedEvalId(firstId);
+        loadScores(firstId);
       }
       setLoading(false);
     });
   }, [user]);
 
-  // 선택된 검사의 결과(점수) 로드
-  useEffect(() => {
-    if (!selectedEvalId) return;
-    setScoresLoading(true);
-    getResult(selectedEvalId).then(result => {
-      if (result) {
-        setScores([
-          result.point1, result.point2, result.point3, result.point4,
-          result.point5, result.point6, result.point7, result.point8,
-        ]);
-      } else {
-        setScores(null);
-      }
-      setScoresLoading(false);
-    });
-  }, [selectedEvalId]);
+  // 드롭다운 변경 핸들러
+  const handleEvalChange = (e) => {
+    const evalId = Number(e.target.value);
+    setSelectedEvalId(evalId);
+    loadScores(evalId);
+  };
 
   if (loading) {
     return (
@@ -81,7 +87,7 @@ const AIReport = () => {
               <select
                 id="eval-select"
                 value={selectedEvalId || ''}
-                onChange={e => setSelectedEvalId(Number(e.target.value))}
+                onChange={handleEvalChange}
                 style={{
                   padding: '8px 12px',
                   borderRadius: '8px',
