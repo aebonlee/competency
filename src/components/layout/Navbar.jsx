@@ -78,6 +78,7 @@ const Navbar = () => {
                   나이별 &amp; 직무별 통계
                 </Link>
                 <Link to="/history" className="nav-dropdown-item" onClick={() => setOpenMenu(null)}>검사내역</Link>
+                <Link to="/ai-report" className="nav-dropdown-item" onClick={() => setOpenMenu(null)}>AI 보고서</Link>
               </div>
             </div>
           )}

@@ -13,13 +13,14 @@ import getSupabase from '../../utils/supabase';
 import usePageTitle from '../../utils/usePageTitle';
 import { COMPETENCY_LABELS, COMPETENCY_COLORS, AGE_LIST, POSITION_LIST } from '../../data/competencyInfo';
 import '../../styles/result.css';
+import '../../styles/avg.css';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip);
 
 const GENDER_MAP = { M: '남성', F: '여성' };
 
-/** Horizontal bar chart for 8 competency averages */
-const AvgBarChart = ({ title, data, containerRef }) => {
+/** 수평 바 차트 — legacy horizontalBar 동일 구조 */
+const AvgBarChart = ({ title, data }) => {
   if (!data) return null;
 
   const chartData = {
@@ -52,11 +53,7 @@ const AvgBarChart = ({ title, data, containerRef }) => {
     },
   };
 
-  return (
-    <div className="chart-canvas-wrap" ref={containerRef}>
-      <Bar data={chartData} options={options} />
-    </div>
-  );
+  return <Bar data={chartData} options={options} />;
 };
 
 const ResultAvg = () => {
@@ -157,7 +154,6 @@ const ResultAvg = () => {
         if (genderCnt[g] > 0) {
           setGenderAvg(genderSums[g].map(s => Math.round(s / genderCnt[g])));
         } else {
-          // Fallback: random data like legacy
           setGenderAvg(Array.from({ length: 8 }, () => Math.round(Math.random() * 240 + 160)));
         }
 
@@ -192,8 +188,7 @@ const ResultAvg = () => {
   }, [myGender, myAge]);
 
   const handleJobClick = (code) => {
-    setActiveJob(code);
-    // Scroll to chart area
+    setActiveJob(activeJob === code ? null : code);
     setTimeout(() => {
       jobChartRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 100);
@@ -213,7 +208,7 @@ const ResultAvg = () => {
   const myGenderLabel = GENDER_MAP[myGender] || '전체';
 
   return (
-    <div className="page-wrapper">
+    <div className="page-wrapper result-domain">
       <section className="page-header">
         <div className="container">
           <h1>나이별 &amp; 직무별 통계</h1>
@@ -221,71 +216,72 @@ const ResultAvg = () => {
         </div>
       </section>
 
-      <div className="result-page">
-        {/* Age Average */}
-        <div className="card" style={{ marginBottom: 32 }}>
-          <div className="chart-title">
+      <div id="cont" style={{ position: 'relative', marginTop: '20px' }}>
+        {/* 인구통계학적 통계 (나이별) — legacy #age */}
+        <div className="avg-section">
+          <div className="avg-chart-title">
             <h1>인구통계학적 통계</h1>
           </div>
-          <AvgBarChart
-            title={`${myAgeLabel} 평균 검사결과`}
-            data={ageAvg}
-          />
+          <div className="avg-chart-center">
+            <div className="avg-chart-box">
+              <AvgBarChart title={`${myAgeLabel} 평균 검사결과`} data={ageAvg} />
+            </div>
+          </div>
         </div>
 
-        {/* Gender Average */}
-        <div className="card" style={{ marginBottom: 32 }}>
-          <div className="chart-title">
+        {/* 성별 통계 — legacy #mf */}
+        <div className="avg-section">
+          <div className="avg-chart-title">
             <h1>성별 통계</h1>
           </div>
-          <AvgBarChart
-            title={`${myGenderLabel} 평균 검사결과`}
-            data={genderAvg}
-          />
+          <div className="avg-chart-center">
+            <div className="avg-chart-box">
+              <AvgBarChart title={`${myGenderLabel} 평균 검사결과`} data={genderAvg} />
+            </div>
+          </div>
         </div>
 
-        {/* 24 Job Category */}
-        <div className="card" style={{ marginBottom: 32 }}>
-          <div className="chart-title">
+        {/* 24 직무별 통계 — legacy #position */}
+        <div className="avg-section">
+          <div className="avg-chart-title">
             <h1>24 직무별 통계</h1>
           </div>
 
-          {/* Job buttons grid */}
-          <div className="chart-tabs">
-            <ul style={{ flexWrap: 'wrap' }}>
-              {POSITION_LIST.map(p => (
-                <li key={p.code} style={{ flex: '1 0 25%', listStyle: 'none' }}>
-                  <div
-                    className={`chart-tab-btn${activeJob === p.code ? ' active' : ''}`}
-                    onClick={() => handleJobClick(p.code)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => { if (e.key === 'Enter') handleJobClick(p.code); }}
-                  >
-                    {String(p.code).padStart(2, '0')}. {p.name}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* 6열 직무 버튼 그리드 — legacy .ncsSearch_field1 */}
+          <ul className="avg-job-grid">
+            {POSITION_LIST.map(p => (
+              <li key={p.code}>
+                <button
+                  className={`avg-job-btn${activeJob === p.code ? ' active' : ''}`}
+                  onClick={() => handleJobClick(p.code)}
+                >
+                  <span className="avg-job-num">{String(p.code).padStart(2, '0')}</span>
+                  <span className="avg-job-name">{p.name}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
 
-          {/* Selected job chart */}
+          {/* 선택된 직무 차트 — legacy .jChart show/hide */}
           {activeJob && posAvgMap[activeJob] && (
-            <div className="chart-panel">
-              <AvgBarChart
-                title={POSITION_LIST.find(p => p.code === activeJob)?.name || ''}
-                data={posAvgMap[activeJob]}
-                containerRef={jobChartRef}
-              />
+            <div className="avg-chart-center" ref={jobChartRef}>
+              <div className="avg-chart-box">
+                <AvgBarChart
+                  title={POSITION_LIST.find(p => p.code === activeJob)?.name || ''}
+                  data={posAvgMap[activeJob]}
+                />
+              </div>
             </div>
           )}
 
           {!activeJob && (
-            <p style={{ color: 'var(--text-light)', fontSize: 14, margin: '24px 0' }}>
+            <p className="avg-hint">
               위 직무 버튼을 클릭하면 해당 직무의 평균 검사결과 차트가 표시됩니다.
             </p>
           )}
         </div>
+
+        <div style={{ marginBottom: 40 }} />
       </div>
     </div>
   );

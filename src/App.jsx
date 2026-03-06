@@ -32,6 +32,7 @@ import ResultAvg from './pages/user/ResultAvg';
 import History from './pages/user/History';
 import Profile from './pages/user/Profile';
 import DeleteAccount from './pages/user/DeleteAccount';
+import AIReport from './pages/user/AIReport';
 
 // Group pages (lazy)
 const GroupMain = lazy(() => import('./pages/group/GroupMain'));
@@ -133,6 +134,7 @@ function App() {
           <Route path="/results" element={<AuthGuard><PrevResult /></AuthGuard>} />
           <Route path="/results/average" element={<AuthGuard><ResultAvg /></AuthGuard>} />
           <Route path="/history" element={<AuthGuard><History /></AuthGuard>} />
+          <Route path="/ai-report" element={<AuthGuard><AIReport /></AuthGuard>} />
           <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
           <Route path="/delete-account" element={<AuthGuard><DeleteAccount /></AuthGuard>} />
 
